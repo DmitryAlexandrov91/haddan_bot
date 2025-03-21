@@ -9,6 +9,7 @@ from bot_classes import DriverManager, HaddanBot
 from constants import FIELD_PRICES
 from utils import get_glade_price_list
 
+
 manager = DriverManager()
 manager.options.add_argument('--start-maximized')
 profile_dir = os.path.join(os.getcwd(), 'haddan_tk_profile')
