@@ -365,5 +365,5 @@ sync_button.grid(
 )
 
 
-if __name__ == '__main__':
+def main(app):
     app.mainloop()

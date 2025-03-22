@@ -288,3 +288,6 @@ class DriverManager:
                 # self.driver.refresh()
                 # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
+
+    def stop_farm(self):
+        return False

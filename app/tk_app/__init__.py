@@ -1,0 +1,1 @@
+from .core import start_app  # noqa
