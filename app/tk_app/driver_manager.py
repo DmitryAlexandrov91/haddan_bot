@@ -1,6 +1,6 @@
-from bot_classes import DriverManager
 import os
 
+from bot_classes import DriverManager
 
 manager = DriverManager()
 manager.options.add_argument('--start-maximized')
@@ -11,4 +11,4 @@ manager.options.add_experimental_option(
     "excludeSwitches", ["enable-automation"]
 )
 manager.options.add_experimental_option('useAutomationExtension', False)
-print('Менеджер запущен')
+

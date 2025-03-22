@@ -1,8 +1,7 @@
+from constants import HADDAN_MAIN_URL
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from constants import HADDAN_MAIN_URL
 
 
 class HaddanBot:

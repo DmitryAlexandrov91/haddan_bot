@@ -3,6 +3,8 @@ import threading
 from datetime import datetime
 from time import sleep
 
+from configs import configure_logging
+from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
@@ -12,8 +14,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
-from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
-from configs import configure_logging
 from utils import price_counter, time_extractor
 
 
@@ -26,6 +26,7 @@ class DriverManager:
         self.options = webdriver.ChromeOptions()
         self.bot = None
         self.choises = {}
+        self.stop_event = threading.Event()
 
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
@@ -218,6 +219,8 @@ class DriverManager:
             spell=1):
         """Фарм поляны(пока без распознования капчи)"""
         while True:
+            if self.stop_event.is_set():
+                break
             sleep(1)
             try:
                 self.try_to_switch_to_central_frame()

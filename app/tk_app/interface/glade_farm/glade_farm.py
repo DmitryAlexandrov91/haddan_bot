@@ -1,11 +1,10 @@
-import tkinter as tk
+"""Управление фармом поляны"""
 import threading
-
-from tk_app.core import app
-
-from tk_app.driver_manager import manager
+import tkinter as tk
 
 from constants import FIELD_PRICES
+from tk_app.core import app
+from tk_app.driver_manager import manager
 
 GLADE_PRICES = FIELD_PRICES.copy()
 
@@ -18,18 +17,20 @@ def tk_glade_farm():
 
 
 def stop_farm():
-    manager.stop_farm()
+    manager.stop_event.set()
+    print(manager.stop_event)
     print('Останавливаю фарм поляны')
 
 
 def start_thread():
+    manager.stop_event.clear()
     manager.thread = threading.Thread(target=tk_glade_farm)
     manager.thread.start()
 
 
 glade__farm_lable = tk.Label(
     app,
-    text='Фарм поляны.',
+    text='Фарм поляны - >',
     bg='#FFF4DC')
 glade__farm_lable.grid(row=2, column=0)
 

@@ -2,11 +2,10 @@
 import re
 from time import sleep
 
+from constants import FIELD_PRICES, RES_LIST, SHOP_URL
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-from constants import FIELD_PRICES, SHOP_URL, RES_LIST
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def price_counter(resurses, price_diсt=FIELD_PRICES):
