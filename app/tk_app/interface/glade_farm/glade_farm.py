@@ -1,12 +1,11 @@
 """Управление фармом поляны"""
 import threading
 import tkinter as tk
+import os
 
-from constants import FIELD_PRICES
+from .glade_prices import GLADE_PRICES
 from tk_app.core import app
 from tk_app.driver_manager import manager
-
-GLADE_PRICES = FIELD_PRICES.copy()
 
 
 def tk_glade_farm():
@@ -18,7 +17,6 @@ def tk_glade_farm():
 
 def stop_farm():
     manager.stop_event.set()
-    print(manager.stop_event)
     print('Останавливаю фарм поляны')
 
 
@@ -55,4 +53,22 @@ glade_farm_stop_buttton = tk.Button(
     )
 glade_farm_stop_buttton.grid(
     row=2, column=2
+)
+
+# Информационный блок
+
+
+def glade_farm_txt_open():
+    os.startfile('glade_farm.txt')
+
+
+statistic_button = tk.Button(
+    app,
+    text='лог подбора трав',
+    width=15,
+    bg='#FFF4DC',
+    command=glade_farm_txt_open
+)
+statistic_button.grid(
+    row=12, column=1
 )

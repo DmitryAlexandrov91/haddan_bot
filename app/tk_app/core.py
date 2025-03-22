@@ -19,6 +19,6 @@ from tk_app.interface.login import *  # noqa
 
 
 def start_app():
-    username_field.insert(0, 'SwordS')
-    password_field.insert(0, '0>2Z9&vdMPVOV{h')
+    username_field.insert(0, os.getenv('FIRST_CHAR'))
+    password_field.insert(0, os.getenv('HADDAN_PASSWORD'))
     app.mainloop()

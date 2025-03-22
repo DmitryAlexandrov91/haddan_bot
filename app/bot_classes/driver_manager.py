@@ -18,7 +18,7 @@ from utils import price_counter, time_extractor
 
 
 class DriverManager:
-    """Класс управления объектом driver."""
+    """Класс управления объектом webdriver."""
 
     def __init__(self):
         self.driver = None

@@ -11,4 +11,3 @@ manager.options.add_experimental_option(
     "excludeSwitches", ["enable-automation"]
 )
 manager.options.add_experimental_option('useAutomationExtension', False)
-
