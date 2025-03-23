@@ -1,6 +1,7 @@
-"""Приложение haddan."""
+"""Основная конфигурация приложения tkinter."""
 import tkinter as tk
 
+from constants import FIRST_CHAR, PASSWORD
 from PIL import Image, ImageTk
 
 from .utils import keys
@@ -19,6 +20,6 @@ from tk_app.interface.login import *  # noqa
 
 
 def start_app():
-    username_field.insert(0, os.getenv('FIRST_CHAR'))
-    password_field.insert(0, os.getenv('HADDAN_PASSWORD'))
+    username_field.insert(0, FIRST_CHAR)
+    password_field.insert(0, PASSWORD)
     app.mainloop()

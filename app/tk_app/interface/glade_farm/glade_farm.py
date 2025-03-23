@@ -1,11 +1,12 @@
 """Управление фармом поляны"""
+import os
 import threading
 import tkinter as tk
-import os
 
-from .glade_prices import GLADE_PRICES
 from tk_app.core import app
 from tk_app.driver_manager import manager
+
+from .glade_prices import GLADE_PRICES
 
 
 def tk_glade_farm():

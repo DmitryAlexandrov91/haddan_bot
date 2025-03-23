@@ -33,9 +33,9 @@ KAPCHA_URL = 'https://haddan.ru/inner/img/gc.php'
 SHOP_URL = 'http://ordenpegasa.ru/shop/'
 
 # Переменные окружения.
-FIRST_CHAR = os.getenv('FIRST_CHAR')
-SECOND_CHAR = os.getenv('SECOND_CHAR')
-PASSWORD = os.getenv('HADDAN_PASSWORD')
+FIRST_CHAR = os.getenv('FIRST_CHAR', None)
+SECOND_CHAR = os.getenv('SECOND_CHAR', None)
+PASSWORD = os.getenv('HADDAN_PASSWORD', None)
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 

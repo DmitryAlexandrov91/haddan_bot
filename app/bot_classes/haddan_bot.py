@@ -1,7 +1,9 @@
 from constants import HADDAN_MAIN_URL
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from telebot import TeleBot
 
 
 class HaddanBot:
@@ -15,12 +17,12 @@ class HaddanBot:
     """
 
     def __init__(self, char, driver, password, bot=None):
-        self.driver = driver
-        self.char = char
-        self.password = password
+        self.driver: webdriver.Chrome = driver
+        self.char: str = char
+        self.password: str = password
         if bot is not None:
-            self.bot = bot
-        self.login_url = HADDAN_MAIN_URL
+            self.bot: TeleBot = bot
+        self.login_url: str = HADDAN_MAIN_URL
 
     def login_to_game(self):
         """Заходит в игру под заданным именем char."""

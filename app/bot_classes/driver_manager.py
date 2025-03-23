@@ -12,21 +12,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
-
+from telebot import TeleBot
 from utils import price_counter, time_extractor
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 class DriverManager:
     """Класс управления объектом webdriver."""
 
-    def __init__(self):
-        self.driver = None
-        self.thread = None
-        self.options = webdriver.ChromeOptions()
-        self.bot = None
-        self.choises = {}
-        self.stop_event = threading.Event()
+    def __init__(self, bot=None):
+        self.driver: webdriver.Chrome = None
+        self.thread: threading = None
+        self.options: webdriver.ChromeOptions = webdriver.ChromeOptions()
+        if bot is not None:
+            self.bot: TeleBot = bot
+        self.choises: dict = {}
+        self.stop_event: threading.Event = threading.Event()
 
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
@@ -189,25 +190,34 @@ class DriverManager:
                 sleep(0.5)
                 self.one_spell_fight(slots=2, spell=1)
 
-    def send_photo(self, bot, photo):
+    def send_photo(self, photo):
         """Отправляет фотку в телеграм."""
-        bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
+        self.bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
 
-    def check_kaptcha(self, bot=None):
+    def check_kaptcha(self):
         """Проверяет наличие капчи на странице."""
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]'
                 )
         if kaptcha:
-            print('Обнаружена капча!')
-            kaptcha[0].screenshot('kaptcha.png')
-            sleep(30)
-            if bot is not None:
-                self.send_photo(bot, 'kaptcha.png')
-                sleep(1)
-                self.send_photo(bot, 'runes.png')
+            if not self.bot:
+                print('Обнаружена капча!')
+                # kaptcha[0].screenshot('kaptcha.png')        
                 sleep(30)
+            else:
+                self.bot.send_message(
+                    chat_id=TELEGRAM_CHAT_ID,
+                    text='Обнаружена капча!'
+                )
+                configure_logging()
+                logging.info(
+                    '\nОбнаружена капча!\n',
+                )
+                # self.send_photo(bot, 'kaptcha.png')
+                sleep(30)
+                # self.send_photo(bot, 'runes.png')
+                # sleep(30)
         # self.driver.refresh()
         # self.driver.execute_script("window.location.reload();")
         self.driver.switch_to.default_content()
@@ -218,6 +228,9 @@ class DriverManager:
             slots=2,
             spell=1):
         """Фарм поляны(пока без распознования капчи)"""
+        self.bot.send_message(
+            chat_id=TELEGRAM_CHAT_ID,
+            text='начинаю фарм поляны')
         while True:
             if self.stop_event.is_set():
                 break

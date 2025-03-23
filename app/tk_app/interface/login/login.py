@@ -46,7 +46,7 @@ password_field.grid(row=1, column=1)
 
 bot_stop_buttton = tk.Button(
     app,
-    text='закрыть игру',
+    text='закрыть',
     width=11,
     bg='#FFF4DC',
     command=stop_bot
@@ -58,7 +58,7 @@ bot_stop_buttton.grid(
 
 login_to_game = tk.Button(
     app,
-    text='Войти в игру',
+    text='войти',
     width=11,
     bg='#FFF4DC',
     command=start_game
