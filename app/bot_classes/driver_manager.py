@@ -228,9 +228,6 @@ class DriverManager:
             slots=2,
             spell=1):
         """Фарм поляны(пока без распознования капчи)"""
-        self.bot.send_message(
-            chat_id=TELEGRAM_CHAT_ID,
-            text='начинаю фарм поляны')
         while True:
             if self.stop_event.is_set():
                 break
