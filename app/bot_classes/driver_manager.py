@@ -27,7 +27,7 @@ class DriverManager:
         if bot is not None:
             self.bot: TeleBot = bot
         self.choises: dict = {}
-        self.stop_event: threading.Event = threading.Event()
+        self.event: threading.Event = threading.Event()
 
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
@@ -201,23 +201,14 @@ class DriverManager:
                     'img[src="/inner/img/bc.php"]'
                 )
         if kaptcha:
-            if not self.bot:
+            if self.bot is None:
                 print('Обнаружена капча!')
-                # kaptcha[0].screenshot('kaptcha.png')        
-                sleep(30)
             else:
                 self.bot.send_message(
                     chat_id=TELEGRAM_CHAT_ID,
                     text='Обнаружена капча!'
                 )
-                configure_logging()
-                logging.info(
-                    '\nОбнаружена капча!\n',
-                )
-                # self.send_photo(bot, 'kaptcha.png')
-                sleep(30)
-                # self.send_photo(bot, 'runes.png')
-                # sleep(30)
+            sleep(30)
         # self.driver.refresh()
         # self.driver.execute_script("window.location.reload();")
         self.driver.switch_to.default_content()
@@ -228,9 +219,8 @@ class DriverManager:
             slots=2,
             spell=1):
         """Фарм поляны(пока без распознования капчи)"""
-        while True:
-            if self.stop_event.is_set():
-                break
+        self.event.set()
+        while self.event.is_set() is True:
             sleep(1)
             try:
                 self.try_to_switch_to_central_frame()
@@ -289,7 +279,7 @@ class DriverManager:
                 if hits:
                     sleep(2)
                     self.one_spell_fight(slots=slots, spell=spell)
-                self.choises = {}
+                self.choises.clear()
                 self.check_kaptcha()
             except Exception as e:
                 configure_logging()

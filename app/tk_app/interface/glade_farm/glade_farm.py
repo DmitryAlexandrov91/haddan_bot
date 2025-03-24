@@ -17,12 +17,12 @@ def tk_glade_farm():
 
 
 def stop_farm():
-    manager.stop_event.set()
+    manager.event.clear()
     print('Останавливаю фарм поляны')
 
 
 def start_thread():
-    manager.stop_event.clear()
+    manager.event.clear()
     manager.thread = threading.Thread(target=tk_glade_farm)
     manager.thread.start()
 

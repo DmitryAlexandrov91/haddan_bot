@@ -27,7 +27,7 @@ def start_game(manager=manager):
 
 
 def stop_bot(manager=manager):
-    manager.stop_event.clear()
+    manager.event.clear()
     manager.close_driver()
 
 
