@@ -57,9 +57,9 @@ def update_price_from_search():
     manager.close_driver()
 
 
-def start_price_update(manager):
-    manager.thread = threading.Thread(target=update_price_from_search)
-    manager.thread.start()
+def start_price_update():
+    new_thread = threading.Thread(target=update_price_from_search)
+    new_thread.start()
 
 
 sync_button = tk.Button(
