@@ -2,6 +2,7 @@ import logging
 import threading
 from datetime import datetime
 from time import sleep
+import random
 
 from configs import configure_logging
 from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
@@ -177,6 +178,7 @@ class DriverManager:
                 come_back[0]
             )
             come_back[0].click()
+            sleep(1)
         else:
             ActionChains(self.driver).send_keys(Keys.TAB).perform()
             hits = self.driver.find_elements(
@@ -290,6 +292,33 @@ class DriverManager:
                 sleep(2)
                 # self.driver.refresh()
                 # self.driver.execute_script("window.location.reload();")
+                self.driver.switch_to.default_content()
+
+    def one_spell_farm(self, slots=2, spell=1, with_move=False):
+        """Фарм с проведением боя одним заклом."""
+        self.start_event()
+        while self.event.is_set() is True:
+            sleep(1)
+            try:
+                self.try_to_switch_to_central_frame()
+                self.check_kaptcha()
+                hits = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[onclick="touchFight();"]')
+                if hits:
+                    self.one_spell_fight(slots=slots, spell=spell)
+                else:
+                    if with_move:
+                        move = random.choice([Keys.DOWN, Keys.UP])
+                        ActionChains(self.driver).send_keys(move).perform()
+
+            except Exception as e:
+                configure_logging()
+                logging.exception(
+                    f'\nВозникло исключение {str(e)}\n',
+                    stack_info=True
+                )
+                sleep(2)
                 self.driver.switch_to.default_content()
 
     def start_event(self):

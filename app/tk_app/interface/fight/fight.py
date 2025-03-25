@@ -9,9 +9,12 @@ def start_fight():
     print('Начинаю автобой')
     manager.start_event()
 
-    manager.one_spell_fight(
+    move = checkbox_value.get()
+
+    manager.one_spell_farm(
         slots=fight_slot.get(),
-        spell=spell_slot.get()
+        spell=spell_slot.get(),
+        with_move=move
     )
 
 
@@ -77,4 +80,29 @@ fight_stop_btn = tk.Button(
     )
 fight_stop_btn.grid(
     row=2, column=6
+)
+
+
+def toggle_function():
+    if checkbox_value.get():  # Проверяем, включен ли чекбокс
+        print("Режим включен")
+        # Логика для включенного режима
+    else:
+        print("Режим выключен")
+        # Логика для выключенного режима
+
+
+checkbox_value = tk.IntVar(value=0)
+
+move_check_button = tk.Checkbutton(
+    app,
+    text="Бегать верх-вниз",
+    variable=checkbox_value,
+    command=toggle_function,
+    bg='#FFF4DC'
+)
+
+move_check_button.grid(
+    row=2,
+    column=4
 )
