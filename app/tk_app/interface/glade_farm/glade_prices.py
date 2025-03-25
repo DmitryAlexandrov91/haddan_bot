@@ -67,7 +67,7 @@ sync_button = tk.Button(
     text='синхра цен с поисковиком',
     width=22,
     bg='#FFF4DC',
-    command=lambda: start_price_update(manager)
+    command=lambda: start_price_update()
 )
 sync_button.grid(
     row=3, column=0

@@ -1,0 +1,1 @@
+from .fight import *  # noqa

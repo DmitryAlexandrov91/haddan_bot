@@ -219,7 +219,7 @@ class DriverManager:
             slots=2,
             spell=1):
         """Фарм поляны(пока без распознования капчи)"""
-        self.event.set()
+        self.start_event()
         while self.event.is_set() is True:
             sleep(1)
             try:
@@ -292,5 +292,8 @@ class DriverManager:
                 # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
 
-    def stop_farm(self):
-        return False
+    def start_event(self):
+        self.event.set()
+
+    def stop_event(self):
+        self.event.clear()
