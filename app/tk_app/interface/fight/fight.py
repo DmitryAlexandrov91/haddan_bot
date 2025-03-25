@@ -20,6 +20,7 @@ def start_fight():
 
 def stop_fight():
     manager.stop_event()
+    manager.choises.clear()
     print('Останавливаю автобой')
 
 

@@ -198,6 +198,7 @@ class DriverManager:
 
     def check_kaptcha(self):
         """Проверяет наличие капчи на странице."""
+        self.try_to_switch_to_central_frame()
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]'
@@ -301,16 +302,18 @@ class DriverManager:
             sleep(1)
             try:
                 self.try_to_switch_to_central_frame()
-                self.check_kaptcha()
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[onclick="touchFight();"]')
                 if hits:
-                    self.one_spell_fight(slots=slots, spell=spell)
+                    self.one_spell_fight(
+                        slots=slots, spell=spell)
                 else:
                     if with_move:
                         move = random.choice([Keys.DOWN, Keys.UP])
                         ActionChains(self.driver).send_keys(move).perform()
+                self.choises.clear()
+                self.check_kaptcha()
 
             except Exception as e:
                 configure_logging()
