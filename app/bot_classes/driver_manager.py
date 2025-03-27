@@ -14,7 +14,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
-from utils import price_counter, time_extractor, get_intimidation_and_next_room
+from utils import get_intimidation_and_next_room, price_counter, time_extractor
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -176,12 +176,13 @@ class DriverManager:
             spirit_answers = self.driver.find_elements(
                 By.CLASS_NAME,
                 'talksayTak')
-            if spirit_answers:
+            while spirit_answers:
                 spirit_text = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayBIG')
                 if 'Параметры' in spirit_text[0].text:
-                    intimidation, next_room = get_intimidation_and_next_room(spirit_text[0].text)
+                    intimidation, next_room = get_intimidation_and_next_room(
+                        spirit_text[0].text)
                     if next_room >= intimidation:
                         right_choise = self.driver.find_elements(
                             By.PARTIAL_LINK_TEXT, 'Довольно')
@@ -192,24 +193,37 @@ class DriverManager:
                         right_choise[0].click()
 
                 right_choise = self.driver.find_elements(
+                            By.PARTIAL_LINK_TEXT, 'Дальше!')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Телепортироваться')
                 if right_choise:
                     right_choise[0].click()
-                
+                # right_choise = self.driver.find_elements(
+                #             By.PARTIAL_LINK_TEXT, 'Пробуем')
+                # if right_choise:
+                #     right_choise[0].click()
+
                 right_choise = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'делу давай!')
                 if right_choise:
                     right_choise[0].click()
-                
+
                 right_choise = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, ' / ')
                 if right_choise:
                     right_choise[0].click()
-                
+
                 right_choise = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'пошли')
                 if right_choise:
                     right_choise[0].click()
+                spirit_answers = self.driver.find_elements(
+                    By.CLASS_NAME,
+                    'talksayTak'
+                )
+                sleep(0.5)
 
     def play_with_poetry_spirit(self):
         poetry_spirit = self.driver.find_elements(
@@ -227,7 +241,7 @@ class DriverManager:
             spirit_answers = self.driver.find_elements(
                 By.CLASS_NAME,
                 'talksayTak0')
-            if spirit_answers:
+            while spirit_answers:
                 right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'давай дальше')
                 if right_choise:
@@ -256,6 +270,19 @@ class DriverManager:
                         By.PARTIAL_LINK_TEXT, 'Телепортироваться')
                 if right_choise:
                     right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Увечье нам не надо')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Поехали!')
+                if right_choise:
+                    right_choise[0].click()
+                spirit_answers = self.driver.find_elements(
+                    By.CLASS_NAME,
+                    'talksayTak0'
+                )
+                sleep(0.5)
 
     def play_with_mind_spirit(self):
         mind_spirit = self.driver.find_elements(
@@ -287,7 +314,6 @@ class DriverManager:
 
                 right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Телепортироваться')
-                
                 if right_choise:
                     right_choise[0].click()
 
@@ -316,9 +342,9 @@ class DriverManager:
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
             if hits:
-                self.wait_while_element_will_be_clickable(
-                    hits[0]
-                )
+                # self.wait_while_element_will_be_clickable(
+                #     hits[0]
+                # )
                 hits[0].click()
                 sleep(0.5)
                 self.one_spell_fight(slots=2, spell=1)
@@ -415,6 +441,7 @@ class DriverManager:
                     self.one_spell_fight(slots=slots, spell=spell)
                 self.choises.clear()
                 self.check_kaptcha()
+                self.check_error_on_page()
             except Exception as e:
                 configure_logging()
                 logging.exception(
@@ -426,12 +453,19 @@ class DriverManager:
                 # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
 
-    def one_spell_farm(self, slots=2, spell=1, with_move=False):
+    def one_spell_farm(
+            self,
+            slots=2,
+            spell=1,
+            up_down_move=False,
+            left_right_move=False,
+            mind_spirit_play=True):
         """Фарм с проведением боя одним заклом."""
-        self.start_event()
+        # self.start_event()
         while self.event.is_set() is True:
             # sleep(1)
             try:
+                self.check_error_on_page()
                 self.try_to_switch_to_central_frame()
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
@@ -440,12 +474,32 @@ class DriverManager:
                     self.one_spell_fight(
                         slots=slots, spell=spell)
                 else:
-                    if with_move:
-                        move = random.choice([Keys.DOWN, Keys.UP])
-                        ActionChains(self.driver).send_keys(move).perform()
+                    if up_down_move:
+                        self.crossing_to_the_north()
+                        self.crossing_to_the_south()
+                        # move = random.choice([Keys.DOWN, Keys.UP])
+                        # ActionChains(self.driver).send_keys(move).perform()
+                    if left_right_move:
+                        self.crossing_to_the_west()
+                        self.crossing_to_the_east()
+                        # move = random.choice([Keys.LEFT, Keys.RIGHT])
+                        # ActionChains(self.driver).send_keys(move).perform()
+
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
-                self.play_with_mind_spirit()
+                if mind_spirit_play:
+                    self.play_with_mind_spirit()
+                else:
+                    mind_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850577"]')
+
+                    if mind_spirit:
+                        self.bot.send_message(
+                            chat_id=TELEGRAM_CHAT_ID,
+                            text='Обнаружен дух ума!'
+                        )
+                        sleep(30)
 
                 self.choises.clear()
                 self.check_kaptcha()
@@ -458,7 +512,7 @@ class DriverManager:
                     f'\nВозникло исключение {str(e)}\n',
                     stack_info=True
                 )
-                # sleep(2)
+                sleep(2)
                 self.driver.switch_to.default_content()
 
     def start_event(self):
@@ -482,3 +536,66 @@ class DriverManager:
 
         else:
             print('Здоровье не найдено.')
+
+    def check_unsuitable_equipment(self):
+        # user_url = f'https://haddan.ru/user.php?id={id}'
+        # manager = DriverManager()
+        # manager.options.add_argument('--headless')
+        # manager.start_driver()
+        # manager.driver.get(user_url)
+        # injury = manager.driver.find_elements(
+        #     By.PARTIAL_LINK_TEXT, 'травма')
+        # self.driver.switch_to.default_content()
+        unsuitable_equipment = self.driver.find_elements(
+             By.CLASS_NAME, 'nofit')
+        if unsuitable_equipment:
+            print('Найдено неподходящее снаряжение!')
+            sleep(300)
+
+    def check_error_on_page(self):
+        self.try_to_switch_to_central_frame()
+        error = self.driver.find_elements(
+            By.PARTIAL_LINK_TEXT, 'Ошибка')
+        if error:
+            print('Обнаружена ошибка на странице, перезагружаем окно.')
+            self.driver.refresh()
+
+    def crossing_to_the_north(self):
+        north = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На север"]')
+        if north:
+            self.wait_while_element_will_be_clickable(
+                north[0]
+            )
+            north[0].click()
+
+    def crossing_to_the_south(self):
+        south = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На юг"]')
+        if south:
+            self.wait_while_element_will_be_clickable(
+                south[0]
+            )
+            south[0].click()
+
+    def crossing_to_the_west(self):
+        west = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На запад"]')
+        if west:
+            self.wait_while_element_will_be_clickable(
+                west[0]
+            )
+            west[0].click()
+
+    def crossing_to_the_east(self):
+        east = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На восток"]')
+        if east:
+            self.wait_while_element_will_be_clickable(
+                east[0]
+            )
+            east[0].click()

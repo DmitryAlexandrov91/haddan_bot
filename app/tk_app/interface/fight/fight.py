@@ -9,12 +9,16 @@ def start_fight():
     print('Начинаю автобой')
     manager.start_event()
 
-    move = checkbox_value.get()
+    up_down_move = up_down_checkbox_value.get()
+    left_right_move = left_right_checkbox_value.get()
+    mind_spirit_play = mind_spirit_checkbox_value.get()
 
     manager.one_spell_farm(
         slots=fight_slot.get(),
         spell=spell_slot.get(),
-        with_move=move
+        up_down_move=up_down_move,
+        left_right_move=left_right_move,
+        mind_spirit_play=mind_spirit_play
     )
 
 
@@ -83,27 +87,43 @@ fight_stop_btn.grid(
     row=2, column=6
 )
 
+# Чек боксы
+left_right_checkbox_value = tk.IntVar(value=0)
+up_down_checkbox_value = tk.IntVar(value=0)
+mind_spirit_checkbox_value = tk.IntVar(value=True)
 
-def toggle_function():
-    if checkbox_value.get():  # Проверяем, включен ли чекбокс
-        print("Режим включен")
-        # Логика для включенного режима
-    else:
-        print("Режим выключен")
-        # Логика для выключенного режима
-
-
-checkbox_value = tk.IntVar(value=0)
-
-move_check_button = tk.Checkbutton(
+up_down_move_check_button = tk.Checkbutton(
     app,
     text="Бегать верх-вниз",
-    variable=checkbox_value,
-    command=toggle_function,
+    variable=up_down_checkbox_value,
     bg='#FFF4DC'
 )
 
-move_check_button.grid(
+up_down_move_check_button.grid(
     row=2,
+    column=4
+)
+
+
+left_right_move_check_button = tk.Checkbutton(
+    app,
+    text="Бегать влево-вправо",
+    variable=left_right_checkbox_value,
+    bg='#FFF4DC'
+)
+
+left_right_move_check_button.grid(
+    row=3,
+    column=4
+)
+
+mind_spiritplay_check_button = tk.Checkbutton(
+    app,
+    text="Автоигра с духом ума",
+    variable=mind_spirit_checkbox_value,
+    bg='#FFF4DC'
+)
+mind_spiritplay_check_button.grid(
+    row=4,
     column=4
 )

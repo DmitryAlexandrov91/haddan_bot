@@ -84,7 +84,11 @@ def get_glade_price_list(manager):
     return result_dict
 
 
-def get_intimidation_and_next_room(text):
+def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
+    """Вытаскивает данные из ответа духа азарта.
+
+    1. intimidation - показатель запугивания
+    2. next_room - номер следующей комнаты."""
     intimidation_pattern = r'Запугивание\s*-\s*(\d+)'
     match = re.search(intimidation_pattern, text)
     if match:
@@ -100,6 +104,4 @@ def get_intimidation_and_next_room(text):
         print(f"Номер следующей комнаты: {next_room}")
     else:
         print("Не удалось найти номер следующей комнаты.")
-
-
     return intimidation, next_room
