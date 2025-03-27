@@ -82,3 +82,24 @@ def get_glade_price_list(manager):
     for key, value in zip(FIELD_PRICES.keys(), result):
         result_dict[key] = float(value)
     return result_dict
+
+
+def get_intimidation_and_next_room(text):
+    intimidation_pattern = r'Запугивание\s*-\s*(\d+)'
+    match = re.search(intimidation_pattern, text)
+    if match:
+        intimidation = int(match.group(1))
+        print(f"Значение параметра 'Запугивание': {intimidation}")
+    else:
+        print("Не удалось найти значение параметра 'Запугивание'.")
+
+    room_number_pattern = r'комнату №(\d+)'
+    match = re.search(room_number_pattern, text)
+    if match:
+        next_room = int(match.group(1))
+        print(f"Номер следующей комнаты: {next_room}")
+    else:
+        print("Не удалось найти номер следующей комнаты.")
+
+
+    return intimidation, next_room

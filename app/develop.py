@@ -1,5 +1,4 @@
 from bot_classes import DriverManager, HaddanBot
-
 from constants import FIRST_CHAR, PASSWORD
 
 

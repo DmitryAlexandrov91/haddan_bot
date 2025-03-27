@@ -5,7 +5,6 @@ from bot_classes import DriverManager
 from constants import TELEGRAM_BOT_TOKEN
 from telebot import TeleBot
 
-
 manager = DriverManager(
     bot=TeleBot(token=TELEGRAM_BOT_TOKEN)
 )

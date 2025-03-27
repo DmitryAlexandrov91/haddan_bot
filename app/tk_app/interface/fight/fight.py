@@ -1,5 +1,5 @@
-import tkinter as tk
 import threading
+import tkinter as tk
 
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -30,7 +30,7 @@ def start_thread():
     manager.event.thread.start()
 
 
-values = ["1", "2", "3", "4", "5", "6", "7"]
+values = ("1", "2", "3", "4", "5", "6", "7")
 
 fight_slot = tk.StringVar(app)
 fight_slot.set(values[1])

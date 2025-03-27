@@ -1,8 +1,8 @@
 import logging
+import random
 import threading
 from datetime import datetime
 from time import sleep
-import random
 
 from configs import configure_logging
 from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
@@ -14,7 +14,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
-from utils import price_counter, time_extractor
+from utils import price_counter, time_extractor, get_intimidation_and_next_room
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -160,6 +160,137 @@ class DriverManager:
             glade_fairy[0].click()
             sleep(1)
 
+    def play_with_gamble_spirit(self):
+        """Ищет фею поляны и щёлкает на неё."""
+        gamble_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850578"]')
+
+        if gamble_spirit:
+            self.wait_while_element_will_be_clickable(
+                 gamble_spirit[0]
+            )
+            gamble_spirit[0].click()
+            sleep(1)
+            self.try_to_switch_to_dialog()
+            spirit_answers = self.driver.find_elements(
+                By.CLASS_NAME,
+                'talksayTak')
+            if spirit_answers:
+                spirit_text = self.driver.find_elements(
+                    By.CLASS_NAME,
+                    'talksayBIG')
+                if 'Параметры' in spirit_text[0].text:
+                    intimidation, next_room = get_intimidation_and_next_room(spirit_text[0].text)
+                    if next_room >= intimidation:
+                        right_choise = self.driver.find_elements(
+                            By.PARTIAL_LINK_TEXT, 'Довольно')
+                        right_choise[0].click()
+                    else:
+                        right_choise = self.driver.find_elements(
+                            By.PARTIAL_LINK_TEXT, 'Дальше!')
+                        right_choise[0].click()
+
+                right_choise = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Телепортироваться')
+                if right_choise:
+                    right_choise[0].click()
+                
+                right_choise = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'делу давай!')
+                if right_choise:
+                    right_choise[0].click()
+                
+                right_choise = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, ' / ')
+                if right_choise:
+                    right_choise[0].click()
+                
+                right_choise = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'пошли')
+                if right_choise:
+                    right_choise[0].click()
+
+    def play_with_poetry_spirit(self):
+        poetry_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850579"]')
+        if poetry_spirit:
+            self.wait_while_element_will_be_clickable(
+                 poetry_spirit[0]
+            )
+            poetry_spirit[0].click()
+            sleep(1)
+
+            print('Играем с духом поэзии.')
+            self.try_to_switch_to_dialog()
+            spirit_answers = self.driver.find_elements(
+                By.CLASS_NAME,
+                'talksayTak0')
+            if spirit_answers:
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'давай дальше')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, ' / ')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Начали!')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Дальше!')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'пора обратно')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'с наградой')
+                if right_choise:
+                    right_choise[0].click()
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Телепортироваться')
+                if right_choise:
+                    right_choise[0].click()
+
+    def play_with_mind_spirit(self):
+        mind_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850577"]')
+
+        if mind_spirit:
+            self.wait_while_element_will_be_clickable(
+                 mind_spirit[0]
+            )
+            mind_spirit[0].click()
+            sleep(1)
+            self.try_to_switch_to_dialog()
+
+            spirit_answers = self.driver.find_elements(
+                By.CLASS_NAME,
+                'talksayTak0')
+            if spirit_answers:
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Легко')
+                if right_choise:
+                    right_choise[0].click()
+
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Сходить')
+
+                if right_choise:
+                    right_choise[random.choice([0, 1])].click()
+
+                right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Телепортироваться')
+                
+                if right_choise:
+                    right_choise[0].click()
+
     def one_spell_fight(self, slots=2, spell=1):
         """Проводит бой одним заклом."""
         choise = self.choises.get('choised', False)
@@ -224,7 +355,7 @@ class DriverManager:
         """Фарм поляны(пока без распознования капчи)"""
         self.start_event()
         while self.event.is_set() is True:
-            sleep(1)
+            # sleep(1)
             try:
                 self.try_to_switch_to_central_frame()
                 self.try_to_click_to_glade_fairy()
@@ -290,7 +421,7 @@ class DriverManager:
                     f'\nВозникло исключение {str(e)}\n',
                     stack_info=True
                 )
-                sleep(2)
+                # sleep(2)
                 # self.driver.refresh()
                 # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
@@ -299,7 +430,7 @@ class DriverManager:
         """Фарм с проведением боя одним заклом."""
         self.start_event()
         while self.event.is_set() is True:
-            sleep(1)
+            # sleep(1)
             try:
                 self.try_to_switch_to_central_frame()
                 hits = self.driver.find_elements(
@@ -312,8 +443,14 @@ class DriverManager:
                     if with_move:
                         move = random.choice([Keys.DOWN, Keys.UP])
                         ActionChains(self.driver).send_keys(move).perform()
+                self.play_with_poetry_spirit()
+                self.play_with_gamble_spirit()
+                self.play_with_mind_spirit()
+
                 self.choises.clear()
                 self.check_kaptcha()
+                self.chech_health()
+                sleep(0.5)
 
             except Exception as e:
                 configure_logging()
@@ -321,11 +458,27 @@ class DriverManager:
                     f'\nВозникло исключение {str(e)}\n',
                     stack_info=True
                 )
-                sleep(2)
+                # sleep(2)
                 self.driver.switch_to.default_content()
 
     def start_event(self):
+        """Ставит флаг запуска циклов в положение True."""
         self.event.set()
 
     def stop_event(self):
+        """Ставит флаг запуска циклов в положение False."""
         self.event.clear()
+
+    def chech_health(self):
+        self.driver.switch_to.default_content()
+        health = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'span[id="m_hpc"]'
+                )
+        if health:
+            hp = int(health[0].text)
+            if hp < 10000:
+                sleep(10)
+
+        else:
+            print('Здоровье не найдено.')
