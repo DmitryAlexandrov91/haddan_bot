@@ -6,7 +6,7 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 
 from .fight import (left_right_checkbox_value, mind_spirit_checkbox_value,
-                    up_down_checkbox_value)
+                    up_down_checkbox_value, additional_spells_value)
 
 
 values = ("1", "2", "3", "4", "5", "6", "7")
@@ -19,6 +19,7 @@ def start_heavy_fight():
     up_down_move = up_down_checkbox_value.get()
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
+    additional_spels = additional_spells_value.get()
 
     # manager.one_spell_farm(
     #     slots=fight_slot.get(),

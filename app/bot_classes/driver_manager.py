@@ -177,6 +177,7 @@ class DriverManager:
                 By.CLASS_NAME,
                 'talksayTak')
             while spirit_answers:
+                sleep(0.5)
                 spirit_text = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayBIG')
@@ -196,6 +197,7 @@ class DriverManager:
                         By.CLASS_NAME,
                         'talksayTak'
                     )
+                    sleep(0.5)
                     continue
                     
                 # right_choise = self.driver.find_elements(
@@ -334,6 +336,7 @@ class DriverManager:
             self.choises['choised'] = True
             self.quick_slots_open()
             self.try_to_switch_to_central_frame()
+        sleep(0.5)
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
@@ -348,12 +351,12 @@ class DriverManager:
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
             if hits:
-                # self.wait_while_element_will_be_clickable(
-                #     hits[0]
-                # )
+                self.wait_while_element_will_be_clickable(
+                    hits[0]
+                )
                 hits[0].click()
                 sleep(0.5)
-                self.one_spell_fight(slots=2, spell=1)
+                self.one_spell_fight(slots=slots, spell=spell)
 
     def send_photo(self, photo):
         """Отправляет фотку в телеграм."""
@@ -465,7 +468,8 @@ class DriverManager:
             spell=1,
             up_down_move=False,
             left_right_move=False,
-            mind_spirit_play=True):
+            mind_spirit_play=True,
+            min_hp=10000):
         """Фарм с проведением боя одним заклом."""
         # self.start_event()
         while self.event.is_set() is True:
@@ -483,13 +487,10 @@ class DriverManager:
                     if up_down_move:
                         self.crossing_to_the_north()
                         self.crossing_to_the_south()
-                        # move = random.choice([Keys.DOWN, Keys.UP])
-                        # ActionChains(self.driver).send_keys(move).perform()
+
                     if left_right_move:
                         self.crossing_to_the_west()
                         self.crossing_to_the_east()
-                        # move = random.choice([Keys.LEFT, Keys.RIGHT])
-                        # ActionChains(self.driver).send_keys(move).perform()
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
@@ -508,9 +509,107 @@ class DriverManager:
                         sleep(30)
 
                 self.choises.clear()
-                self.check_kaptcha()
-                self.chech_health()
+                hp = self.check_health()
+                if hp is not None and hp < min_hp:
+                    print(f'Здоровье меньше {min_hp}, спим 10 секунд.')
+                    sleep(10)
+
                 sleep(0.5)
+
+            except Exception as e:
+                configure_logging()
+                logging.exception(
+                    f'\nВозникло исключение {str(e)}\n',
+                    stack_info=True
+                )
+                sleep(2)
+                self.driver.switch_to.default_content()
+
+    def fight_with_multicast(
+            self,
+            main_fight_slot=2, main_fight_spell=1,
+            treatment_slot=4, treatment_spell=1,
+            fight_slot_2=2, fight_spell_2=2,
+            fight_slot_3=2, fight_spell_3=3,
+            fight_slot_4=2, fight_spell_4=4,
+            fight_slot_5=2, fight_spell_5=6,
+            min_hp=10000):
+        user_casts = [
+            main_fight_spell, fight_spell_2,
+            fight_spell_3, fight_spell_4, fight_spell_5
+        ]
+        self.choises['spell_book'] = {}
+
+        threatment = self.choises['spell_book'].get('threatment', False)
+
+        if not threatment:
+            self.driver.switch_to.default_content()
+            self.quick_slots_open()
+            self.quick_slot_choise(slots_number=treatment_slot)
+            self.spell_choise(spell_number=treatment_spell)
+            self.choises['spell_book']['threatment'] = True
+            self.quick_slots_open()
+            self.try_to_switch_to_central_frame()
+
+        else:
+            self.driver.switch_to.default_content()
+            self.quick_slots_open()
+            self.quick_slot_choise(slots_number=main_fight_slot)
+            self.spell_choise(spell_number=random.choice(user_casts))
+            self.quick_slots_open()
+            self.try_to_switch_to_central_frame()
+
+        sleep(0.5)
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        if come_back:
+            self.wait_while_element_will_be_clickable(
+                come_back[0]
+            )
+            come_back[0].click()
+            sleep(1)
+        else:
+            ActionChains(self.driver).send_keys(Keys.TAB).perform()
+            hits = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[onclick="touchFight();"]')
+            if hits:
+                self.wait_while_element_will_be_clickable(
+                    hits[0]
+                )
+                hits[0].click()
+                sleep(0.5)
+                self.fight_with_multicast(
+                    main_fight_slot=main_fight_slot,
+                    main_fight_spell=main_fight_spell,
+                    fight_slot_2=fight_slot_2, fight_spell_2=fight_spell_2,
+                    fight_slot_3=fight_slot_3, fight_spell_3=fight_spell_3,
+                    fight_slot_4=fight_slot_4, fight_spell_4=fight_spell_4,
+                    fight_slot_5=fight_slot_5, fight_spell_5=fight_spell_5,
+                    min_hp=min_hp
+                )
+
+    def heavy_farm(
+            self,
+            main_fight_slot=2, main_fight_spell=1,
+            treatment_slot=4, treatment_spell=1,
+            fight_slot_2=2, fight_spell_2=2,
+            fight_slot_3=2, fight_spell_3=3,
+            fight_slot_4=2, fight_spell_4=4,
+            fight_slot_5=2, fight_spell_5=6,
+            up_down_move=False, left_right_move=False,
+            mind_spirit_play=True, additional_spells=False):
+        """Фарм с отхилом и доп ударами."""
+        while self.event.is_set() is True:
+            try:
+                self.check_error_on_page()
+                self.try_to_switch_to_central_frame()
+                hits = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[onclick="touchFight();"]')
+                # if hits:
+                #     self.one_spell_fight(
+                #         slots=slots, spell=spell)
 
             except Exception as e:
                 configure_logging()
@@ -529,7 +628,8 @@ class DriverManager:
         """Ставит флаг запуска циклов в положение False."""
         self.event.clear()
 
-    def chech_health(self):
+    def check_health(self):
+        """"Возвращает кол-во  ХП персонажа."""
         self.driver.switch_to.default_content()
         health = self.driver.find_elements(
                     By.CSS_SELECTOR,
@@ -537,11 +637,7 @@ class DriverManager:
                 )
         if health:
             hp = int(health[0].text)
-            if hp < 10000:
-                sleep(10)
-
-        else:
-            print('Здоровье не найдено.')
+            return hp
 
     def check_unsuitable_equipment(self):
         # user_url = f'https://haddan.ru/user.php?id={id}'
