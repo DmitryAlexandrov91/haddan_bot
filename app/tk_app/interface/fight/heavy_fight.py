@@ -8,6 +8,7 @@ from tk_app.driver_manager import manager
 from .fight import (left_right_checkbox_value, mind_spirit_checkbox_value,
                     up_down_checkbox_value)
 
+
 values = ("1", "2", "3", "4", "5", "6", "7")
 
 
@@ -64,7 +65,7 @@ heavy_fight_stop_btn.grid(
 )
 #  ------------------------------------------------------------------
 
-#  Титульник блока тяжелого боя.
+#  Титульник блока тяжелого боя. ------------------------------------
 heavy_fight = tk.Label(
     app,
     text='Проведение боя с отхилом и доп ударами.',

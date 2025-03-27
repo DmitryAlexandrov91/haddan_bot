@@ -5,6 +5,8 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 
 
+#  Функции блока боя одним заклинанием. ------------------------------
+
 def start_fight():
     print('Начинаю автобой')
     manager.start_event()
@@ -32,27 +34,31 @@ def start_thread():
     manager.stop_event()
     manager.event.thread = threading.Thread(target=start_fight)
     manager.event.thread.start()
+#  --------------------------------------------------------------------
 
 
 values = ("1", "2", "3", "4", "5", "6", "7")
+
+#  Титульник блока боя одним заклом. ----------------------------------
+fight_panel_label = tk.Label(
+    app,
+    text='Проведение боя одним заклом',
+    bg='#FFF4DC')
+fight_panel_label.grid(row=0, column=5)
+#  --------------------------------------------------------------------
+
+#  Кнопки основного заклинания ----------------------------------------
+skill_fight_label = tk.Label(
+    app,
+    text='Боевой закл (страница, слот)',
+    bg='#FFF4DC')
+skill_fight_label.grid(row=1, column=4)
 
 fight_slot = tk.StringVar(app)
 fight_slot.set(values[1])
 
 spell_slot = tk.StringVar(app)
 spell_slot.set(values[0])
-
-fight_panel_label = tk.Label(
-    app,
-    text='Проведение боя одним заклом',
-    bg='#FFF4DC')
-fight_panel_label.grid(row=0, column=5)
-
-skill_fight_label = tk.Label(
-    app,
-    text='Боевой закл (страница, слот)',
-    bg='#FFF4DC')
-skill_fight_label.grid(row=1, column=4)
 
 main_slot_label = tk.OptionMenu(
     app, fight_slot, *values,
@@ -63,8 +69,9 @@ main_spell_label = tk.OptionMenu(
     app, spell_slot, *values,
 )
 main_spell_label.grid(row=1, column=6)
+#  --------------------------------------------------------------------
 
-
+#  Кнопки запуска и остановки боя. ------------------------------------
 fight_start_btn = tk.Button(
     app,
     text='старт',
@@ -86,8 +93,9 @@ fight_stop_btn = tk.Button(
 fight_stop_btn.grid(
     row=2, column=6
 )
+#  --------------------------------------------------------------------
 
-# Чек боксы
+#  Чек боксы  ---------------------------------------------------------
 left_right_checkbox_value = tk.IntVar(value=0)
 up_down_checkbox_value = tk.IntVar(value=0)
 mind_spirit_checkbox_value = tk.IntVar(value=True)
@@ -103,7 +111,6 @@ up_down_move_check_button.grid(
     row=2,
     column=4
 )
-
 
 left_right_move_check_button = tk.Checkbutton(
     app,
@@ -127,3 +134,4 @@ mind_spiritplay_check_button.grid(
     row=4,
     column=4
 )
+#  --------------------------------------------------------------------
