@@ -191,11 +191,17 @@ class DriverManager:
                         right_choise = self.driver.find_elements(
                             By.PARTIAL_LINK_TEXT, 'Дальше!')
                         right_choise[0].click()
-
-                right_choise = self.driver.find_elements(
-                            By.PARTIAL_LINK_TEXT, 'Дальше!')
-                if right_choise:
-                    right_choise[0].click()
+                    
+                    spirit_answers = self.driver.find_elements(
+                        By.CLASS_NAME,
+                        'talksayTak'
+                    )
+                    continue
+                    
+                # right_choise = self.driver.find_elements(
+                #             By.PARTIAL_LINK_TEXT, 'Дальше!')
+                # if right_choise:
+                #     right_choise[0].click()
                 right_choise = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Телепортироваться')
                 if right_choise:

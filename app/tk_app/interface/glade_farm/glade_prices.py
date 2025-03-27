@@ -5,7 +5,6 @@ import tkinter as tk
 from bot_classes import DriverManager
 from constants import FIELD_PRICES
 from tk_app.core import app
-from tk_app.driver_manager import manager
 from utils import get_glade_price_list
 
 GLADE_PRICES = FIELD_PRICES.copy()

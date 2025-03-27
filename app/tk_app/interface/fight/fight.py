@@ -50,19 +50,19 @@ fight_panel_label.grid(row=0, column=5)
 
 skill_fight_label = tk.Label(
     app,
-    text='Закл (слот, закл)',
+    text='Боевой закл (страница, слот)',
     bg='#FFF4DC')
 skill_fight_label.grid(row=1, column=4)
 
-slot_label = tk.OptionMenu(
+main_slot_label = tk.OptionMenu(
     app, fight_slot, *values,
 )
-slot_label.grid(row=1, column=5)
+main_slot_label.grid(row=1, column=5)
 
-spell_label = tk.OptionMenu(
+main_spell_label = tk.OptionMenu(
     app, spell_slot, *values,
 )
-spell_label.grid(row=1, column=6)
+main_spell_label.grid(row=1, column=6)
 
 
 fight_start_btn = tk.Button(
