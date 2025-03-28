@@ -14,7 +14,6 @@ def start_fight():
     up_down_move = up_down_checkbox_value.get()
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
-    
 
     manager.one_spell_farm(
         slots=fight_slot.get(),
@@ -43,7 +42,7 @@ values = ("1", "2", "3", "4", "5", "6", "7")
 #  Титульник блока боя одним заклом. ----------------------------------
 fight_panel_label = tk.Label(
     app,
-    text='Проведение боя одним заклом',
+    text='Автобой',
     bg='#FFF4DC')
 fight_panel_label.grid(row=0, column=5)
 #  --------------------------------------------------------------------
@@ -100,7 +99,6 @@ fight_stop_btn.grid(
 left_right_checkbox_value = tk.IntVar(value=0)
 up_down_checkbox_value = tk.IntVar(value=0)
 mind_spirit_checkbox_value = tk.IntVar(value=True)
-additional_spells_value = tk.IntVar(value=False)
 
 up_down_move_check_button = tk.Checkbutton(
     app,
@@ -136,16 +134,4 @@ mind_spiritplay_check_button.grid(
     row=4,
     column=4
 )
-
-additional_spells_check_button = tk.Checkbutton(
-    app,
-    text="Использовать доп. удары",
-    variable=additional_spells_value,
-    bg='#FFF4DC'
-)
-additional_spells_check_button.grid(
-    row=7,
-    column=4
-)
-
 #  --------------------------------------------------------------------

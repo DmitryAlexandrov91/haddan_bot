@@ -325,18 +325,41 @@ class DriverManager:
                 if right_choise:
                     right_choise[0].click()
 
+    def get_hit_number(self) -> str:
+        """Возвращает номер удара в бою."""
+        try:
+            hit_number = self.driver.find_element(
+                By.CSS_SELECTOR,
+                'a[href="javascript:submitMove()"]'
+            )
+            return hit_number.text
+        except Exception:
+            print('Номер удара не найден.')
+
+    def get_round_number(self) -> str:
+        """Возвращает номер раунда"""
+        for i in range(1, 7):
+            round_name = self.driver.find_elements(
+                    By.NAME,
+                    f'roundr{i}')
+            if not round_name:
+                return 'Раунд 1'
+            else:
+                return f'Раунд {i + 1}'
+
     def one_spell_fight(self, slots=2, spell=1):
         """Проводит бой одним заклом."""
+        print('-----------------------------')
+        print(self.get_hit_number())
+        print(self.get_round_number())
+        print('-----------------------------')
         choise = self.choises.get('choised', False)
         if not choise:
-            self.driver.switch_to.default_content()
-            self.quick_slots_open()
-            self.quick_slot_choise(slots)
-            self.spell_choise(spell)
+            self.open_slot_and_choise_spell(
+                slots_number=slots, spell_number=spell)
             self.choises['choised'] = True
-            self.quick_slots_open()
-            self.try_to_switch_to_central_frame()
         sleep(0.5)
+        
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
@@ -345,6 +368,7 @@ class DriverManager:
             )
             come_back[0].click()
             sleep(1)
+
         else:
             ActionChains(self.driver).send_keys(Keys.TAB).perform()
             hits = self.driver.find_elements(
@@ -355,7 +379,6 @@ class DriverManager:
                     hits[0]
                 )
                 hits[0].click()
-                sleep(0.5)
                 self.one_spell_fight(slots=slots, spell=spell)
 
     def send_photo(self, photo):
@@ -462,6 +485,17 @@ class DriverManager:
                 # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
 
+    def open_slot_and_choise_spell(
+            self,
+            slots_number: int,
+            spell_number: int):
+        self.driver.switch_to.default_content()
+        self.quick_slots_open()
+        self.quick_slot_choise(slots_number=slots_number)
+        self.spell_choise(spell_number=spell_number)
+        self.quick_slots_open()
+        self.try_to_switch_to_central_frame()
+
     def one_spell_farm(
             self,
             slots=2,
@@ -533,33 +567,35 @@ class DriverManager:
             fight_slot_3=2, fight_spell_3=3,
             fight_slot_4=2, fight_spell_4=4,
             fight_slot_5=2, fight_spell_5=6,
-            min_hp=10000):
+            additional_spells=False):
         user_casts = [
             main_fight_spell, fight_spell_2,
             fight_spell_3, fight_spell_4, fight_spell_5
         ]
-        self.choises['spell_book'] = {}
 
-        threatment = self.choises['spell_book'].get('threatment', False)
+        if self.choises.get('treatment', False) is False:
+            self.open_slot_and_choise_spell(
+                slots_number=treatment_slot,
+                spell_number=treatment_spell
+            )
+            self.choises['treatment'] = True
 
-        if not threatment:
-            self.driver.switch_to.default_content()
-            self.quick_slots_open()
-            self.quick_slot_choise(slots_number=treatment_slot)
-            self.spell_choise(spell_number=treatment_spell)
-            self.choises['spell_book']['threatment'] = True
-            self.quick_slots_open()
-            self.try_to_switch_to_central_frame()
+        if additional_spells:
+            self.open_slot_and_choise_spell(
+                slots_number=main_fight_slot,
+                spell_number=random.choice(user_casts)
+            )
 
-        else:
-            self.driver.switch_to.default_content()
-            self.quick_slots_open()
-            self.quick_slot_choise(slots_number=main_fight_slot)
-            self.spell_choise(spell_number=random.choice(user_casts))
-            self.quick_slots_open()
-            self.try_to_switch_to_central_frame()
+        choise = self.choises.get('choised', False)
+        if not choise:
+            self.open_slot_and_choise_spell(
+                slots_number=main_fight_slot,
+                spell_number=main_fight_spell
+            )
+            self.choises['choised'] = True
 
         sleep(0.5)
+        self.try_to_switch_to_central_frame()
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
@@ -582,11 +618,12 @@ class DriverManager:
                 self.fight_with_multicast(
                     main_fight_slot=main_fight_slot,
                     main_fight_spell=main_fight_spell,
+                    treatment_slot=treatment_slot,
+                    treatment_spell=treatment_spell,
                     fight_slot_2=fight_slot_2, fight_spell_2=fight_spell_2,
                     fight_slot_3=fight_slot_3, fight_spell_3=fight_spell_3,
                     fight_slot_4=fight_slot_4, fight_spell_4=fight_spell_4,
-                    fight_slot_5=fight_slot_5, fight_spell_5=fight_spell_5,
-                    min_hp=min_hp
+                    fight_slot_5=fight_slot_5, fight_spell_5=fight_spell_5
                 )
 
     def heavy_farm(
@@ -598,7 +635,8 @@ class DriverManager:
             fight_slot_4=2, fight_spell_4=4,
             fight_slot_5=2, fight_spell_5=6,
             up_down_move=False, left_right_move=False,
-            mind_spirit_play=True, additional_spells=False):
+            mind_spirit_play=True, additional_spells=False,
+            min_hp=10000):
         """Фарм с отхилом и доп ударами."""
         while self.event.is_set() is True:
             try:
@@ -607,9 +645,49 @@ class DriverManager:
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[onclick="touchFight();"]')
-                # if hits:
-                #     self.one_spell_fight(
-                #         slots=slots, spell=spell)
+                if hits:
+                    self.fight_with_multicast(
+                        main_fight_slot=main_fight_slot,
+                        main_fight_spell=main_fight_spell,
+                        treatment_slot=treatment_slot,
+                        treatment_spell=treatment_spell,
+                        fight_slot_2=fight_slot_2, fight_spell_2=fight_spell_2,
+                        fight_slot_3=fight_slot_3, fight_spell_3=fight_spell_3,
+                        fight_slot_4=fight_slot_4, fight_spell_4=fight_spell_4,
+                        fight_slot_5=fight_slot_5, fight_spell_5=fight_spell_5,
+                        additional_spells=additional_spells)
+                else:
+                    if up_down_move:
+                        self.crossing_to_the_north()
+                        self.crossing_to_the_south()
+
+                    if left_right_move:
+                        self.crossing_to_the_west()
+                        self.crossing_to_the_east()
+
+                self.play_with_poetry_spirit()
+                self.play_with_gamble_spirit()
+                if mind_spirit_play:
+                    self.play_with_mind_spirit()
+                else:
+                    mind_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850577"]')
+
+                    if mind_spirit:
+                        self.bot.send_message(
+                            chat_id=TELEGRAM_CHAT_ID,
+                            text='Обнаружен дух ума!'
+                        )
+                        sleep(30)
+
+                self.choises.clear()
+                hp = self.check_health()
+                if hp is not None and hp < min_hp:
+                    print(f'Здоровье меньше {min_hp}, спим 10 секунд.')
+                    sleep(10)
+
+                sleep(0.5)
 
             except Exception as e:
                 configure_logging()
@@ -638,21 +716,6 @@ class DriverManager:
         if health:
             hp = int(health[0].text)
             return hp
-
-    def check_unsuitable_equipment(self):
-        # user_url = f'https://haddan.ru/user.php?id={id}'
-        # manager = DriverManager()
-        # manager.options.add_argument('--headless')
-        # manager.start_driver()
-        # manager.driver.get(user_url)
-        # injury = manager.driver.find_elements(
-        #     By.PARTIAL_LINK_TEXT, 'травма')
-        # self.driver.switch_to.default_content()
-        unsuitable_equipment = self.driver.find_elements(
-             By.CLASS_NAME, 'nofit')
-        if unsuitable_equipment:
-            print('Найдено неподходящее снаряжение!')
-            sleep(300)
 
     def check_error_on_page(self):
         self.try_to_switch_to_central_frame()

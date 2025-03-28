@@ -1,4 +1,5 @@
 # Блок проведения сложного боя с отхилом и несколькими заклами
+# В разработке, пока работает через задницу
 import threading
 import tkinter as tk
 
@@ -6,7 +7,8 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 
 from .fight import (left_right_checkbox_value, mind_spirit_checkbox_value,
-                    up_down_checkbox_value, additional_spells_value)
+                    up_down_checkbox_value,
+                    fight_slot, spell_slot)
 
 
 values = ("1", "2", "3", "4", "5", "6", "7")
@@ -19,15 +21,26 @@ def start_heavy_fight():
     up_down_move = up_down_checkbox_value.get()
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
-    additional_spels = additional_spells_value.get()
+    additional_spells = additional_spells_checkbox_value.get()
 
-    # manager.one_spell_farm(
-    #     slots=fight_slot.get(),
-    #     spell=spell_slot.get(),
-    #     up_down_move=up_down_move,
-    #     left_right_move=left_right_move,
-    #     mind_spirit_play=mind_spirit_play
-    # )
+    manager.heavy_farm(
+        main_fight_slot=fight_slot.get(),
+        main_fight_spell=spell_slot.get(),
+        treatment_slot=treatment_slot.get(),
+        treatment_spell=treatment_spell.get(),
+        fight_slot_2=skill_fight_2_slot_choice.get(),
+        fight_spell_2=skill_fight_2_spell_choice.get(),
+        fight_slot_3=skill_fight_3_slot_choice.get(),
+        fight_spell_3=skill_fight_3_spell_choice.get(),
+        fight_slot_4=skill_fight_4_slot_choice.get(),
+        fight_spell_4=skill_fight_4_spell_choice.get(),
+        fight_slot_5=skill_fight_5_slot_choice.get(),
+        fight_spell_5=skill_fight_5_spell_choice.get(),
+        up_down_move=up_down_move,
+        left_right_move=left_right_move,
+        mind_spirit_play=mind_spirit_play,
+        additional_spells=additional_spells,
+    )
 
 
 def stop_heavy_fight():
@@ -48,7 +61,7 @@ heavy_fight_start_btn = tk.Button(
     text='старт',
     width=9,
     bg='#FFF4DC',
-    # command=start_heavy_thread
+    command=start_heavy_thread
     )
 heavy_fight_start_btn.grid(
     row=7, column=5
@@ -59,7 +72,7 @@ heavy_fight_stop_btn = tk.Button(
     text='стоп',
     width=9,
     bg='#FFF4DC',
-    # command=stop_heavy_fight
+    command=stop_heavy_fight
     )
 heavy_fight_stop_btn.grid(
     row=7, column=6
@@ -193,3 +206,16 @@ skill_fight_5_spell_label = tk.OptionMenu(
 )
 skill_fight_5_spell_label.grid(row=11, column=6)
 #  ------------------------------------------------------------------
+
+additional_spells_checkbox_value = tk.IntVar(value=0)
+
+additional_spells_check_button = tk.Checkbutton(
+    app,
+    text="Использовать доп. удары",
+    variable=additional_spells_checkbox_value,
+    bg='#FFF4DC'
+)
+additional_spells_check_button.grid(
+    row=7,
+    column=4
+)
