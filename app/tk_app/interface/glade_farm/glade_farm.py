@@ -23,8 +23,8 @@ def stop_farm():
 
 def start_thread():
     manager.event.clear()
-    manager.event.thread = threading.Thread(target=tk_glade_farm)
-    manager.event.thread.start()
+    manager.thread = threading.Thread(target=tk_glade_farm)
+    manager.thread.start()
 
 
 glade__farm_lable = tk.Label(

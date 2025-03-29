@@ -23,24 +23,24 @@ def start_heavy_fight():
     mind_spirit_play = mind_spirit_checkbox_value.get()
     additional_spells = additional_spells_checkbox_value.get()
 
-    manager.heavy_farm(
-        main_fight_slot=fight_slot.get(),
-        main_fight_spell=spell_slot.get(),
-        treatment_slot=treatment_slot.get(),
-        treatment_spell=treatment_spell.get(),
-        fight_slot_2=skill_fight_2_slot_choice.get(),
-        fight_spell_2=skill_fight_2_spell_choice.get(),
-        fight_slot_3=skill_fight_3_slot_choice.get(),
-        fight_spell_3=skill_fight_3_spell_choice.get(),
-        fight_slot_4=skill_fight_4_slot_choice.get(),
-        fight_spell_4=skill_fight_4_spell_choice.get(),
-        fight_slot_5=skill_fight_5_slot_choice.get(),
-        fight_spell_5=skill_fight_5_spell_choice.get(),
-        up_down_move=up_down_move,
-        left_right_move=left_right_move,
-        mind_spirit_play=mind_spirit_play,
-        additional_spells=additional_spells,
-    )
+    # manager.heavy_farm(
+    #     main_fight_slot=fight_slot.get(),
+    #     main_fight_spell=spell_slot.get(),
+    #     treatment_slot=treatment_slot.get(),
+    #     treatment_spell=treatment_spell.get(),
+    #     fight_slot_2=skill_fight_2_slot_choice.get(),
+    #     fight_spell_2=skill_fight_2_spell_choice.get(),
+    #     fight_slot_3=skill_fight_3_slot_choice.get(),
+    #     fight_spell_3=skill_fight_3_spell_choice.get(),
+    #     fight_slot_4=skill_fight_4_slot_choice.get(),
+    #     fight_spell_4=skill_fight_4_spell_choice.get(),
+    #     fight_slot_5=skill_fight_5_slot_choice.get(),
+    #     fight_spell_5=skill_fight_5_spell_choice.get(),
+    #     up_down_move=up_down_move,
+    #     left_right_move=left_right_move,
+    #     mind_spirit_play=mind_spirit_play,
+    #     additional_spells=additional_spells,
+    # )
 
 
 def stop_heavy_fight():
