@@ -10,7 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.keys import Keys  # noqa
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
@@ -29,6 +29,7 @@ class DriverManager:
             self.bot: TeleBot = bot
         self.choises: dict = {}
         self.event: threading.Event = threading.Event()
+        self.errors_count = 0
 
     # Служебные методы взаимодействия. ******************************
     def start_driver(self):
@@ -72,28 +73,6 @@ class DriverManager:
         """Ставит флаг запуска циклов в положение False."""
         self.event.clear()
     # ***************************************************************
-
-    # Декораторы*****************************************************
-    def exception_handler(method):
-        """
-        Этот декоратор оборачивает методы класса в блок try/except,
-        чтобы обработать любые возникающие исключения.
-        """
-        def wrapper(self, *args, **kwargs):
-            try:
-                return method(self, *args, **kwargs)
-            except Exception as e:
-
-                configure_logging()
-                logging.exception(
-                    f'Возникло исключение {str(e)}', 
-                    stack_info=False)
-
-                sleep(2)
-
-                if hasattr(self, 'driver'):
-                    self.driver.switch_to.default_content()
-        return wrapper
 
     #  Методы взаимодействия с элементами.***************************
     def wait_while_element_will_be_clickable(self, element):
@@ -211,23 +190,19 @@ class DriverManager:
             self.open_slot_and_choise_spell(
                 slots_number=slots, spell_number=spell)
             self.choises['choised'] = True
-        sleep(0.5)
         self.try_to_switch_to_central_frame()
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
             self.click_to_element_with_actionchains(come_back[0])
-            # come_back[0].click()
 
         else:
-            # ActionChains(self.driver).send_keys(Keys.TAB).perform()
             hits = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
             if hits:
-                # ActionChains(self.driver).move_to_element(hits[0]).perform()
                 self.click_to_element_with_actionchains(hits[0])
-                # hits[0].click()
+                ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
 
     def open_slot_and_choise_spell(
@@ -420,7 +395,98 @@ class DriverManager:
             )
             glade_fairy[0].click()
             sleep(1)
+    # ***************************************************************
 
+    def send_photo(self, photo):
+        """Отправляет фотку в телеграм."""
+        self.bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
+
+    def check_kaptcha(self):
+        """Проверяет наличие капчи на странице."""
+        self.try_to_switch_to_central_frame()
+        kaptcha = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[src="/inner/img/bc.php"]'
+                )
+        if kaptcha:
+            if self.bot is None:
+                print('Обнаружена капча!')
+            else:
+                self.bot.send_message(
+                    chat_id=TELEGRAM_CHAT_ID,
+                    text='Обнаружена капча!'
+                )
+            sleep(30)
+        # self.driver.refresh()
+        # self.driver.execute_script("window.location.reload();")
+        self.driver.switch_to.default_content()
+
+    def check_health(self):
+        """"Возвращает кол-во  ХП персонажа."""
+        self.driver.switch_to.default_content()
+        health = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'span[id="m_hpc"]'
+                )
+        if health:
+            hp = int(health[0].text)
+            return hp
+
+    def check_error_on_page(self):
+        self.try_to_switch_to_central_frame()
+        error = self.driver.find_elements(
+            By.PARTIAL_LINK_TEXT, 'Ошибка')
+        if error:
+            print('Обнаружена ошибка на странице, перезагружаем окно.')
+            self.driver.refresh()
+        come_back = self.driver.find_elements(
+            By.CSS_SELECTOR, 'a[href="javascript:history.back()"]')
+        if come_back:
+            self.click_to_element_with_actionchains(come_back[0])
+
+    # Переходы ******************************************************
+    def crossing_to_the_north(self):
+        north = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На север"]')
+        if north:
+            self.wait_while_element_will_be_clickable(
+                north[0]
+            )
+            north[0].click()
+
+    def crossing_to_the_south(self):
+        south = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На юг"]')
+        if south:
+            self.wait_while_element_will_be_clickable(
+                south[0]
+            )
+            south[0].click()
+
+    def crossing_to_the_west(self):
+        west = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На запад"]')
+        if west:
+            self.wait_while_element_will_be_clickable(
+                west[0]
+            )
+            west[0].click()
+
+    def crossing_to_the_east(self):
+        east = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На восток"]')
+        if east:
+            self.wait_while_element_will_be_clickable(
+                east[0]
+            )
+            east[0].click()
+    #  **************************************************************
+
+    # Основные циклы приложения *************************************
     def glade_farm(
             self,
             price_dict: dict = FIELD_PRICES,
@@ -491,41 +557,23 @@ class DriverManager:
                 self.check_kaptcha()
                 self.check_error_on_page()
             except Exception as e:
-                # configure_logging()
-                # logging.exception(
-                #     f'\nВозникло исключение {str(e)}\n',
-                #     stack_info=False
-                # )
-                # sleep(2)
-                print(e)
+                configure_logging()
+                logging.exception(
+                    f'\nВозникло исключение {str(e)}\n',
+                    stack_info=True
+                )
+                sleep(2)
+                # print(e)
                 # self.driver.refresh()
                 # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
-    # ***************************************************************
+                self.errors_count += 1
+                print(f'Текущее количество ошибок - {self.errors_count}')
+                if self.errors_count > 30:
+                    self.driver.refresh()
+                    self.errors_count = 0
+                    
 
-    def send_photo(self, photo):
-        """Отправляет фотку в телеграм."""
-        self.bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
-
-    def check_kaptcha(self):
-        """Проверяет наличие капчи на странице."""
-        self.try_to_switch_to_central_frame()
-        kaptcha = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'img[src="/inner/img/bc.php"]'
-                )
-        if kaptcha:
-            if self.bot is None:
-                print('Обнаружена капча!')
-            else:
-                self.bot.send_message(
-                    chat_id=TELEGRAM_CHAT_ID,
-                    text='Обнаружена капча!'
-                )
-            sleep(30)
-        # self.driver.refresh()
-        # self.driver.execute_script("window.location.reload();")
-        self.driver.switch_to.default_content()
 
     def one_spell_farm(
             self,
@@ -538,10 +586,15 @@ class DriverManager:
         """Фарм с проведением боя одним заклом."""
         # self.start_event()
         while self.event.is_set() is True:
-            # sleep(1)
+            sleep(1)
             try:
+                self.check_kaptcha()
                 self.check_error_on_page()
                 self.try_to_switch_to_central_frame()
+                come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+                if come_back:
+                    self.click_to_element_with_actionchains(come_back[0])
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[onclick="touchFight();"]')
@@ -584,8 +637,6 @@ class DriverManager:
                         )
                     sleep(30)
 
-                sleep(0.5)
-
             except Exception as e:
                 configure_logging()
                 logging.exception(
@@ -594,62 +645,8 @@ class DriverManager:
                 )
                 sleep(2)
                 self.driver.switch_to.default_content()
-
-    def check_health(self):
-        """"Возвращает кол-во  ХП персонажа."""
-        self.driver.switch_to.default_content()
-        health = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'span[id="m_hpc"]'
-                )
-        if health:
-            hp = int(health[0].text)
-            return hp
-
-    def check_error_on_page(self):
-        self.try_to_switch_to_central_frame()
-        error = self.driver.find_elements(
-            By.PARTIAL_LINK_TEXT, 'Ошибка')
-        if error:
-            print('Обнаружена ошибка на странице, перезагружаем окно.')
-            self.driver.refresh()
-
-    def crossing_to_the_north(self):
-        north = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На север"]')
-        if north:
-            self.wait_while_element_will_be_clickable(
-                north[0]
-            )
-            north[0].click()
-
-    def crossing_to_the_south(self):
-        south = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На юг"]')
-        if south:
-            self.wait_while_element_will_be_clickable(
-                south[0]
-            )
-            south[0].click()
-
-    def crossing_to_the_west(self):
-        west = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На запад"]')
-        if west:
-            self.wait_while_element_will_be_clickable(
-                west[0]
-            )
-            west[0].click()
-
-    def crossing_to_the_east(self):
-        east = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На восток"]')
-        if east:
-            self.wait_while_element_will_be_clickable(
-                east[0]
-            )
-            east[0].click()
+                self.errors_count += 1
+                print(f'Текущее количество ошибок - {self.errors_count}')
+                if self.errors_count > 30:
+                    self.driver.refresh()
+                    self.errors_count = 0

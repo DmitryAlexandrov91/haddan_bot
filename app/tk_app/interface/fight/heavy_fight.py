@@ -6,10 +6,9 @@ import tkinter as tk
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
-from .fight import (left_right_checkbox_value, mind_spirit_checkbox_value,
-                    up_down_checkbox_value,
-                    fight_slot, spell_slot)
-
+from .fight import (fight_slot, left_right_checkbox_value,
+                    mind_spirit_checkbox_value, spell_slot,
+                    up_down_checkbox_value)
 
 values = ("1", "2", "3", "4", "5", "6", "7")
 
