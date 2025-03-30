@@ -6,7 +6,7 @@ from constants import TELEGRAM_BOT_TOKEN
 from telebot import TeleBot
 
 manager = DriverManager(
-    bot=TeleBot(token=TELEGRAM_BOT_TOKEN)
+    # bot=TeleBot(token=TELEGRAM_BOT_TOKEN)
 )
 manager.options.add_argument('--start-maximized')
 profile_dir = os.path.join(os.getcwd(), 'haddan_tk_profile')

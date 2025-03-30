@@ -108,7 +108,8 @@ up_down_move_check_button = tk.Checkbutton(
 
 up_down_move_check_button.grid(
     row=2,
-    column=4
+    column=4,
+    sticky='w'
 )
 
 left_right_move_check_button = tk.Checkbutton(
@@ -120,7 +121,8 @@ left_right_move_check_button = tk.Checkbutton(
 
 left_right_move_check_button.grid(
     row=3,
-    column=4
+    column=4,
+    sticky='w'
 )
 
 mind_spiritplay_check_button = tk.Checkbutton(
@@ -131,6 +133,8 @@ mind_spiritplay_check_button = tk.Checkbutton(
 )
 mind_spiritplay_check_button.grid(
     row=4,
-    column=4
+    column=4,
+    ipadx=1,
+    sticky='nw'
 )
 #  --------------------------------------------------------------------

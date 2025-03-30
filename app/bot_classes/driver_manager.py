@@ -285,7 +285,6 @@ class DriverManager:
                 By.CLASS_NAME,
                 'talksayTak')
             while spirit_answers:
-                sleep(0.5)
                 spirit_text = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayBIG')
@@ -462,15 +461,14 @@ class DriverManager:
                     'img[src="/inner/img/bc.php"]'
                 )
         if kaptcha:
-            # self.driver.execute_script(
-            #     'window.alert("Обнаружена капча!");')
-            if self.bot is None:
-                print('Обнаружена капча!')
-            else:
+            if self.bot:
                 self.bot.send_message(
                     chat_id=TELEGRAM_CHAT_ID,
                     text='Обнаружена капча!'
                 )
+            else:
+                self.driver.execute_script(
+                    'window.alert("Обнаружена капча!");')
             sleep(30)
         # self.driver.execute_script("window.location.reload();")
         self.driver.switch_to.default_content()
@@ -672,23 +670,28 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
                     if mind_spirit:
-                        self.bot.send_message(
-                            chat_id=TELEGRAM_CHAT_ID,
-                            text='Обнаружен дух ума!'
-                        )
-                        # self.driver.execute_script(
-                        #     'window.alert("Обнаружен дух ума!");'
-                        # )
+                        if self.bot:
+                            self.bot.send_message(
+                                chat_id=TELEGRAM_CHAT_ID,
+                                text='Обнаружен дух ума!'
+                            )
+                        else:
+                            self.driver.execute_script(
+                                'window.alert("Обнаружен дух ума!");'
+                            )
                         sleep(30)
 
                 self.choises.clear()
                 hp = self.check_health()
                 if hp is not None and hp < min_hp:
-                    print(f'Здоровье меньше {min_hp}, спим 30 секунд.')
-                    if self.bot is not None:
+                    if self.bot:
                         self.bot.send_message(
                             chat_id=TELEGRAM_CHAT_ID,
                             text='Здоровье упало меньше минимума!'
+                        )
+                    else:
+                        self.driver.execute_script(
+                            'window.alert("Мало здоровья, спим 30 секунд!");'
                         )
                     sleep(30)
 

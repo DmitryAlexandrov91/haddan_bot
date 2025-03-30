@@ -14,12 +14,15 @@ res_price_label = tk.Label(
     app,
     text='Цена ресурсов:', bg='#FFF4DC'
 )
-res_price_label.grid(row=3, column=1)
+res_price_label.grid(
+    row=3,
+    column=1,
+    sticky='ew')
 
 price_dict_content = '\n'.join(
     f'{key}: {value}' for key, value in GLADE_PRICES.items())
 price_label = tk.Label(app, text=price_dict_content, bg='#FFF4DC')
-price_label.grid(row=4, column=1)
+price_label.grid(row=4, column=1, columnspan=1)
 
 
 # Блок изменения цены ресурсов.
