@@ -4,8 +4,8 @@ import tkinter as tk
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
-#  Функции блока боя одним заклинанием. ------------------------------
 
+#  Функции блока боя одним заклинанием. ------------------------------
 def start_fight():
     print('Начинаю автобой')
     manager.start_event()

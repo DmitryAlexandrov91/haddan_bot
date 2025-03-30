@@ -9,6 +9,7 @@ from tk_app.driver_manager import manager
 
 
 def test(manager: DriverManager):
+    manager.driver.switch_to.default_content()
     slots_2 = manager.driver.find_elements(
         By.CSS_SELECTOR,
         'a[href="javascript:qs_toggleSlots()"]'
@@ -19,24 +20,7 @@ def test(manager: DriverManager):
         slots_2[0].click()
 
 
-    # slots = manager.driver.find_elements(
-    #     By.CSS_SELECTOR,
-    #     'a[href="javascript:Slot.showSlots()"]'
-    # )
-    # if slots:
-    #     manager.print_element_content(slots[0])
-    #     slots[0].click()
-
-
 def test_2(manager: DriverManager):
-
-    # slots_2 = manager.driver.find_elements(
-    #     By.CSS_SELECTOR,
-    #     'a[href="javascript:qs_toggleSlots()"]'
-    # )
-    # if slots_2:
-    #     manager.print_element_content(slots_2[0])
-    #     slots_2[0].click()
 
     slots = manager.driver.find_elements(
         By.CSS_SELECTOR,
@@ -45,7 +29,11 @@ def test_2(manager: DriverManager):
     if slots:
         print(slots)
         manager.print_element_content(slots[0])
-        slots[0].click()
+        try:
+            slots[0].click()
+        except Exception:
+            print('Слот закрыт')
+            pass
 
 
 def start_test_thread():

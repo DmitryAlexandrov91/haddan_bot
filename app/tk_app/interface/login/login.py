@@ -14,6 +14,7 @@ def start_thread():
 
 def start_game(manager=manager):
     char = username_field.get().strip()
+    # char = 'фантазёрка'
     password = password_field.get().strip()
 
     if char and password:

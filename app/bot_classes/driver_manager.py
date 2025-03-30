@@ -14,7 +14,8 @@ from selenium.webdriver.common.keys import Keys  # noqa
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
-from utils import get_intimidation_and_next_room, price_counter, time_extractor
+from utils import (get_attr_from_string, get_intimidation_and_next_room,
+                   price_counter, time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -55,6 +56,10 @@ class DriverManager:
     def print_element_content(self, element):
         """Выводит в терминал html код элемента"""
         print(element.get_attribute('outerHTML'))
+
+    def get_element_content(self, element):
+        """Возвращает сожержимое элемента."""
+        return element.get_attribute('outerHTML')
 
     def save_url_content(self):
         """Сохраняет контент страницы.
@@ -123,14 +128,53 @@ class DriverManager:
     #  **************************************************************
 
     #  Методы ведения боя. ******************************************
+    def get_choised_spell(self):
+        """Возвращает название заклинания, которое используется в бою."""
+        self.try_to_switch_to_central_frame()
+        spell = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'a[href="javascript:fight_goAndShowSlots(true)"]'
+        )
+
+        if spell:
+            return get_attr_from_string(
+                self.get_element_content(spell[0]),
+                'title'
+            )
+
+    def get_spell_to_cast(self, spell_number):
+        """Возвращает название заклинания, которое нужно использовать."""
+        self.driver.switch_to.default_content()
+        spell_to_cast = self.driver.find_elements(
+            By.ID, f'lSlot{spell_number}'
+        )
+        if spell_to_cast:
+            return get_attr_from_string(
+                self.get_element_content(spell_to_cast[0]),
+                'title'
+            )
+
     def quick_slots_open(self):
         """Открывает меню быстрых слотов."""
-        slots = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'lSlotsBtn')))
-        self.wait_while_element_will_be_clickable(
-            slots
+        quick_slots = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'a[href="javascript:qs_toggleSlots()"]'
         )
-        slots.click()
+        if quick_slots:
+            quick_slots[0].click()
+
+    def quick_slots_close(self):
+        """Закрывает меню быстрых слотов."""
+        quick_slots = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'a[href="javascript:Slot.showSlots()"]'
+        )
+        if quick_slots:
+            try:
+                quick_slots[0].click()
+            except Exception:
+                print('Слоты уже закрыты!')
+                pass
 
     def quick_slot_choise(self, slots_number):
         """Открывает нужную страницу быстрых слотов.
@@ -160,6 +204,23 @@ class DriverManager:
             spell
         )
         spell.click()
+
+    def open_slot_and_choise_spell(
+            self,
+            slots_number: int,
+            spell_number: int):
+        """Открывает меню быстрых слотов и выбирает знужный закл."""
+        active_spell = self.get_choised_spell()
+        spell_to_cast = self.get_spell_to_cast(
+            spell_number=spell_number
+        )
+        if active_spell != spell_to_cast:
+            self.driver.switch_to.default_content()
+            self.quick_slots_open()
+            self.quick_slot_choise(slots_number=slots_number)
+            self.spell_choise(spell_number=spell_number)
+            self.quick_slots_close()
+            self.try_to_switch_to_central_frame()
 
     def get_hit_number(self) -> str:
         """Возвращает номер удара в бою."""
@@ -204,18 +265,6 @@ class DriverManager:
                 self.click_to_element_with_actionchains(hits[0])
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
-
-    def open_slot_and_choise_spell(
-            self,
-            slots_number: int,
-            spell_number: int):
-        """Открывает меню быстрых слотов и выбирает знужный закл."""
-        self.driver.switch_to.default_content()
-        self.quick_slots_open()
-        self.quick_slot_choise(slots_number=slots_number)
-        self.spell_choise(spell_number=spell_number)
-        self.quick_slots_open()
-        self.try_to_switch_to_central_frame()
     # ***************************************************************
 
     #  Методы игры с духами. ****************************************
@@ -353,29 +402,33 @@ class DriverManager:
                  mind_spirit[0]
             )
             mind_spirit[0].click()
-            sleep(1)
+            sleep(0.5)
             self.try_to_switch_to_dialog()
 
             spirit_answers = self.driver.find_elements(
                 By.CLASS_NAME,
                 'talksayTak0')
-            if spirit_answers:
+            while spirit_answers:
                 right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Легко')
                 if right_choise:
                     right_choise[0].click()
 
-                right_choise = self.driver.find_elements(
+                random_play = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Сходить')
 
-                if right_choise:
-                    right_choise[random.choice([0, 1])].click()
+                if random_play:
+                    random_play[random.choice([0, 1])].click()
 
                 right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Телепортироваться')
                 if right_choise:
                     right_choise[0].click()
 
+                spirit_answers = self.driver.find_elements(
+                    By.CLASS_NAME,
+                    'talksayTak0')
+                sleep(0.5)
     #  **************************************************************
 
     # Фарм поляны. **************************************************
@@ -409,15 +462,16 @@ class DriverManager:
                     'img[src="/inner/img/bc.php"]'
                 )
         if kaptcha:
-            if self.bot is None:
-                print('Обнаружена капча!')
-            else:
-                self.bot.send_message(
-                    chat_id=TELEGRAM_CHAT_ID,
-                    text='Обнаружена капча!'
-                )
+            self.driver.execute_script(
+                'window.alert("Обнаружена капча!");')
+            # if self.bot is None:
+            #     print('Обнаружена капча!')
+            # else:
+            #     self.bot.send_message(
+            #         chat_id=TELEGRAM_CHAT_ID,
+            #         text='Обнаружена капча!'
+            #     )
             sleep(30)
-        # self.driver.refresh()
         # self.driver.execute_script("window.location.reload();")
         self.driver.switch_to.default_content()
 
@@ -572,8 +626,6 @@ class DriverManager:
                 if self.errors_count > 30:
                     self.driver.refresh()
                     self.errors_count = 0
-                    
-
 
     def one_spell_farm(
             self,
@@ -620,22 +672,25 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
                     if mind_spirit:
-                        self.bot.send_message(
-                            chat_id=TELEGRAM_CHAT_ID,
-                            text='Обнаружен дух ума!'
+                        # self.bot.send_message(
+                        #     chat_id=TELEGRAM_CHAT_ID,
+                        #     text='Обнаружен дух ума!'
+                        # )
+                        self.driver.execute_script(
+                            'window.alert("Обнаружен дух ума!");'
                         )
                         sleep(30)
 
                 self.choises.clear()
                 hp = self.check_health()
-                if hp is not None and hp < min_hp:
-                    print(f'Здоровье меньше {min_hp}, спим 30 секунд.')
-                    if self.bot is not None:
-                        self.bot.send_message(
-                            chat_id=TELEGRAM_CHAT_ID,
-                            text='Здоровье упало меньше минимума!'
-                        )
-                    sleep(30)
+                # if hp is not None and hp < min_hp:
+                #     print(f'Здоровье меньше {min_hp}, спим 30 секунд.')
+                #     if self.bot is not None:
+                #         self.bot.send_message(
+                #             chat_id=TELEGRAM_CHAT_ID,
+                #             text='Здоровье упало меньше минимума!'
+                #         )
+                #     sleep(30)
 
             except Exception as e:
                 configure_logging()

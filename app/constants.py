@@ -26,7 +26,7 @@ DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
 LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
 
 # константы адресов.
-HADDAN_MAIN_URL = 'https://haddan.ru/'
+HADDAN_MAIN_URL = 'https://new.haddan.ru/'
 HADDAN_RESERVE_URL = 'https://www.online-igra.ru/'
 MEDITATION_URL = 'https://haddan.ru/room/func/temple.php'
 KAPCHA_URL = 'https://haddan.ru/inner/img/gc.php'
@@ -59,4 +59,3 @@ RES_LIST = ['Мухожор', 'Подсолнух', 'Капустница', 'М�
             'Зеленая массивка', 'Колючник черный', 'Гертаниум']
 
 #  Константы для проведения боя
-
