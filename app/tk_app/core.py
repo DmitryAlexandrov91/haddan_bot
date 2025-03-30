@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 from .utils import keys
 
 app = tk.Tk()
-app.title("Haddan bot v1.0")
+app.title("Haddan bot v1.1")
 app.bind("<Control-KeyPress>", keys)
 
 app.configure(bg='#FFF4DC')

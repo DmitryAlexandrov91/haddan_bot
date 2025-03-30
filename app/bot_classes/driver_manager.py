@@ -128,7 +128,7 @@ class DriverManager:
     #  **************************************************************
 
     #  Методы ведения боя. ******************************************
-    def get_choised_spell(self):
+    def get_active_spell(self):
         """Возвращает название заклинания, которое используется в бою."""
         self.try_to_switch_to_central_frame()
         spell = self.driver.find_elements(
@@ -210,11 +210,11 @@ class DriverManager:
             slots_number: int,
             spell_number: int):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
-        active_spell = self.get_choised_spell()
+        active_spell = self.get_active_spell()
         spell_to_cast = self.get_spell_to_cast(
             spell_number=spell_number
         )
-        if active_spell != spell_to_cast:
+        if spell_to_cast != active_spell:
             self.driver.switch_to.default_content()
             self.quick_slots_open()
             self.quick_slot_choise(slots_number=slots_number)
@@ -462,15 +462,15 @@ class DriverManager:
                     'img[src="/inner/img/bc.php"]'
                 )
         if kaptcha:
-            self.driver.execute_script(
-                'window.alert("Обнаружена капча!");')
-            # if self.bot is None:
-            #     print('Обнаружена капча!')
-            # else:
-            #     self.bot.send_message(
-            #         chat_id=TELEGRAM_CHAT_ID,
-            #         text='Обнаружена капча!'
-            #     )
+            # self.driver.execute_script(
+            #     'window.alert("Обнаружена капча!");')
+            if self.bot is None:
+                print('Обнаружена капча!')
+            else:
+                self.bot.send_message(
+                    chat_id=TELEGRAM_CHAT_ID,
+                    text='Обнаружена капча!'
+                )
             sleep(30)
         # self.driver.execute_script("window.location.reload();")
         self.driver.switch_to.default_content()
@@ -672,25 +672,25 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
                     if mind_spirit:
-                        # self.bot.send_message(
-                        #     chat_id=TELEGRAM_CHAT_ID,
-                        #     text='Обнаружен дух ума!'
-                        # )
-                        self.driver.execute_script(
-                            'window.alert("Обнаружен дух ума!");'
+                        self.bot.send_message(
+                            chat_id=TELEGRAM_CHAT_ID,
+                            text='Обнаружен дух ума!'
                         )
+                        # self.driver.execute_script(
+                        #     'window.alert("Обнаружен дух ума!");'
+                        # )
                         sleep(30)
 
                 self.choises.clear()
                 hp = self.check_health()
-                # if hp is not None and hp < min_hp:
-                #     print(f'Здоровье меньше {min_hp}, спим 30 секунд.')
-                #     if self.bot is not None:
-                #         self.bot.send_message(
-                #             chat_id=TELEGRAM_CHAT_ID,
-                #             text='Здоровье упало меньше минимума!'
-                #         )
-                #     sleep(30)
+                if hp is not None and hp < min_hp:
+                    print(f'Здоровье меньше {min_hp}, спим 30 секунд.')
+                    if self.bot is not None:
+                        self.bot.send_message(
+                            chat_id=TELEGRAM_CHAT_ID,
+                            text='Здоровье упало меньше минимума!'
+                        )
+                    sleep(30)
 
             except Exception as e:
                 configure_logging()
