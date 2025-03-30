@@ -26,8 +26,7 @@ class DriverManager:
         self.driver: webdriver.Chrome = None
         self.thread: threading = None
         self.options: webdriver.ChromeOptions = webdriver.ChromeOptions()
-        if bot is not None:
-            self.bot: TeleBot = bot
+        self.bot: TeleBot = bot
         self.choises: dict = {}
         self.event: threading.Event = threading.Event()
         self.errors_count = 0
@@ -453,7 +452,7 @@ class DriverManager:
         """Отправляет фотку в телеграм."""
         self.bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
 
-    def check_kaptcha(self):
+    def check_kaptcha(self, message_to_tg):
         """Проверяет наличие капчи на странице."""
         self.try_to_switch_to_central_frame()
         kaptcha = self.driver.find_elements(
@@ -461,7 +460,7 @@ class DriverManager:
                     'img[src="/inner/img/bc.php"]'
                 )
         if kaptcha:
-            if self.bot:
+            if self.bot and message_to_tg:
                 self.bot.send_message(
                     chat_id=TELEGRAM_CHAT_ID,
                     text='Обнаружена капча!'
@@ -543,7 +542,8 @@ class DriverManager:
             self,
             price_dict: dict = FIELD_PRICES,
             slots=2,
-            spell=1):
+            spell=1,
+            message_to_tg=False):
         """Фарм поляны(пока без распознования капчи)"""
         self.start_event()
         while self.event.is_set() is True:
@@ -575,7 +575,6 @@ class DriverManager:
                         resurses = self.driver.find_elements(By.TAG_NAME, 'li')
                         if resurses:
                             res_price = [res.text for res in resurses]
-                            print(res_price)
                             most_cheep_res = price_counter(
                                 res_price,
                                 price_diсt=price_dict)
@@ -606,7 +605,7 @@ class DriverManager:
                     sleep(2)
                     self.one_spell_fight(slots=slots, spell=spell)
                 self.choises.clear()
-                self.check_kaptcha()
+                self.check_kaptcha(message_to_tg=message_to_tg)
                 self.check_error_on_page()
             except Exception as e:
                 configure_logging()
@@ -632,13 +631,15 @@ class DriverManager:
             up_down_move=False,
             left_right_move=False,
             mind_spirit_play=True,
+            message_to_tg=False,
             min_hp=10000):
         """Фарм с проведением боя одним заклом."""
         # self.start_event()
+        print(message_to_tg)
         while self.event.is_set() is True:
             sleep(1)
             try:
-                self.check_kaptcha()
+                self.check_kaptcha(message_to_tg=message_to_tg)
                 self.check_error_on_page()
                 self.try_to_switch_to_central_frame()
                 come_back = self.driver.find_elements(
@@ -670,7 +671,7 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
                     if mind_spirit:
-                        if self.bot:
+                        if self.bot and message_to_tg:
                             self.bot.send_message(
                                 chat_id=TELEGRAM_CHAT_ID,
                                 text='Обнаружен дух ума!'
@@ -684,7 +685,7 @@ class DriverManager:
                 self.choises.clear()
                 hp = self.check_health()
                 if hp is not None and hp < min_hp:
-                    if self.bot:
+                    if self.bot and message_to_tg:
                         self.bot.send_message(
                             chat_id=TELEGRAM_CHAT_ID,
                             text='Здоровье упало меньше минимума!'

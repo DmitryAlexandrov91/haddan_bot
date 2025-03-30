@@ -6,13 +6,19 @@ import tkinter as tk
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
+from tk_app.interface.fight import send_message_checkbox_value
+
 from .glade_prices import GLADE_PRICES
 
 
 def tk_glade_farm():
+    send_message_to_tg = send_message_checkbox_value.get()
+
+    print(send_message_to_tg)
 
     manager.glade_farm(
-            price_dict=GLADE_PRICES)
+            price_dict=GLADE_PRICES,
+            message_to_tg=send_message_to_tg)
     print('Начинаю фарм поляны')
 
 

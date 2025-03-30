@@ -13,13 +13,15 @@ def start_fight():
     up_down_move = up_down_checkbox_value.get()
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
+    send_message_to_tg = send_message_checkbox_value.get()
 
     manager.one_spell_farm(
         slots=fight_slot.get(),
         spell=spell_slot.get(),
         up_down_move=up_down_move,
         left_right_move=left_right_move,
-        mind_spirit_play=mind_spirit_play
+        mind_spirit_play=mind_spirit_play,
+        message_to_tg=send_message_to_tg
     )
 
 
@@ -98,6 +100,20 @@ fight_stop_btn.grid(
 left_right_checkbox_value = tk.IntVar(value=0)
 up_down_checkbox_value = tk.IntVar(value=0)
 mind_spirit_checkbox_value = tk.IntVar(value=True)
+send_message_checkbox_value = tk.BooleanVar(value=False)
+
+send_message_check_button = tk.Checkbutton(
+    app,
+    text="Отправлять сообщения в телеграм",
+    variable=send_message_checkbox_value,
+    bg='#FFF4DC'
+)
+send_message_check_button.grid(
+    row=0,
+    column=4,
+    sticky='w'
+)
+
 
 up_down_move_check_button = tk.Checkbutton(
     app,
@@ -105,7 +121,6 @@ up_down_move_check_button = tk.Checkbutton(
     variable=up_down_checkbox_value,
     bg='#FFF4DC'
 )
-
 up_down_move_check_button.grid(
     row=2,
     column=4,
@@ -118,7 +133,6 @@ left_right_move_check_button = tk.Checkbutton(
     variable=left_right_checkbox_value,
     bg='#FFF4DC'
 )
-
 left_right_move_check_button.grid(
     row=3,
     column=4,
