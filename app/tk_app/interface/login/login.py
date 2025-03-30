@@ -14,7 +14,6 @@ def start_thread():
 
 def start_game(manager=manager):
     char = username_field.get().strip()
-    # char = 'фантазёрка'
     password = password_field.get().strip()
 
     if char and password:
@@ -34,14 +33,14 @@ def stop_bot(manager=manager):
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')
 username_label.grid(row=0, column=0)
 
-username_field = tk.Entry(app, width=30)
+username_field = tk.Entry(app, width=25)
 username_field.grid(row=0, column=1)
 
 
 password_label = tk.Label(app, text='пароль', bg='#FFF4DC')
 password_label.grid(row=1, column=0)
 
-password_field = tk.Entry(app, width=30)
+password_field = tk.Entry(app, width=25)
 password_field.grid(row=1, column=1)
 
 bot_stop_buttton = tk.Button(
@@ -66,3 +65,28 @@ login_to_game = tk.Button(
 login_to_game.grid(
     row=0, column=2
 )
+
+# Блок с чекбосом телеграм сообщений и телеграм ID.
+send_message_checkbox_value = tk.BooleanVar(value=False)
+
+send_message_check_button = tk.Checkbutton(
+    app,
+    text="Отправлять сообщения в телеграм",
+    variable=send_message_checkbox_value,
+    bg='#FFF4DC'
+)
+send_message_check_button.grid(
+    row=0,
+    column=4,
+    sticky='w'
+)
+
+tg_id_field = tk.Entry(app, width=12, justify='center')
+tg_id_field.grid(row=1, column=4)
+
+tg_id_label = tk.Label(
+    app,
+    text='Телеграм ID: ',
+    bg='#FFF4DC',
+)
+tg_id_label.grid(row=1, column=4, sticky='w')

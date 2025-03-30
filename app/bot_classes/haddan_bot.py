@@ -20,8 +20,7 @@ class HaddanBot:
         self.driver: webdriver.Chrome = driver
         self.char: str = char
         self.password: str = password
-        if bot is not None:
-            self.bot: TeleBot = bot
+        self.bot: TeleBot = bot
         self.login_url: str = HADDAN_MAIN_URL
 
     def login_to_game(self):

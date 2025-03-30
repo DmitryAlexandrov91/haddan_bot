@@ -1,8 +1,10 @@
 import threading
 import tkinter as tk
 
+from constants import LABIRINT_MAP_URL
 from tk_app.core import app
 from tk_app.driver_manager import manager
+from tk_app.interface.login import send_message_checkbox_value, tg_id_field
 
 
 #  Функции блока боя одним заклинанием. ------------------------------
@@ -14,6 +16,7 @@ def start_fight():
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
+    user_telegram_id = tg_id_field.get().strip()
 
     manager.one_spell_farm(
         slots=fight_slot.get(),
@@ -21,7 +24,8 @@ def start_fight():
         up_down_move=up_down_move,
         left_right_move=left_right_move,
         mind_spirit_play=mind_spirit_play,
-        message_to_tg=send_message_to_tg
+        message_to_tg=send_message_to_tg,
+        telegram_id=user_telegram_id
     )
 
 
@@ -49,12 +53,6 @@ fight_panel_label.grid(row=0, column=5)
 #  --------------------------------------------------------------------
 
 #  Кнопки основного заклинания ----------------------------------------
-skill_fight_label = tk.Label(
-    app,
-    text='Боевой закл (страница, слот)',
-    bg='#FFF4DC')
-skill_fight_label.grid(row=1, column=4)
-
 fight_slot = tk.StringVar(app)
 fight_slot.set(values[1])
 
@@ -100,19 +98,6 @@ fight_stop_btn.grid(
 left_right_checkbox_value = tk.IntVar(value=0)
 up_down_checkbox_value = tk.IntVar(value=0)
 mind_spirit_checkbox_value = tk.IntVar(value=True)
-send_message_checkbox_value = tk.BooleanVar(value=False)
-
-send_message_check_button = tk.Checkbutton(
-    app,
-    text="Отправлять сообщения в телеграм",
-    variable=send_message_checkbox_value,
-    bg='#FFF4DC'
-)
-send_message_check_button.grid(
-    row=0,
-    column=4,
-    sticky='w'
-)
 
 
 up_down_move_check_button = tk.Checkbutton(
@@ -148,7 +133,31 @@ mind_spiritplay_check_button = tk.Checkbutton(
 mind_spiritplay_check_button.grid(
     row=4,
     column=4,
-    ipadx=1,
+    sticky='nw'
+)
+#  --------------------------------------------------------------------
+
+
+# Карта лабиринта
+def open_map():
+    manager.driver.execute_script("window.open('');")
+    windows = manager.driver.window_handles
+    manager.driver.switch_to.window(windows[-1])
+    manager.driver.get(LABIRINT_MAP_URL)
+    manager.driver.switch_to.window(windows[0])
+
+
+labirint_map = tk.Button(
+    app,
+    text='карта лабиринта',
+    width=15,
+    bg='#FFF4DC',
+    command=open_map
+)
+labirint_map.grid(
+    row=4,
+    column=5,
+    columnspan=2,
     sticky='nw'
 )
 #  --------------------------------------------------------------------

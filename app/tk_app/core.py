@@ -1,7 +1,7 @@
 """Основная конфигурация приложения tkinter."""
 import tkinter as tk
 
-from constants import FIRST_CHAR, PASSWORD
+from constants import FIRST_CHAR, PASSWORD, TELEGRAM_CHAT_ID
 from PIL import Image, ImageTk
 
 from .utils import keys
@@ -23,6 +23,7 @@ from tk_app.interface.login import *  # noqa
 
 
 def start_app():
-    username_field.insert(0, FIRST_CHAR)
-    password_field.insert(0, PASSWORD)
+    username_field.insert(0, FIRST_CHAR)  # noqa
+    password_field.insert(0, PASSWORD)  # noqa
+    tg_id_field.insert(0, TELEGRAM_CHAT_ID)  # noqa
     app.mainloop()
