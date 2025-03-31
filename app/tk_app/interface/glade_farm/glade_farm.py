@@ -23,11 +23,13 @@ def tk_glade_farm():
 
 def stop_farm():
     manager.event.clear()
+    glade_farm_start_buttton.configure(foreground="black")
     print('Останавливаю фарм поляны')
 
 
 def start_thread():
     manager.event.clear()
+    glade_farm_start_buttton.configure(foreground="green")
     manager.thread = threading.Thread(target=tk_glade_farm)
     manager.thread.start()
 
@@ -76,5 +78,5 @@ statistic_button = tk.Button(
     command=glade_farm_txt_open
 )
 statistic_button.grid(
-    row=12, column=1
+    row=11, column=1
 )

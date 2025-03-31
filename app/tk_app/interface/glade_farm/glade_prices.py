@@ -16,13 +16,12 @@ res_price_label = tk.Label(
 )
 res_price_label.grid(
     row=3,
-    column=1,
-    sticky='ew')
+    column=1)
 
 price_dict_content = '\n'.join(
     f'{key}: {value}' for key, value in GLADE_PRICES.items())
 price_label = tk.Label(app, text=price_dict_content, bg='#FFF4DC')
-price_label.grid(row=4, column=1, columnspan=1)
+price_label.grid(row=4, column=1, columnspan=1, rowspan=5)
 
 
 # Блок изменения цены ресурсов.
@@ -57,9 +56,11 @@ def update_price_from_search():
     )
     price_label.config(text=price_dict_content)
     manager.close_driver()
+    sync_button.configure(foreground='black')
 
 
 def start_price_update():
+    sync_button.configure(foreground='green')
     new_thread = threading.Thread(target=update_price_from_search)
     new_thread.start()
 
@@ -80,63 +81,63 @@ muhozhor_label = tk.Label(
     text='Мухожор',
     bg='#FFF4DC'
 )
-muhozhor_label.grid(row=5, column=0)
+muhozhor_label.grid(row=4, column=0, sticky='w')
 
 muhozhor_field = tk.Entry(
     app, width=5
 )
-muhozhor_field.grid(row=5, column=1)
+muhozhor_field.grid(row=4, column=0, sticky='e')
 
 muhozhor_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(muhozhor_label, muhozhor_field)
     )
-muhozhor_button.grid(row=5, column=2)
+muhozhor_button.grid(row=4, column=2)
 
 # Подсолнух
 podsolnuh_label = tk.Label(
     text='Подсолнух',
     bg='#FFF4DC'
 )
-podsolnuh_label.grid(row=6, column=0)
+podsolnuh_label.grid(row=5, column=0, sticky='w')
 
 podsolnuh_field = tk.Entry(
     app, width=5
 )
-podsolnuh_field.grid(row=6, column=1)
+podsolnuh_field.grid(row=5, column=0, sticky='e')
 
 podsolnuh_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(podsolnuh_label, podsolnuh_field)
     )
-podsolnuh_button.grid(row=6, column=2)
+podsolnuh_button.grid(row=5, column=2)
 
 # Капустница
 kapusta_label = tk.Label(
     text='Капустница',
     bg='#FFF4DC'
 )
-kapusta_label.grid(row=7, column=0)
+kapusta_label.grid(row=6, column=0, sticky='w')
 
 kapusta_field = tk.Entry(
     app, width=5
 )
-kapusta_field.grid(row=7, column=1)
+kapusta_field.grid(row=6, column=0, sticky='e')
 
 kapusta_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(kapusta_label, kapusta_field)
     )
-kapusta_button.grid(row=7, column=2)
+kapusta_button.grid(row=6, column=2)
 
 
 # Мандрагора
@@ -144,17 +145,17 @@ mandragora_label = tk.Label(
     text='Мандрагора',
     bg='#FFF4DC'
 )
-mandragora_label.grid(row=8, column=0)
+mandragora_label.grid(row=8, column=0, sticky='w')
 
 mandragora_field = tk.Entry(
     app, width=5
 )
-mandragora_field.grid(row=8, column=1)
+mandragora_field.grid(row=8, column=0, sticky='e')
 
 mandragora_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(mandragora_label, mandragora_field)
     )
@@ -165,17 +166,17 @@ green_mass_label = tk.Label(
     text='Зеленая массивка',
     bg='#FFF4DC'
 )
-green_mass_label.grid(row=9, column=0)
+green_mass_label.grid(row=9, column=0, sticky='w')
 
 green_mass_field = tk.Entry(
     app, width=5
 )
-green_mass_field.grid(row=9, column=1)
+green_mass_field.grid(row=9, column=0, sticky='e')
 
 green_mass_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(green_mass_label, green_mass_field)
     )
@@ -186,17 +187,17 @@ koluchka_label = tk.Label(
     text='Колючник Черный',
     bg='#FFF4DC'
 )
-koluchka_label.grid(row=10, column=0)
+koluchka_label.grid(row=10, column=0, sticky='w')
 
 koluchka_field = tk.Entry(
     app, width=5
 )
-koluchka_field.grid(row=10, column=1)
+koluchka_field.grid(row=10, column=0, sticky='e')
 
 koluchka_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(koluchka_label, koluchka_field)
     )
@@ -207,17 +208,17 @@ gertanium_label = tk.Label(
     text='Гертаниум',
     bg='#FFF4DC'
 )
-gertanium_label.grid(row=11, column=0)
+gertanium_label.grid(row=11, column=0, sticky='w')
 
 gertanium_field = tk.Entry(
     app, width=5
 )
-gertanium_field.grid(row=11, column=1)
+gertanium_field.grid(row=11, column=0, sticky='e')
 
 gertanium_button = tk.Button(
     app,
     text='изменить',
-    width=9,
+    width=7,
     bg='#FFF4DC',
     command=lambda: price_change(gertanium_label, gertanium_field)
     )

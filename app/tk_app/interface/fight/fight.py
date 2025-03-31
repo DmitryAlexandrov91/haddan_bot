@@ -10,6 +10,7 @@ from tk_app.interface.login import send_message_checkbox_value, tg_id_field
 #  Функции блока боя одним заклинанием. ------------------------------
 def start_fight():
     print('Начинаю автобой')
+    fight_start_btn.configure(foreground='green')
     manager.start_event()
 
     up_down_move = up_down_checkbox_value.get()
@@ -32,6 +33,7 @@ def start_fight():
 def stop_fight():
     manager.stop_event()
     manager.choises.clear()
+    fight_start_btn.configure(foreground='black')
     print('Останавливаю автобой')
 
 

@@ -101,6 +101,7 @@ class DriverManager:
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
         frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
+        sleep(0.5)
         if frames:
             for frame in frames:
                 if frame.get_attribute('name') == 'frmcenterandchat':

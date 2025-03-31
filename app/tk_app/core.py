@@ -9,6 +9,7 @@ from .utils import keys
 app = tk.Tk()
 app.title("Haddan bot v1.1")
 app.bind("<Control-KeyPress>", keys)
+app.resizable(False, False)
 
 app.configure(bg='#FFF4DC')
 img = Image.open('icon.ico')
