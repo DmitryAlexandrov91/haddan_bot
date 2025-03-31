@@ -161,6 +161,7 @@ class DriverManager:
             'a[href="javascript:qs_toggleSlots()"]'
         )
         if quick_slots:
+            self.wait_while_element_will_be_clickable(quick_slots[0])
             quick_slots[0].click()
 
     def quick_slots_close(self):
@@ -171,6 +172,7 @@ class DriverManager:
         )
         if quick_slots:
             try:
+                self.wait_while_element_will_be_clickable(quick_slots[0])
                 quick_slots[0].click()
             except Exception:
                 print('Слоты уже закрыты!')
@@ -252,6 +254,7 @@ class DriverManager:
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
+            self.wait_while_element_will_be_clickable(come_back[0])
             self.click_to_element_with_actionchains(come_back[0])
 
         else:
@@ -259,7 +262,8 @@ class DriverManager:
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
             if hits:
-                # self.click_to_element_with_actionchains(hits[0])
+                self.wait_while_element_will_be_clickable(hits[0])
+                self.click_to_element_with_actionchains(hits[0])
                 hits[0].click()
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
@@ -267,7 +271,7 @@ class DriverManager:
 
     #  Методы игры с духами. ****************************************
     def play_with_gamble_spirit(self):
-        """Ищет фею поляны и щёлкает на неё."""
+        """Игра с духом азарта."""
         gamble_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[id="roomnpc1850578"]')
@@ -331,6 +335,7 @@ class DriverManager:
                 sleep(0.5)
 
     def play_with_poetry_spirit(self):
+        """Игра с духом поэзии."""
         poetry_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[id="roomnpc1850579"]')
@@ -390,6 +395,7 @@ class DriverManager:
                 sleep(0.5)
 
     def play_with_mind_spirit(self):
+        """Игра с духом ума."""
         mind_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[id="roomnpc1850577"]')
@@ -533,9 +539,7 @@ class DriverManager:
             message_to_tg=False,
             telegram_id=None):
         """Фарм поляны(пока без распознования капчи)"""
-        self.start_event()
         while self.event.is_set() is True:
-            # sleep(1)
             try:
                 self.try_to_switch_to_central_frame()
                 self.try_to_click_to_glade_fairy()
@@ -591,7 +595,7 @@ class DriverManager:
                     By.CSS_SELECTOR,
                     'img[onclick="touchFight();"]')
                 if hits:
-                    # sleep(2)
+                    sleep(2)
                     self.one_spell_fight(slots=slots, spell=spell)
                 self.choises.clear()
                 self.check_kaptcha(
@@ -599,18 +603,7 @@ class DriverManager:
                     telegram_id=telegram_id)
                 self.check_error_on_page()
             except Exception as e:
-                configure_logging()
-                logging.exception(
-                    f'\nВозникло исключение {str(e)}\n',
-                    stack_info=True
-                )
-                # sleep(2)
-                self.driver.switch_to.default_content()
-                self.errors_count += 1
-                print(f'Текущее количество ошибок - {self.errors_count}')
-                if self.errors_count > 30:
-                    self.driver.refresh()
-                    self.errors_count = 0
+                self.actions_after_exception(exception=e)
 
     def one_spell_farm(
             self,
@@ -631,21 +624,35 @@ class DriverManager:
                 come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
                 if come_back:
-                    self.click_to_element_with_actionchains(come_back[0])
+                    self.wait_while_element_will_be_clickable(come_back[0])
+                    come_back[0]
                 hits = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'img[onclick="touchFight();"]')
+                        By.CSS_SELECTOR,
+                        'a[href="javascript:submitMove()"]')
                 if hits:
                     self.one_spell_fight(
                         slots=slots, spell=spell)
+
                 else:
                     if up_down_move:
                         self.crossing_to_the_north()
                         self.crossing_to_the_south()
+                        hits = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'a[href="javascript:submitMove()"]')
+                        if hits:
+                            self.one_spell_fight(
+                                slots=slots, spell=spell)
 
                     if left_right_move:
                         self.crossing_to_the_west()
                         self.crossing_to_the_east()
+                        hits = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'a[href="javascript:submitMove()"]')
+                        if hits:
+                            self.one_spell_fight(
+                                slots=slots, spell=spell)
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
@@ -683,15 +690,20 @@ class DriverManager:
                     sleep(30)
 
             except Exception as e:
-                configure_logging()
-                logging.exception(
-                    f'\nВозникло исключение {str(e)}\n',
-                    stack_info=True
-                )
-                # sleep(2)
-                self.driver.switch_to.default_content()
-                self.errors_count += 1
-                print(f'Текущее количество ошибок - {self.errors_count}')
-                if self.errors_count > 30:
-                    self.driver.refresh()
-                    self.errors_count = 0
+                self.actions_after_exception(exception=e)
+
+    def actions_after_exception(self, exception: Exception):
+        """Общее действие обработки исключения."""
+        configure_logging()
+        logging.exception(
+            f'\nВозникло исключение {str(exception)}\n',
+            stack_info=True
+        )
+
+        self.driver.switch_to.default_content()
+        self.errors_count += 1
+        print(f'Текущее количество ошибок - {self.errors_count}')
+        if self.errors_count >= 20:
+            self.driver.execute_script("window.localStorage.clear();")
+            self.driver.refresh()
+            self.errors_count = 0

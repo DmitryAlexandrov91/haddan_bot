@@ -8,37 +8,17 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 
 
-def test(manager: DriverManager):
-    manager.driver.switch_to.default_content()
-    slots_2 = manager.driver.find_elements(
-        By.CSS_SELECTOR,
-        'a[href="javascript:qs_toggleSlots()"]'
-    )
-    if slots_2:
-        print(slots_2)
-        manager.print_element_content(slots_2[0])
-        slots_2[0].click()
+def test_1():
+    manager.driver.execute_script("window.localStorage.clear();")
 
 
 def test_2(manager: DriverManager):
-
-    slots = manager.driver.find_elements(
-        By.CSS_SELECTOR,
-        'a[href="javascript:Slot.showSlots()"]'
-    )
-    if slots:
-        print(slots)
-        manager.print_element_content(slots[0])
-        try:
-            slots[0].click()
-        except Exception:
-            print('Слот закрыт')
-            pass
+    manager.driver.delete_cookie()
 
 
 def start_test_thread():
     manager.stop_event()
-    manager.event.thread = threading.Thread(target=test(manager=manager))
+    manager.event.thread = threading.Thread(target=test_1())
     manager.event.thread.start()
 
 
@@ -50,10 +30,10 @@ def start_test_thread_2():
 
 test_btn = tk.Button(
     app,
-    text='открыть',
+    text='тест 1',
     width=9,
     bg='#FFF4DC',
-    command=start_test_thread
+    command=test_1
     )
 test_btn.grid(
     row=7, column=5
@@ -62,7 +42,7 @@ test_btn.grid(
 
 test_btn_2 = tk.Button(
     app,
-    text='закрыть',
+    text='тест 2',
     width=9,
     bg='#FFF4DC',
     command=start_test_thread_2

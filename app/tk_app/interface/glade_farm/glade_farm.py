@@ -11,6 +11,8 @@ from .glade_prices import GLADE_PRICES
 
 
 def tk_glade_farm():
+    manager.start_event()
+
     send_message_to_tg = send_message_checkbox_value.get()
     user_telegram_id = tg_id_field.get().strip()
 
