@@ -23,11 +23,13 @@ def start_game(manager=manager):
             password=password,
             driver=manager.driver)
         User.login_to_game()
+        login_to_game.configure(foreground='green')
 
 
 def stop_bot(manager=manager):
     manager.event.clear()
     manager.close_driver()
+    login_to_game.configure(foreground='black')
 
 
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')
@@ -60,7 +62,7 @@ login_to_game = tk.Button(
     text='войти',
     width=11,
     bg='#FFF4DC',
-    command=start_game
+    command=start_thread
     )
 login_to_game.grid(
     row=0, column=2

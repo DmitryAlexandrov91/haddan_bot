@@ -40,6 +40,11 @@ PASSWORD = os.getenv('HADDAN_PASSWORD', None)
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
+# Заказные данные
+USER_CHAR = 'фантазёрка'
+USER_PASSWORD = 'пароль игрока'
+USER_CHAR_ID = 'тг id игрока'
+
 # Остальное.
 PAUSE_DURATION_SECONDS = 50
 TIME_FORMAT = '%d.%m.%Y %H:%M:%S'

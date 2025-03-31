@@ -101,8 +101,8 @@ class DriverManager:
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
         frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
-        sleep(0.5)
         if frames:
+            sleep(0.2)
             for frame in frames:
                 if frame.get_attribute('name') == 'frmcenterandchat':
                     self.driver.switch_to.frame("frmcenterandchat")
@@ -246,11 +246,8 @@ class DriverManager:
 
     def one_spell_fight(self, slots=2, spell=1):
         """Проводит бой одним заклом."""
-        choise = self.choises.get('choised', False)
-        if not choise:
-            self.open_slot_and_choise_spell(
-                slots_number=slots, spell_number=spell)
-            self.choises['choised'] = True
+        self.open_slot_and_choise_spell(
+            slots_number=slots, spell_number=spell)
         self.try_to_switch_to_central_frame()
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
@@ -262,7 +259,8 @@ class DriverManager:
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
             if hits:
-                self.click_to_element_with_actionchains(hits[0])
+                # self.click_to_element_with_actionchains(hits[0])
+                hits[0].click()
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
     # ***************************************************************
@@ -502,9 +500,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На север"]')
         if north:
-            self.wait_while_element_will_be_clickable(
-                north[0]
-            )
             north[0].click()
 
     def crossing_to_the_south(self):
@@ -512,9 +507,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На юг"]')
         if south:
-            self.wait_while_element_will_be_clickable(
-                south[0]
-            )
             south[0].click()
 
     def crossing_to_the_west(self):
@@ -522,9 +514,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На запад"]')
         if west:
-            self.wait_while_element_will_be_clickable(
-                west[0]
-            )
             west[0].click()
 
     def crossing_to_the_east(self):
@@ -532,9 +521,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На восток"]')
         if east:
-            self.wait_while_element_will_be_clickable(
-                east[0]
-            )
             east[0].click()
     #  **************************************************************
 
@@ -577,6 +563,7 @@ class DriverManager:
                         resurses = self.driver.find_elements(By.TAG_NAME, 'li')
                         if resurses:
                             res_price = [res.text for res in resurses]
+                            print(res_price)
                             most_cheep_res = price_counter(
                                 res_price,
                                 price_diсt=price_dict)
@@ -604,7 +591,7 @@ class DriverManager:
                     By.CSS_SELECTOR,
                     'img[onclick="touchFight();"]')
                 if hits:
-                    sleep(2)
+                    # sleep(2)
                     self.one_spell_fight(slots=slots, spell=spell)
                 self.choises.clear()
                 self.check_kaptcha(
@@ -617,7 +604,7 @@ class DriverManager:
                     f'\nВозникло исключение {str(e)}\n',
                     stack_info=True
                 )
-                sleep(2)
+                # sleep(2)
                 self.driver.switch_to.default_content()
                 self.errors_count += 1
                 print(f'Текущее количество ошибок - {self.errors_count}')
@@ -637,7 +624,6 @@ class DriverManager:
             telegram_id=None):
         """Фарм с проведением боя одним заклом."""
         while self.event.is_set() is True:
-            sleep(1)
             try:
                 self.check_kaptcha(message_to_tg=message_to_tg)
                 self.check_error_on_page()
@@ -702,7 +688,7 @@ class DriverManager:
                     f'\nВозникло исключение {str(e)}\n',
                     stack_info=True
                 )
-                sleep(2)
+                # sleep(2)
                 self.driver.switch_to.default_content()
                 self.errors_count += 1
                 print(f'Текущее количество ошибок - {self.errors_count}')
