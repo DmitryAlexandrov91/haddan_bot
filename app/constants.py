@@ -48,6 +48,7 @@ USER_CHAR_ID = 'тг id игрока'
 # Остальное.
 PAUSE_DURATION_SECONDS = 50
 TIME_FORMAT = '%d.%m.%Y %H:%M:%S'
+MIN_HP_VALUE = 10000
 
 # Цена ресурсов поляны
 FIELD_PRICES = {

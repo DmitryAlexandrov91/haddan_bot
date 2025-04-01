@@ -18,6 +18,7 @@ def start_fight():
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
     user_telegram_id = tg_id_field.get().strip()
+    minimum_hp = int(min_hp_field.get().strip())
 
     manager.one_spell_farm(
         slots=fight_slot.get(),
@@ -26,7 +27,8 @@ def start_fight():
         left_right_move=left_right_move,
         mind_spirit_play=mind_spirit_play,
         message_to_tg=send_message_to_tg,
-        telegram_id=user_telegram_id
+        telegram_id=user_telegram_id,
+        min_hp=minimum_hp
     )
 
 
@@ -136,6 +138,22 @@ mind_spiritplay_check_button.grid(
     row=4,
     column=4,
     sticky='nw'
+)
+
+min_hp_label = tk.Label(
+    app,
+    text='Минимум ХП',
+    bg='#FFF4DC'
+)
+min_hp_label.grid(
+    row=5, column=4,
+    sticky='w'
+)
+min_hp_field = tk.Entry(
+    app, width=8, justify='center'
+)
+min_hp_field.grid(
+    row=5, column=4,
 )
 #  --------------------------------------------------------------------
 

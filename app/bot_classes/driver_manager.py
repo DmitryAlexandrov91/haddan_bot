@@ -100,23 +100,25 @@ class DriverManager:
     #  Методы переключения между фреймами. **************************
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
-        frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
-        if frames:
+
+        try:
+
+            self.driver.switch_to.frame("frmcenterandchat")
             sleep(0.5)
-            for frame in frames:
-                if frame.get_attribute('name') == 'frmcenterandchat':
-                    self.driver.switch_to.frame("frmcenterandchat")
-                    self.driver.switch_to.frame("frmcentral")
-                    break
+            self.driver.switch_to.frame("frmcentral")
+
+        except Exception:
+            pass
 
     def try_to_switch_to_dialog(self):
         """Переключается на фрейм диалога."""
-        frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
-        if frames:
-            for frame in frames:
-                if frame.get_attribute('id') == 'thedialog':
-                    self.driver.switch_to.frame("thedialog")
-                    break
+
+        try:
+
+            self.driver.switch_to.frame("thedialog")
+
+        except Exception:
+            pass
 
     def find_all_iframes(self):
         """Выводит в терминал список всех iframe егов на странице."""
@@ -212,10 +214,10 @@ class DriverManager:
             slots_number: int,
             spell_number: int):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
-        active_spell = self.get_active_spell()
         spell_to_cast = self.get_spell_to_cast(
             spell_number=spell_number
         )
+        active_spell = self.get_active_spell()
         if spell_to_cast != active_spell:
             self.driver.switch_to.default_content()
             self.quick_slots_open()
@@ -250,7 +252,6 @@ class DriverManager:
         """Проводит бой одним заклом."""
         self.open_slot_and_choise_spell(
             slots_number=slots, spell_number=spell)
-        self.try_to_switch_to_central_frame()
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
@@ -261,11 +262,10 @@ class DriverManager:
             hits = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
-            
+
             if hits:
                 self.wait_while_element_will_be_clickable(hits[0])
                 self.click_to_element_with_actionchains(hits[0])
-                # hits[0].click()
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
     # ***************************************************************
@@ -460,7 +460,7 @@ class DriverManager:
 
     def check_kaptcha(self, message_to_tg, telegram_id=None):
         """Проверяет наличие капчи на странице."""
-        self.try_to_switch_to_central_frame()
+        # self.try_to_switch_to_central_frame()
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]'
@@ -476,9 +476,9 @@ class DriverManager:
                     'window.alert("Обнаружена капча!");')
             sleep(30)
         # self.driver.execute_script("window.location.reload();")
-        self.driver.switch_to.default_content()
+        # self.driver.switch_to.default_content()
 
-    def check_health(self):
+    def check_health(self) -> int:
         """"Возвращает кол-во  ХП персонажа."""
         self.driver.switch_to.default_content()
         health = self.driver.find_elements(
@@ -490,7 +490,7 @@ class DriverManager:
             return hp
 
     def check_error_on_page(self):
-        self.try_to_switch_to_central_frame()
+        # self.try_to_switch_to_central_frame()
         error = self.driver.find_elements(
             By.PARTIAL_LINK_TEXT, 'Ошибка')
         if error:
@@ -597,6 +597,7 @@ class DriverManager:
                                 file.write(f'{message_for_log}\n')
                                 file.write(content)
                             print(message_for_log)
+                self.try_to_switch_to_central_frame()
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'a[href="javascript:submitMove()"]')
@@ -618,7 +619,7 @@ class DriverManager:
             left_right_move=False,
             mind_spirit_play=True,
             message_to_tg=False,
-            min_hp=10000,
+            min_hp: int = None,
             telegram_id=None):
         """Фарм с проведением боя одним заклом."""
         while self.event.is_set() is True:
@@ -680,7 +681,6 @@ class DriverManager:
                             )
                         sleep(30)
 
-                self.choises.clear()
                 hp = self.check_health()
                 if hp is not None and hp < min_hp:
                     if self.bot and message_to_tg and telegram_id:
