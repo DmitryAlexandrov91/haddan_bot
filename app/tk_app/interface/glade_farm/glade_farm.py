@@ -30,7 +30,6 @@ def stop_farm():
 
 
 def start_thread():
-    manager.event.clear()
     glade_farm_start_buttton.configure(foreground="green")
     manager.thread = threading.Thread(target=tk_glade_farm)
     manager.thread.start()

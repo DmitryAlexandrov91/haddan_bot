@@ -81,7 +81,7 @@ class DriverManager:
     #  Методы взаимодействия с элементами.***************************
     def wait_while_element_will_be_clickable(self, element):
         """Ждёт пока элемент станет кликабельным."""
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 5).until(
             EC.element_to_be_clickable(element))
 
     def scroll_to_element(self, element):
@@ -102,7 +102,7 @@ class DriverManager:
         """Переключается на центральный фрейм окна."""
         frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
         if frames:
-            sleep(0.2)
+            sleep(0.5)
             for frame in frames:
                 if frame.get_attribute('name') == 'frmcenterandchat':
                     self.driver.switch_to.frame("frmcenterandchat")
@@ -261,10 +261,11 @@ class DriverManager:
             hits = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[onclick="touchFight();"]')
+            
             if hits:
                 self.wait_while_element_will_be_clickable(hits[0])
                 self.click_to_element_with_actionchains(hits[0])
-                hits[0].click()
+                # hits[0].click()
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
     # ***************************************************************
@@ -290,7 +291,7 @@ class DriverManager:
                 spirit_text = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayBIG')
-                if 'Параметры' in spirit_text[0].text:
+                if spirit_text and 'Параметры' in spirit_text[0].text:
                     intimidation, next_room = get_intimidation_and_next_room(
                         spirit_text[0].text)
                     if next_room >= intimidation:
@@ -445,7 +446,7 @@ class DriverManager:
                         By.CSS_SELECTOR,
                         'img[id="roomnpc17481"]')
 
-        if len(glade_fairy) > 0:
+        if glade_fairy:
             self.wait_while_element_will_be_clickable(
                  glade_fairy[0]
             )
@@ -498,6 +499,7 @@ class DriverManager:
         come_back = self.driver.find_elements(
             By.CSS_SELECTOR, 'a[href="javascript:history.back()"]')
         if come_back:
+            self.wait_while_element_will_be_clickable(come_back[0])
             self.click_to_element_with_actionchains(come_back[0])
 
     # Переходы ******************************************************
@@ -506,6 +508,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На север"]')
         if north:
+            self.wait_while_element_will_be_clickable(north[0])
             north[0].click()
 
     def crossing_to_the_south(self):
@@ -513,6 +516,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На юг"]')
         if south:
+            self.wait_while_element_will_be_clickable(south[0])
             south[0].click()
 
     def crossing_to_the_west(self):
@@ -520,6 +524,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На запад"]')
         if west:
+            self.wait_while_element_will_be_clickable(west[0])
             west[0].click()
 
     def crossing_to_the_east(self):
@@ -527,6 +532,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На восток"]')
         if east:
+            self.wait_while_element_will_be_clickable(east[0])
             east[0].click()
     #  **************************************************************
 
@@ -538,7 +544,7 @@ class DriverManager:
             spell=1,
             message_to_tg=False,
             telegram_id=None):
-        """Фарм поляны(пока без распознования капчи)"""
+        """Фарм поляны."""
         while self.event.is_set() is True:
             try:
                 self.try_to_switch_to_central_frame()
@@ -593,11 +599,10 @@ class DriverManager:
                             print(message_for_log)
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
-                    'img[onclick="touchFight();"]')
+                    'a[href="javascript:submitMove()"]')
                 if hits:
                     sleep(2)
                     self.one_spell_fight(slots=slots, spell=spell)
-                self.choises.clear()
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
@@ -618,9 +623,9 @@ class DriverManager:
         """Фарм с проведением боя одним заклом."""
         while self.event.is_set() is True:
             try:
+                self.try_to_switch_to_central_frame()
                 self.check_kaptcha(message_to_tg=message_to_tg)
                 self.check_error_on_page()
-                self.try_to_switch_to_central_frame()
                 come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
                 if come_back:
@@ -697,13 +702,13 @@ class DriverManager:
         configure_logging()
         logging.exception(
             f'\nВозникло исключение {str(exception)}\n',
-            stack_info=True
+            stack_info=False
         )
 
         self.driver.switch_to.default_content()
         self.errors_count += 1
         print(f'Текущее количество ошибок - {self.errors_count}')
-        if self.errors_count >= 20:
-            self.driver.execute_script("window.localStorage.clear();")
+        if self.errors_count >= 30:
             self.driver.refresh()
             self.errors_count = 0
+            sleep(10)

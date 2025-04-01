@@ -7,9 +7,14 @@ from selenium.webdriver.common.by import By
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
+from time import sleep
+
 
 def test_1():
-    manager.driver.execute_script("window.localStorage.clear();")
+    frames = manager.driver.find_elements(By.TAG_NAME, 'iframe')
+    if frames:
+        sleep(0.5)
+        manager.driver.switch_to.frame("frmcenterandchat")
 
 
 def test_2(manager: DriverManager):

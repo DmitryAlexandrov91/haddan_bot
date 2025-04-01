@@ -2,7 +2,6 @@
 import re
 from time import sleep
 
-from bs4 import BeautifulSoup
 from constants import FIELD_PRICES, RES_LIST, SHOP_URL
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -106,12 +105,6 @@ def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
     else:
         print("Не удалось найти номер следующей комнаты.")
     return intimidation, next_room
-
-
-def cook_soup(text: str, parser='lxml') -> BeautifulSoup:
-    """Из текста возвращает объект BeautifulSoup."""
-    soup = BeautifulSoup(text, parser)
-    return soup
 
 
 def get_attr_from_string(text: str, attr: str) -> str:
