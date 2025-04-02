@@ -1,5 +1,6 @@
 import threading
 import tkinter as tk
+import gc
 
 from constants import LABIRINT_MAP_URL
 from tk_app.core import app
@@ -36,6 +37,7 @@ def stop_fight():
     manager.stop_event()
     manager.choises.clear()
     fight_start_btn.configure(foreground='black')
+    gc.collect()
     print('Останавливаю автобой')
 
 

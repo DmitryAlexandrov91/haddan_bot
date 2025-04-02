@@ -2,6 +2,7 @@
 import os
 import threading
 import tkinter as tk
+import gc
 
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -26,6 +27,7 @@ def tk_glade_farm():
 def stop_farm():
     manager.event.clear()
     glade_farm_start_buttton.configure(foreground="black")
+    gc.collect()
     print('Останавливаю фарм поляны')
 
 

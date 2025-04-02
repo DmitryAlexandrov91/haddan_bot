@@ -1,6 +1,7 @@
 """Вход в игру и закрытие бота."""
 import threading
 import tkinter as tk
+import gc
 
 from bot_classes import HaddanBot
 from tk_app.core import app
@@ -30,6 +31,7 @@ def stop_bot(manager=manager):
     manager.event.clear()
     manager.close_driver()
     login_to_game.configure(foreground='black')
+    gc.collect()
 
 
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')

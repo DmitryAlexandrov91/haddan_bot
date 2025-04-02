@@ -1,6 +1,7 @@
 """Цены ресурсов поляны."""
 import threading
 import tkinter as tk
+import gc
 
 from bot_classes import DriverManager
 from constants import FIELD_PRICES
@@ -57,6 +58,7 @@ def update_price_from_search():
     price_label.config(text=price_dict_content)
     manager.close_driver()
     sync_button.configure(foreground='black')
+    gc.collect()
 
 
 def start_price_update():

@@ -102,9 +102,8 @@ class DriverManager:
         """Переключается на центральный фрейм окна."""
 
         try:
-
-            self.driver.switch_to.frame("frmcenterandchat")
             sleep(0.5)
+            self.driver.switch_to.frame("frmcenterandchat")
             self.driver.switch_to.frame("frmcentral")
 
         except Exception:
@@ -438,6 +437,7 @@ class DriverManager:
     # Фарм поляны. **************************************************
     def try_to_click_to_glade_fairy(self):
         """Ищет фею поляны и щёлкает на неё."""
+        self.try_to_switch_to_central_frame()
         glade_fairy = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[id="roomnpc231778"]')
@@ -546,8 +546,10 @@ class DriverManager:
             telegram_id=None):
         """Фарм поляны."""
         while self.event.is_set() is True:
+
+            sleep(1)
             try:
-                self.try_to_switch_to_central_frame()
+
                 self.try_to_click_to_glade_fairy()
                 self.try_to_switch_to_dialog()
                 glade_fairy_answers = self.driver.find_elements(
@@ -558,12 +560,11 @@ class DriverManager:
                         wait_tag = self.driver.find_elements(
                             By.CLASS_NAME,
                             'talksayBIG')
-                        if wait_tag:
-                            self.wait_while_element_will_be_clickable(
-                                wait_tag[0]
-                            )
+                        if wait_tag and 'где-то через' in wait_tag[0].text:
                             sleep(time_extractor(wait_tag[0].text))
-                            glade_fairy_answers[0].click()
+                        glade_fairy_answers[0].click()
+                        continue
+
                     if len(glade_fairy_answers) == 3:
                         self.wait_while_element_will_be_clickable(
                             glade_fairy_answers[1]
@@ -597,17 +598,20 @@ class DriverManager:
                                 file.write(f'{message_for_log}\n')
                                 file.write(content)
                             print(message_for_log)
+
                 self.try_to_switch_to_central_frame()
+
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'a[href="javascript:submitMove()"]')
                 if hits:
-                    sleep(2)
                     self.one_spell_fight(slots=slots, spell=spell)
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
                 self.check_error_on_page()
+                # self.driver.execute_script("window.location.reload();")
+                self.driver.switch_to.default_content()
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
