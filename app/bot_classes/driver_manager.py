@@ -627,9 +627,11 @@ class DriverManager:
             telegram_id=None):
         """Фарм с проведением боя одним заклом."""
         while self.event.is_set() is True:
+
             try:
                 self.try_to_switch_to_central_frame()
-                self.check_kaptcha(message_to_tg=message_to_tg)
+                self.check_kaptcha(message_to_tg=message_to_tg,
+                                   telegram_id=telegram_id)
                 self.check_error_on_page()
                 come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')

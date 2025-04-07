@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 from .utils import keys
 
 app = tk.Tk()
-app.title("Haddan bot v1.1.1")
+app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 
