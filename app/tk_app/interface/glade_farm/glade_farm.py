@@ -1,8 +1,8 @@
 """Управление фармом поляны"""
+import gc
 import os
 import threading
 import tkinter as tk
-import gc
 
 from tk_app.core import app
 from tk_app.driver_manager import manager

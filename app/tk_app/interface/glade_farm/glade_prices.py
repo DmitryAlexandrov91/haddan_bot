@@ -1,12 +1,15 @@
 """Цены ресурсов поляны."""
+import gc
 import threading
 import tkinter as tk
-import gc
+import logging
+
 
 from bot_classes import DriverManager
 from constants import FIELD_PRICES
 from tk_app.core import app
 from utils import get_glade_price_list
+from configs import configure_logging
 
 GLADE_PRICES = FIELD_PRICES.copy()
 
@@ -48,17 +51,24 @@ def update_price_label():
 
 
 def update_price_from_search():
-    global price_label
-    global GLADE_PRICES
-    manager = DriverManager()
-    GLADE_PRICES = get_glade_price_list(manager)
-    price_dict_content = '\n'.join(
-        f'{key}: {value}' for key, value in GLADE_PRICES.items()
-    )
-    price_label.config(text=price_dict_content)
-    manager.close_driver()
-    sync_button.configure(foreground='black')
-    gc.collect()
+    try:
+        global price_label
+        global GLADE_PRICES
+        manager = DriverManager()
+        GLADE_PRICES = get_glade_price_list(manager)
+        price_dict_content = '\n'.join(
+            f'{key}: {value}' for key, value in GLADE_PRICES.items()
+        )
+        price_label.config(text=price_dict_content)
+        manager.close_driver()
+        sync_button.configure(foreground='black')
+        gc.collect()
+    except Exception as e:
+        configure_logging()
+        logging.exception(
+            f'\nВозникло исключение {str(e)}\n',
+            stack_info=True
+        )
 
 
 def start_price_update():

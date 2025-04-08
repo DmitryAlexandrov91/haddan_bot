@@ -1,8 +1,9 @@
 """Основная конфигурация приложения tkinter."""
 import tkinter as tk
 
-from constants import (FIRST_CHAR, PASSWORD, TELEGRAM_CHAT_ID, USER_CHAR,  # noqa
-                       USER_CHAR_ID, USER_PASSWORD, MIN_HP_VALUE)
+from constants import (FIRST_CHAR, MIN_HP_VALUE, PASSWORD,  # noqa
+                       TELEGRAM_CHAT_ID, USER_CHAR, USER_CHAR_ID,
+                       USER_PASSWORD)
 from PIL import Image, ImageTk
 
 from .utils import keys

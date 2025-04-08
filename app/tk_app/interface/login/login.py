@@ -1,11 +1,14 @@
 """Вход в игру и закрытие бота."""
+import gc
 import threading
 import tkinter as tk
-import gc
+import logging
 
 from bot_classes import HaddanBot
 from tk_app.core import app
 from tk_app.driver_manager import manager
+
+from configs import configure_logging
 
 
 def start_thread():
@@ -14,17 +17,24 @@ def start_thread():
 
 
 def start_game(manager=manager):
-    char = username_field.get().strip()
-    password = password_field.get().strip()
+    try:
+        char = username_field.get().strip()
+        password = password_field.get().strip()
 
-    if char and password:
-        manager.start_driver()
-        User = HaddanBot(
-            char=char,
-            password=password,
-            driver=manager.driver)
-        User.login_to_game()
-        login_to_game.configure(foreground='green')
+        if char and password:
+            manager.start_driver()
+            User = HaddanBot(
+                char=char,
+                password=password,
+                driver=manager.driver)
+            User.login_to_game()
+            login_to_game.configure(foreground='green')
+    except Exception as e:
+        configure_logging()
+        logging.exception(
+            f'\nВозникло исключение {str(e)}\n',
+            stack_info=True
+        )
 
 
 def stop_bot(manager=manager):

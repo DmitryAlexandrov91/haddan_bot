@@ -1,8 +1,10 @@
 """Утилитки приложения haddan_bot"""
 import re
 from time import sleep
+import tempfile
 
-from constants import FIELD_PRICES, RES_LIST, SHOP_URL
+from constants import (FIELD_PRICES, LINUX_PROFILE_DIR, RES_LIST, SHOP_URL,
+                       WINDOWS_PROFILE_DIR)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -64,6 +66,10 @@ def get_glade_price_list(manager):
     На полный цикл функции уходит примерно 15 секунд.
     """
     manager.options.add_argument('--headless')
+    manager.options.add_argument('--no-sandbox')
+    manager.options.add_argument('--disable-dev-shm-usage')
+    temp_directory = tempfile.mkdtemp()
+    manager.options.add_argument(f"--user-data-dir={temp_directory}")
     manager.start_driver()
     manager.driver.get(SHOP_URL)
     glade_button = manager.driver.find_elements(
@@ -78,6 +84,7 @@ def get_glade_price_list(manager):
         result.append(
             res_price_finder(manager.driver, res)
         )
+
     result_dict = {}
     for key, value in zip(FIELD_PRICES.keys(), result):
         result_dict[key] = float(value)

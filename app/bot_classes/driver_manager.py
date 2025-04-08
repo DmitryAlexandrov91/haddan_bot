@@ -562,9 +562,13 @@ class DriverManager:
                             'talksayBIG')
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             sleep(time_extractor(wait_tag[0].text))
-                        glade_fairy_answers[0].click()
-                        continue
-
+                        try:
+                            glade_fairy_answers[0].click()
+                            continue
+                        except Exception:
+                            self.driver.switch_to.default_content()
+                            continue
+                    
                     if len(glade_fairy_answers) == 3:
                         self.wait_while_element_will_be_clickable(
                             glade_fairy_answers[1]

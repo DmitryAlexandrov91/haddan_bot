@@ -1,13 +1,12 @@
 import threading
 import tkinter as tk
+from time import sleep
 
 from bot_classes import DriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from tk_app.core import app
 from tk_app.driver_manager import manager
-
-from time import sleep
 
 
 def test_1():
