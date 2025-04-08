@@ -3,6 +3,7 @@ import random
 import threading
 from datetime import datetime
 from time import sleep
+import platform
 
 from configs import configure_logging
 from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
@@ -35,18 +36,51 @@ class DriverManager:
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
         if self.driver is None or self.driver.session_id is None:
-            service = Service(executable_path=ChromeDriverManager().install())
-            self.driver = webdriver.Chrome(
-                service=service,
-                options=self.options)
-            self.thread = threading.current_thread()
+
+            try:
+                self.options.add_argument(
+                    '--disable-blink-features=AutomationControlled'
+                )
+                self.options.add_argument('--disable-infobars')
+                self.options.add_argument('--disable-extensions')
+                self.options.add_argument('--no-sandbox')
+                self.options.add_argument('--disable-dev-shm-usage')
+
+                if platform.system() == 'Windows':
+                    self.options.binary_location = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+
+                service = Service(
+                    executable_path=ChromeDriverManager().install(),
+                    service_args=['--verbose'],
+                )
+
+                self.driver = webdriver.Chrome(
+                    service=service,
+                    options=self.options
+                )
+                self.thread = threading.current_thread()
+
+            except Exception as e:
+                configure_logging()
+                logging.exception(
+                    f'\nВозникло исключение {str(e)}\n',
+                    stack_info=False
+                )
 
     def close_driver(self):
         """Закрывает активный driver если таковой имеется."""
         if self.driver is not None:
-            self.driver.quit()
-            self.driver = None
-            self.thread = None
+            try:
+                self.driver.quit()
+            except Exception as e:
+                configure_logging()
+                logging.exception(
+                    f'\nВозникло исключение {str(e)}\n',
+                    stack_info=False
+                )
+            finally:
+                self.driver = None
+                self.thread = None
 
     def get_active_driver(self):
         """Функция для проверки наличия активного драйвера."""
@@ -568,7 +602,7 @@ class DriverManager:
                         except Exception:
                             self.driver.switch_to.default_content()
                             continue
-                    
+
                     if len(glade_fairy_answers) == 3:
                         self.wait_while_element_will_be_clickable(
                             glade_fairy_answers[1]

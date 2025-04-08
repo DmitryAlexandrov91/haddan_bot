@@ -3,8 +3,7 @@ import re
 from time import sleep
 import tempfile
 
-from constants import (FIELD_PRICES, LINUX_PROFILE_DIR, RES_LIST, SHOP_URL,
-                       WINDOWS_PROFILE_DIR)
+from constants import FIELD_PRICES, RES_LIST, SHOP_URL
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -66,10 +65,8 @@ def get_glade_price_list(manager):
     На полный цикл функции уходит примерно 15 секунд.
     """
     manager.options.add_argument('--headless')
-    manager.options.add_argument('--no-sandbox')
-    manager.options.add_argument('--disable-dev-shm-usage')
     temp_directory = tempfile.mkdtemp()
-    manager.options.add_argument(f"--user-data-dir={temp_directory}")
+    manager.options.add_argument(f'--user-data-dir={temp_directory}')
     manager.start_driver()
     manager.driver.get(SHOP_URL)
     glade_button = manager.driver.find_elements(
@@ -100,17 +97,17 @@ def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
     match = re.search(intimidation_pattern, text)
     if match:
         intimidation = int(match.group(1))
-        print(f"Значение параметра 'Запугивание': {intimidation}")
+        print(f'Значение параметра Запугивание: {intimidation}')
     else:
-        print("Не удалось найти значение параметра 'Запугивание'.")
+        print('Не удалось найти значение параметра Запугивание.')
 
     room_number_pattern = r'комнату №(\d+)'
     match = re.search(room_number_pattern, text)
     if match:
         next_room = int(match.group(1))
-        print(f"Номер следующей комнаты: {next_room}")
+        print(f'Номер следующей комнаты: {next_room}')
     else:
-        print("Не удалось найти номер следующей комнаты.")
+        print('Не удалось найти номер следующей комнаты.')
     return intimidation, next_room
 
 

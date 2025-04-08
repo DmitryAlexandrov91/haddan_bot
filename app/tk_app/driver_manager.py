@@ -1,4 +1,4 @@
-"""Конфигурация объекта drivermanager и тегерам бота."""
+"""Конфигурация объекта drivermanager и телеграм бота."""
 import os
 import platform
 
@@ -22,8 +22,6 @@ os.makedirs(profile_dir, exist_ok=True)
 
 manager.options.add_argument(f"user-data-dir={profile_dir}")
 manager.options.add_argument('--ignore-certificate-errors')
-manager.options.add_argument('--no-sandbox')
-manager.options.add_argument('--disable-dev-shm-usage')
 manager.options.add_experimental_option(
     "excludeSwitches", ["enable-automation"]
 )
