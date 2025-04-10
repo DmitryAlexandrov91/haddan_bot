@@ -6,7 +6,9 @@ from datetime import datetime
 from time import sleep
 
 from configs import configure_logging
-from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
+from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
+                       POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
+                       TIME_FORMAT)
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
@@ -18,9 +20,6 @@ from telebot import TeleBot
 from utils import (get_attr_from_string, get_intimidation_and_next_room,
                    price_counter, time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
-
-from constants import (CHROME_PATH, GAMBLE_SPIRIT_RIGHT_ANSWERS,
-                           POETRY_SPIRIT_RIGHT_ANSWERS)
 
 
 class DriverManager:

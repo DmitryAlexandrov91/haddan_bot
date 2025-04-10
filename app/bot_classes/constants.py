@@ -22,7 +22,7 @@ LOGS_DIR_PATH = os.path.join(BASE_DIR, 'logs')
 LOG_FILE_NAME = 'haddan.log'
 LOG_FILE_PATH = os.path.join(LOGS_DIR_PATH, LOG_FILE_NAME)
 MAX_LOG_SIZE = 10 ** 6
-MAX_LOGS_COUNT = 5
+MAX_LOGS_COUNT = 3
 DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
 LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
 
@@ -54,7 +54,7 @@ FIELD_PRICES = {
     'Зеленая массивка': 67,
     'Колючник Черный': 101,
     'Гертаниум': 210
-    }
+}
 
 # Список для парсинга сайта
 RES_LIST = ['Мухожор', 'Подсолнух', 'Капустница', 'Мандрагора',
