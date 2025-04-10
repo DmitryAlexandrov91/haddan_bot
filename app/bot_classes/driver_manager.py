@@ -1,9 +1,9 @@
 import logging
+import platform
 import random
 import threading
 from datetime import datetime
 from time import sleep
-import platform
 
 from configs import configure_logging
 from constants import FIELD_PRICES, TELEGRAM_CHAT_ID, TIME_FORMAT
@@ -18,6 +18,9 @@ from telebot import TeleBot
 from utils import (get_attr_from_string, get_intimidation_and_next_room,
                    price_counter, time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
+
+from constants import (CHROME_PATH, GAMBLE_SPIRIT_RIGHT_ANSWERS,
+                           POETRY_SPIRIT_RIGHT_ANSWERS)
 
 
 class DriverManager:
@@ -35,7 +38,7 @@ class DriverManager:
     # Служебные методы взаимодействия. ******************************
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
-        if self.driver is None or self.driver.session_id is None:
+        if self.driver is None:
 
             try:
                 self.options.add_argument(
@@ -47,7 +50,7 @@ class DriverManager:
                 self.options.add_argument('--disable-dev-shm-usage')
 
                 if platform.system() == 'Windows':
-                    self.options.binary_location = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+                    self.options.binary_location = CHROME_PATH
 
                 service = Service(
                     executable_path=ChromeDriverManager().install(),
@@ -343,25 +346,8 @@ class DriverManager:
                     sleep(0.5)
                     continue
 
-                right_choise = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Телепортироваться')
-                if right_choise:
-                    right_choise[0].click()
+                self.right_answers_choise(GAMBLE_SPIRIT_RIGHT_ANSWERS)
 
-                right_choise = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'делу давай!')
-                if right_choise:
-                    right_choise[0].click()
-
-                right_choise = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, ' / ')
-                if right_choise:
-                    right_choise[0].click()
-
-                right_choise = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'пошли')
-                if right_choise:
-                    right_choise[0].click()
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayTak'
@@ -386,42 +372,7 @@ class DriverManager:
                 By.CLASS_NAME,
                 'talksayTak0')
             while spirit_answers:
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'давай дальше')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, ' / ')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Начали!')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Дальше!')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'пора обратно')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'с наградой')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Телепортироваться')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Увечье нам не надо')
-                if right_choise:
-                    right_choise[0].click()
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Поехали!')
-                if right_choise:
-                    right_choise[0].click()
+                self.right_answers_choise(POETRY_SPIRIT_RIGHT_ANSWERS)
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayTak0'
@@ -756,3 +707,14 @@ class DriverManager:
             self.driver.refresh()
             self.errors_count = 0
             sleep(10)
+
+    def right_answers_choise(self, right_answers):
+        """Проходит циклом по правильным ответам.
+
+        Если такой ответ есть, нажимает на него.
+        """
+        for answer in right_answers:
+            right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, answer)
+            if right_choise:
+                right_choise[0].click()

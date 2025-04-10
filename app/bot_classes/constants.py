@@ -15,6 +15,7 @@ GLADE_FARM_LOG = 'glade_farm.txt'
 KAPCHA_PATH = os.path.join(DOWNLOADS_DIR_NAME, KAPCHA_NAME)
 PAGE_SOURCE_PATH = os.path.join(DOWNLOADS_DIR_NAME, PAGE_SOURCE_NAME)
 SCREENSHOT_PATH = os.path.join(DOWNLOADS_DIR_NAME, SCREENSHOT_NAME)
+CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
 # Константы логгера
 LOGS_DIR_PATH = os.path.join(BASE_DIR, 'logs')
@@ -58,3 +59,12 @@ FIELD_PRICES = {
 # Список для парсинга сайта
 RES_LIST = ['Мухожор', 'Подсолнух', 'Капустница', 'Мандрагора',
             'Зеленая массивка', 'Колючник черный', 'Гертаниум']
+
+POETRY_SPIRIT_RIGHT_ANSWERS = (
+    'давай дальше', ' / ', 'Начали!', 'Дальше!', 'пора обратно',
+    'с наградой', 'Телепортироваться', 'Увечье нам не надо', 'Поехали!'
+)
+
+GAMBLE_SPIRIT_RIGHT_ANSWERS = (
+    'Телепортироваться', 'делу давай!', ' / ', 'пошли'
+)

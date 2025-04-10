@@ -1,14 +1,13 @@
 """Вход в игру и закрытие бота."""
 import gc
+import logging
 import threading
 import tkinter as tk
-import logging
 
 from bot_classes import HaddanBot
+from configs import configure_logging
 from tk_app.core import app
 from tk_app.driver_manager import manager
-
-from configs import configure_logging
 
 
 def start_thread():

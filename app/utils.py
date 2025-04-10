@@ -1,7 +1,7 @@
 """Утилитки приложения haddan_bot"""
 import re
-from time import sleep
 import tempfile
+from time import sleep
 
 from constants import FIELD_PRICES, RES_LIST, SHOP_URL
 from selenium.webdriver.common.by import By

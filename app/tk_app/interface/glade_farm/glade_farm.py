@@ -17,11 +17,12 @@ def tk_glade_farm():
     send_message_to_tg = send_message_checkbox_value.get()
     user_telegram_id = tg_id_field.get().strip()
 
+    print('Начинаю фарм поляны')
+
     manager.glade_farm(
             price_dict=GLADE_PRICES,
             message_to_tg=send_message_to_tg,
             telegram_id=user_telegram_id)
-    print('Начинаю фарм поляны')
 
 
 def stop_farm():
