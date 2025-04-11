@@ -7,6 +7,8 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.login import send_message_checkbox_value, tg_id_field
 
+from .quick_slots import get_round_spells
+
 
 #  Функции блока боя одним заклинанием. ------------------------------
 def start_fight():
@@ -29,7 +31,8 @@ def start_fight():
         mind_spirit_play=mind_spirit_play,
         message_to_tg=send_message_to_tg,
         telegram_id=user_telegram_id,
-        min_hp=minimum_hp
+        min_hp=minimum_hp,
+        spell_book=get_round_spells()
     )
 
 

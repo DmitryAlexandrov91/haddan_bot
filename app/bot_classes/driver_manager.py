@@ -310,9 +310,15 @@ class DriverManager:
         """Проводит бой."""
         round = self.get_round_number()
         kick = self.get_hit_number()
-        self.open_slot_and_choise_spell(
-            slots_number=spell_book[round][kick]['slot'],
-            spell_number=spell_book[round][kick]['spell'])
+        try:
+            self.open_slot_and_choise_spell(
+                slots_number=spell_book[round][kick]['slot'],
+                spell_number=spell_book[round][kick]['spell'])
+        except Exception:
+            self.open_slot_and_choise_spell(
+                slots_number=2,
+                spell_number=1
+            )
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
@@ -330,10 +336,15 @@ class DriverManager:
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 round = self.get_round_number()
                 kick = self.get_hit_number()
-                self.open_slot_and_choise_spell(
-                    slots_number=spell_book[round][kick]['slot'],
-                    spell_number=spell_book[round][kick]['spell']
-                )
+                try:
+                    self.open_slot_and_choise_spell(
+                        slots_number=spell_book[round][kick]['slot'],
+                        spell_number=spell_book[round][kick]['spell'])
+                except Exception:
+                    self.open_slot_and_choise_spell(
+                        slots_number=2,
+                        spell_number=1
+                    )
 
     #  Методы игры с духами. ****************************************
     def play_with_gamble_spirit(self):
@@ -624,6 +635,7 @@ class DriverManager:
                     'a[href="javascript:submitMove()"]')
                 if hits:
                     self.one_spell_fight(slots=slots, spell=spell)
+                    # self.fight(spell_book=spell_book)
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
@@ -642,7 +654,8 @@ class DriverManager:
             mind_spirit_play=True,
             message_to_tg=False,
             min_hp: int = None,
-            telegram_id=None):
+            telegram_id=None,
+            spell_book: dict = None):
         """Фарм с проведением боя одним заклом."""
         while self.event.is_set() is True:
 
