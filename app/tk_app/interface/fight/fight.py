@@ -1,8 +1,8 @@
-import gc
+# import gc
 import threading
 import tkinter as tk
 
-from constants import LABIRINT_MAP_URL
+from constants import LABIRINT_MAP_URL, SLOT_VALUES
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.login import send_message_checkbox_value, tg_id_field
@@ -37,7 +37,7 @@ def stop_fight():
     manager.stop_event()
     manager.choises.clear()
     fight_start_btn.configure(foreground='black')
-    gc.collect()
+    # gc.collect()
     print('Останавливаю автобой')
 
 
@@ -48,7 +48,7 @@ def start_thread():
 #  --------------------------------------------------------------------
 
 
-values = ("1", "2", "3", "4", "5", "6", "7")
+# values = ("1", "2", "3", "4", "5", "6", "7")
 
 #  Титульник блока боя одним заклом. ----------------------------------
 fight_panel_label = tk.Label(
@@ -60,18 +60,18 @@ fight_panel_label.grid(row=0, column=5)
 
 #  Кнопки основного заклинания ----------------------------------------
 fight_slot = tk.StringVar(app)
-fight_slot.set(values[1])
+fight_slot.set(SLOT_VALUES[1])
 
 spell_slot = tk.StringVar(app)
-spell_slot.set(values[0])
+spell_slot.set(SLOT_VALUES[0])
 
 main_slot_label = tk.OptionMenu(
-    app, fight_slot, *values,
+    app, fight_slot, *SLOT_VALUES,
 )
 main_slot_label.grid(row=1, column=5)
 
 main_spell_label = tk.OptionMenu(
-    app, spell_slot, *values,
+    app, spell_slot, *SLOT_VALUES,
 )
 main_spell_label.grid(row=1, column=6)
 #  --------------------------------------------------------------------

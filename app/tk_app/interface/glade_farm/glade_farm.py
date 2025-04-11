@@ -1,5 +1,5 @@
 """Управление фармом поляны"""
-import gc
+# import gc
 import os
 import threading
 import tkinter as tk
@@ -28,7 +28,7 @@ def tk_glade_farm():
 def stop_farm():
     manager.event.clear()
     glade_farm_start_buttton.configure(foreground="black")
-    gc.collect()
+    # gc.collect()
     print('Останавливаю фарм поляны')
 
 

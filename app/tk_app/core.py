@@ -12,6 +12,7 @@ app = tk.Tk()
 app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
+app.maxsize(1490, 552)
 
 app.configure(bg='#FFF4DC')
 img = Image.open('icon.ico')

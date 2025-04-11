@@ -1,5 +1,5 @@
 """Цены ресурсов поляны."""
-import gc
+# import gc
 import logging
 import threading
 import tkinter as tk
@@ -61,7 +61,7 @@ def update_price_from_search():
         price_label.config(text=price_dict_content)
         manager.close_driver()
         sync_button.configure(foreground='black')
-        gc.collect()
+        # gc.collect()
     except Exception as e:
         configure_logging()
         logging.exception(

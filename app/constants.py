@@ -79,3 +79,8 @@ POETRY_SPIRIT_RIGHT_ANSWERS = (
 GAMBLE_SPIRIT_RIGHT_ANSWERS = (
     'Телепортироваться', 'делу давай!', ' / ', 'пошли'
 )
+
+
+#  Константы интерфейса Tkinter
+
+SLOT_VALUES = ("1", "2", "3", "4", "5", "6", "7")
