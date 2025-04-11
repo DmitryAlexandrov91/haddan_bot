@@ -43,7 +43,7 @@ def stop_fight():
 
 def start_thread():
     manager.stop_event()
-    manager.event.thread = threading.Thread(target=start_fight)
+    manager.event.thread = threading.Thread(target=start_fight, daemon=True)
     manager.event.thread.start()
 #  --------------------------------------------------------------------
 

@@ -72,7 +72,7 @@ def update_price_from_search():
 
 def start_price_update():
     sync_button.configure(foreground='green')
-    new_thread = threading.Thread(target=update_price_from_search)
+    new_thread = threading.Thread(target=update_price_from_search, daemon=True)
     new_thread.start()
 
 
