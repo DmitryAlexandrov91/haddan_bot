@@ -1,7 +1,6 @@
 # import gc
 import threading
 import tkinter as tk
-from tkinter import ttk
 
 from constants import LABIRINT_MAP_URL, SLOT_VALUES
 from tk_app.core import app
@@ -60,24 +59,19 @@ fight_panel_label.grid(row=0, column=5)
 #  --------------------------------------------------------------------
 
 #  Кнопки основного заклинания ----------------------------------------
-
-style = ttk.Style()
-style.theme_use('clam')
-
-
 fight_slot = tk.StringVar(app)
 fight_slot.set(SLOT_VALUES[1])
 
 spell_slot = tk.StringVar(app)
 spell_slot.set(SLOT_VALUES[0])
 
-main_slot_label = ttk.Combobox(
-    app, textvariable=fight_slot, values=SLOT_VALUES, state='readonly', width=5
+main_slot_label = tk.OptionMenu(
+    app, fight_slot, *SLOT_VALUES
 )
 main_slot_label.grid(row=1, column=5)
 
-main_spell_label = ttk.Combobox(
-    app, textvariable=spell_slot, values=SLOT_VALUES, state='readonly', width=5
+main_spell_label = tk.OptionMenu(
+    app, spell_slot, *SLOT_VALUES,
 )
 main_spell_label.grid(row=1, column=6)
 #  --------------------------------------------------------------------

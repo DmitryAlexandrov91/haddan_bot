@@ -9,10 +9,12 @@ from PIL import Image, ImageTk
 from .utils import keys
 
 app = tk.Tk()
+
 app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 app.maxsize(1490, 552)
+
 
 app.configure(bg='#FFF4DC')
 img = Image.open('icon.ico')
@@ -20,10 +22,12 @@ photo = ImageTk.PhotoImage(img)
 
 app.iconphoto(True, photo)
 
+
 from tk_app.interface.dev_tests import *  # noqa
 from tk_app.interface.fight import *  # noqa
 from tk_app.interface.glade_farm import *  # noqa
 from tk_app.interface.login import *  # noqa
+
 
 
 def start_app():
