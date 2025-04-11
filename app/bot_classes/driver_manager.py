@@ -246,8 +246,8 @@ class DriverManager:
 
     def open_slot_and_choise_spell(
             self,
-            slots_number: int,
-            spell_number: int):
+            slots_number,
+            spell_number):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
         spell_to_cast = self.get_spell_to_cast(
             spell_number=spell_number
@@ -285,6 +285,7 @@ class DriverManager:
 
     def one_spell_fight(self, slots=2, spell=1):
         """Проводит бой одним заклом."""
+
         self.open_slot_and_choise_spell(
             slots_number=slots, spell_number=spell)
         come_back = self.driver.find_elements(
@@ -304,6 +305,35 @@ class DriverManager:
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
     # ***************************************************************
+
+    def fight(self, spell_book):
+        """Проводит бой."""
+        round = self.get_round_number()
+        kick = self.get_hit_number()
+        self.open_slot_and_choise_spell(
+            slots_number=spell_book[round][kick]['slot'],
+            spell_number=spell_book[round][kick]['spell'])
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        if come_back:
+            self.wait_while_element_will_be_clickable(come_back[0])
+            self.click_to_element_with_actionchains(come_back[0])
+
+        else:
+            hits = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[onclick="touchFight();"]')
+
+            if hits:
+                self.wait_while_element_will_be_clickable(hits[0])
+                self.click_to_element_with_actionchains(hits[0])
+                ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                round = self.get_round_number()
+                kick = self.get_hit_number()
+                self.open_slot_and_choise_spell(
+                    slots_number=spell_book[round][kick]['slot'],
+                    spell_number=spell_book[round][kick]['spell']
+                )
 
     #  Методы игры с духами. ****************************************
     def play_with_gamble_spirit(self):
