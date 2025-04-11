@@ -176,7 +176,7 @@ r2y4_spell = tk.StringVar(app)
 r2y4_spell.set(SLOT_VALUES[0])
 
 r2y4_slot = tk.OptionMenu(
-    app, r2y4_slot, *SLOT_VALUES,
+    app, r2y4_slot, *SLOT_VALUES
 )
 r2y4_slot.grid(row=3, column=11)
 
