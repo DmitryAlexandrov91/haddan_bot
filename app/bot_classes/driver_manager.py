@@ -45,8 +45,8 @@ class DriverManager:
                 )
                 self.options.add_argument('--disable-infobars')
                 self.options.add_argument('--disable-extensions')
-                self.options.add_argument('--no-sandbox')
-                self.options.add_argument('--disable-dev-shm-usage')
+                # self.options.add_argument('--no-sandbox')
+                # self.options.add_argument('--disable-dev-shm-usage')
 
                 if platform.system() == 'Windows':
                     self.options.binary_location = CHROME_PATH
@@ -61,6 +61,9 @@ class DriverManager:
                     options=self.options
                 )
                 self.thread = threading.current_thread()
+                self.driver.implicitly_wait(0.1)
+                # self.driver.set_page_load_timeout(0.1)
+                self.driver.set_script_timeout(0.1)
 
             except Exception as e:
                 configure_logging()
@@ -138,7 +141,7 @@ class DriverManager:
         """Переключается на центральный фрейм окна."""
 
         try:
-            sleep(0.5)
+            # sleep(0.3)
             self.driver.switch_to.frame("frmcenterandchat")
             self.driver.switch_to.frame("frmcentral")
 
@@ -186,7 +189,7 @@ class DriverManager:
         """Возвращает название заклинания, которое нужно использовать."""
         self.driver.switch_to.default_content()
         self.driver.execute_script(
-                f'slotsShow({slot_number})'
+                f'slotsShow({int(slot_number) - 1})'
             )
         spell_to_cast = self.driver.find_elements(
             By.ID, f'lSlot{spell_number}'
@@ -202,20 +205,21 @@ class DriverManager:
             slots_number,
             spell_number):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
-        active_spell = self.get_active_spell()
-        spell_to_cast = self.get_spell_to_cast(
-            spell_number=spell_number,
-            slot_number=slots_number
-        )
-        if spell_to_cast != active_spell:
-            self.driver.execute_script(
-                f'slotsShow({int(slots_number) -1 })'
+        if not self.check_come_back():
+            active_spell = self.get_active_spell()
+            # print(f'Активный закл - {active_spell}')
+            spell_to_cast = self.get_spell_to_cast(
+                spell_number=spell_number,
+                slot_number=slots_number
             )
-            self.driver.execute_script(
-                f'return qs_onClickSlot(event,{int(spell_number) - 1})'
-            )
-        else:
-            self.try_to_switch_to_central_frame()
+            # print(f'Нужно кастануть - {spell_to_cast}')
+            if spell_to_cast != active_spell and not self.check_come_back():
+                self.driver.execute_script(
+                    f'slotsShow({int(slots_number) -1 })'
+                )
+                self.driver.execute_script(
+                    f'return qs_onClickSlot(event,{int(spell_number) - 1})'
+                )
 
     def get_hit_number(self) -> str:
         """Возвращает номер удара в бою."""
@@ -238,30 +242,6 @@ class DriverManager:
                 return 'Раунд 1'
             else:
                 return f'Раунд {i + 1}'
-
-    def one_spell_fight(self, slots=2, spell=1):
-        """Проводит бой одним заклом."""
-
-        self.open_slot_and_choise_spell(
-            slots_number=slots, spell_number=spell)
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        if come_back:
-            # self.wait_while_element_will_be_clickable(come_back[0])
-            # self.click_to_element_with_actionchains(come_back[0])
-            come_back[0].click()
-
-        else:
-            hits = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[onclick="touchFight();"]')
-
-            if hits:
-                # self.wait_while_element_will_be_clickable(hits[0])
-                # self.click_to_element_with_actionchains(hits[0])
-                come_back[0].click()
-                ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                self.one_spell_fight(slots=slots, spell=spell)
     # ***************************************************************
 
     def fight(self, spell_book, default_slot, default_spell):
@@ -272,35 +252,28 @@ class DriverManager:
             come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
             if come_back:
-                # self.wait_while_element_will_be_clickable(come_back[0])
-                # self.click_to_element_with_actionchains(come_back[0])
                 come_back[0].click()
-        try:
-            self.open_slot_and_choise_spell(
-                slots_number=spell_book[round][kick]['slot'],
-                spell_number=spell_book[round][kick]['spell'])
-        except Exception:
-            self.open_slot_and_choise_spell(
-                slots_number=default_slot,
-                spell_number=default_spell
-            )
-        self.try_to_switch_to_central_frame()
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        if come_back:
-            # self.wait_while_element_will_be_clickable(come_back[0])
-            # self.click_to_element_with_actionchains(come_back[0])
-            come_back[0].click()
 
         else:
-            hits = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[onclick="touchFight();"]')
+            try:
+                self.open_slot_and_choise_spell(
+                    slots_number=spell_book[round][kick]['slot'],
+                    spell_number=spell_book[round][kick]['spell'])
+            except Exception:
+                self.open_slot_and_choise_spell(
+                    slots_number=default_slot,
+                    spell_number=default_spell
+                )
+            self.try_to_switch_to_central_frame()
+            come_back = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Вернуться')
+            if come_back:
+                come_back[0].click()
 
-            if hits:
-                # self.wait_while_element_will_be_clickable(hits[0])
-                # self.click_to_element_with_actionchains(hits[0])
-                hits[0].click()
+            else:
+                self.driver.execute_script(
+                        'touchFight();'
+                    )
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.fight(
                     spell_book=spell_book,
@@ -446,7 +419,6 @@ class DriverManager:
 
     def check_kaptcha(self, message_to_tg, telegram_id=None):
         """Проверяет наличие капчи на странице."""
-        # self.try_to_switch_to_central_frame()
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]'
@@ -461,8 +433,6 @@ class DriverManager:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
             sleep(30)
-        # self.driver.execute_script("window.location.reload();")
-        # self.driver.switch_to.default_content()
 
     def check_health(self) -> int:
         """"Возвращает кол-во  ХП персонажа."""
@@ -476,7 +446,6 @@ class DriverManager:
             return hp
 
     def check_error_on_page(self):
-        # self.try_to_switch_to_central_frame()
         error = self.driver.find_elements(
             By.PARTIAL_LINK_TEXT, 'Ошибка')
         if error:
@@ -605,7 +574,6 @@ class DriverManager:
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
                 self.check_error_on_page()
-                # self.driver.execute_script("window.location.reload();")
                 self.driver.switch_to.default_content()
             except Exception as e:
                 self.actions_after_exception(exception=e)
@@ -638,8 +606,7 @@ class DriverManager:
                         By.CSS_SELECTOR,
                         'a[href="javascript:submitMove()"]')
                 if hits:
-                    # self.one_spell_fight(
-                    #     slots=slots, spell=spell)
+
                     self.fight(
                         spell_book=spell_book,
                         default_slot=slots,
@@ -653,8 +620,7 @@ class DriverManager:
                             By.CSS_SELECTOR,
                             'a[href="javascript:submitMove()"]')
                         if hits:
-                            # self.one_spell_fight(
-                            #     slots=slots, spell=spell)
+
                             self.fight(
                                 spell_book=spell_book,
                                 default_slot=slots,
@@ -667,8 +633,6 @@ class DriverManager:
                             By.CSS_SELECTOR,
                             'a[href="javascript:submitMove()"]')
                         if hits:
-                            # self.one_spell_fight(
-                            #     slots=slots, spell=spell)
                             self.fight(
                                 spell_book=spell_book,
                                 default_slot=slots,
@@ -737,3 +701,17 @@ class DriverManager:
                         By.PARTIAL_LINK_TEXT, answer)
             if right_choise:
                 right_choise[0].click()
+
+    def check_fight(self):
+        """Проверяет что идёт бой"""
+        hits = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'a[href="javascript:submitMove()"]'
+        )
+        return bool(hits)
+
+    def check_come_back(self):
+        """Проверяет, закончен ли бой."""
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        return bool(come_back)

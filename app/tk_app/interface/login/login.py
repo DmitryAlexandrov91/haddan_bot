@@ -1,5 +1,4 @@
 """Вход в игру и закрытие бота."""
-import gc
 import logging
 import threading
 import tkinter as tk
@@ -40,7 +39,6 @@ def stop_bot(manager=manager):
     manager.event.clear()
     manager.close_driver()
     login_to_game.configure(foreground='black')
-    gc.collect()
 
 
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')

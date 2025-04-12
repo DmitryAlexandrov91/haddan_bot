@@ -11,6 +11,7 @@ manager = DriverManager(
     bot=TeleBot(token=TELEGRAM_BOT_TOKEN)
 )
 
+
 if platform.system() == 'Windows':
     profile_dir = os.path.join(os.getcwd(), WINDOWS_PROFILE_DIR)
 else:
