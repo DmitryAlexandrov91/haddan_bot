@@ -6,7 +6,7 @@ import tkinter as tk
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.login import send_message_checkbox_value, tg_id_field
-from tk_app.interface.fight import fight_slot, spell_slot
+from tk_app.interface.fight import fight_slot, spell_slot, get_round_spells
 
 from .glade_prices import GLADE_PRICES
 
@@ -22,7 +22,9 @@ def tk_glade_farm():
             message_to_tg=send_message_to_tg,
             telegram_id=user_telegram_id,
             slots=fight_slot.get(),
-            spell=spell_slot.get(),)
+            spell=spell_slot.get(),
+            spell_book=get_round_spells()
+        )
 
 
 def stop_farm():

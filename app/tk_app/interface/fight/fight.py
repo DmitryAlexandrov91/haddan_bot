@@ -40,7 +40,6 @@ def stop_fight():
     manager.stop_event()
     manager.choises.clear()
     fight_start_btn.configure(foreground='black')
-    # gc.collect()
     print('Останавливаю автобой')
 
 

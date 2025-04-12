@@ -13,7 +13,7 @@ app = tk.Tk()
 app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
-app.maxsize(770, 330)
+# app.maxsize(770, 330)
 
 
 app.configure(bg='#FFF4DC')

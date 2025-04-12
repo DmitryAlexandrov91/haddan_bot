@@ -179,9 +179,15 @@ class DriverManager:
                 'title'
             )
 
-    def get_spell_to_cast(self, spell_number):
+    def get_spell_to_cast(
+            self,
+            spell_number,
+            slot_number):
         """Возвращает название заклинания, которое нужно использовать."""
         self.driver.switch_to.default_content()
+        self.driver.execute_script(
+                f'slotsShow({slot_number})'
+            )
         spell_to_cast = self.driver.find_elements(
             By.ID, f'lSlot{spell_number}'
         )
@@ -191,74 +197,24 @@ class DriverManager:
                 'title'
             )
 
-    def quick_slots_open(self):
-        """Открывает меню быстрых слотов."""
-        quick_slots = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'a[href="javascript:qs_toggleSlots()"]'
-        )
-        if quick_slots:
-            self.wait_while_element_will_be_clickable(quick_slots[0])
-            quick_slots[0].click()
-
-    def quick_slots_close(self):
-        """Закрывает меню быстрых слотов."""
-        quick_slots = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'a[href="javascript:Slot.showSlots()"]'
-        )
-        if quick_slots:
-            try:
-                self.wait_while_element_will_be_clickable(quick_slots[0])
-                quick_slots[0].click()
-            except Exception:
-                print('Слоты уже закрыты!')
-                pass
-
-    def quick_slot_choise(self, slots_number):
-        """Открывает нужную страницу быстрых слотов.
-
-        1 - страница с напитками
-        2 - страница с заклами №1
-        3 - страница с заклами №2 и тд
-        """
-        slots = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.ID, f'slotsBtn{slots_number}')
-                )
-            )
-        self.wait_while_element_will_be_clickable(
-            slots
-        )
-        slots.click()
-
-    def spell_choise(self, spell_number):
-        """Щёлкает по нужному заклинанию на странице слотов 1-7"""
-        spell = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.ID, f'lSlot{spell_number}')
-                )
-            )
-        self.wait_while_element_will_be_clickable(
-            spell
-        )
-        spell.click()
-
     def open_slot_and_choise_spell(
             self,
             slots_number,
             spell_number):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
-        spell_to_cast = self.get_spell_to_cast(
-            spell_number=spell_number
-        )
         active_spell = self.get_active_spell()
+        spell_to_cast = self.get_spell_to_cast(
+            spell_number=spell_number,
+            slot_number=slots_number
+        )
         if spell_to_cast != active_spell:
-            self.driver.switch_to.default_content()
-            self.quick_slots_open()
-            self.quick_slot_choise(slots_number=slots_number)
-            self.spell_choise(spell_number=spell_number)
-            self.quick_slots_close()
+            self.driver.execute_script(
+                f'slotsShow({int(slots_number) -1 })'
+            )
+            self.driver.execute_script(
+                f'return qs_onClickSlot(event,{int(spell_number) - 1})'
+            )
+        else:
             self.try_to_switch_to_central_frame()
 
     def get_hit_number(self) -> str:
@@ -291,8 +247,9 @@ class DriverManager:
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
-            self.wait_while_element_will_be_clickable(come_back[0])
-            self.click_to_element_with_actionchains(come_back[0])
+            # self.wait_while_element_will_be_clickable(come_back[0])
+            # self.click_to_element_with_actionchains(come_back[0])
+            come_back[0].click()
 
         else:
             hits = self.driver.find_elements(
@@ -300,30 +257,40 @@ class DriverManager:
                 'img[onclick="touchFight();"]')
 
             if hits:
-                self.wait_while_element_will_be_clickable(hits[0])
-                self.click_to_element_with_actionchains(hits[0])
+                # self.wait_while_element_will_be_clickable(hits[0])
+                # self.click_to_element_with_actionchains(hits[0])
+                come_back[0].click()
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.one_spell_fight(slots=slots, spell=spell)
     # ***************************************************************
 
-    def fight(self, spell_book):
+    def fight(self, spell_book, default_slot, default_spell):
         """Проводит бой."""
         round = self.get_round_number()
         kick = self.get_hit_number()
+        if not kick:
+            come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+            if come_back:
+                # self.wait_while_element_will_be_clickable(come_back[0])
+                # self.click_to_element_with_actionchains(come_back[0])
+                come_back[0].click()
         try:
             self.open_slot_and_choise_spell(
                 slots_number=spell_book[round][kick]['slot'],
                 spell_number=spell_book[round][kick]['spell'])
         except Exception:
             self.open_slot_and_choise_spell(
-                slots_number=2,
-                spell_number=1
+                slots_number=default_slot,
+                spell_number=default_spell
             )
+        self.try_to_switch_to_central_frame()
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
-            self.wait_while_element_will_be_clickable(come_back[0])
-            self.click_to_element_with_actionchains(come_back[0])
+            # self.wait_while_element_will_be_clickable(come_back[0])
+            # self.click_to_element_with_actionchains(come_back[0])
+            come_back[0].click()
 
         else:
             hits = self.driver.find_elements(
@@ -331,20 +298,14 @@ class DriverManager:
                 'img[onclick="touchFight();"]')
 
             if hits:
-                self.wait_while_element_will_be_clickable(hits[0])
-                self.click_to_element_with_actionchains(hits[0])
+                # self.wait_while_element_will_be_clickable(hits[0])
+                # self.click_to_element_with_actionchains(hits[0])
+                hits[0].click()
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                round = self.get_round_number()
-                kick = self.get_hit_number()
-                try:
-                    self.open_slot_and_choise_spell(
-                        slots_number=spell_book[round][kick]['slot'],
-                        spell_number=spell_book[round][kick]['spell'])
-                except Exception:
-                    self.open_slot_and_choise_spell(
-                        slots_number=2,
-                        spell_number=1
-                    )
+                self.fight(
+                    spell_book=spell_book,
+                    default_slot=default_slot,
+                    default_spell=default_spell)
 
     #  Методы игры с духами. ****************************************
     def play_with_gamble_spirit(self):
@@ -568,7 +529,8 @@ class DriverManager:
             slots=2,
             spell=1,
             message_to_tg=False,
-            telegram_id=None):
+            telegram_id=None,
+            spell_book: dict = None):
         """Фарм поляны."""
         while self.event.is_set() is True:
 
@@ -634,8 +596,11 @@ class DriverManager:
                     By.CSS_SELECTOR,
                     'a[href="javascript:submitMove()"]')
                 if hits:
-                    self.one_spell_fight(slots=slots, spell=spell)
-                    # self.fight(spell_book=spell_book)
+                    # self.one_spell_fight(slots=slots, spell=spell)
+                    self.fight(
+                        spell_book=spell_book,
+                        default_slot=slots,
+                        default_spell=spell)
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
@@ -668,13 +633,17 @@ class DriverManager:
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
                 if come_back:
                     self.wait_while_element_will_be_clickable(come_back[0])
-                    come_back[0]
+                    come_back[0].click()
                 hits = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'a[href="javascript:submitMove()"]')
                 if hits:
-                    self.one_spell_fight(
-                        slots=slots, spell=spell)
+                    # self.one_spell_fight(
+                    #     slots=slots, spell=spell)
+                    self.fight(
+                        spell_book=spell_book,
+                        default_slot=slots,
+                        default_spell=spell)
 
                 else:
                     if up_down_move:
@@ -684,8 +653,12 @@ class DriverManager:
                             By.CSS_SELECTOR,
                             'a[href="javascript:submitMove()"]')
                         if hits:
-                            self.one_spell_fight(
-                                slots=slots, spell=spell)
+                            # self.one_spell_fight(
+                            #     slots=slots, spell=spell)
+                            self.fight(
+                                spell_book=spell_book,
+                                default_slot=slots,
+                                default_spell=spell)
 
                     if left_right_move:
                         self.crossing_to_the_west()
@@ -694,8 +667,12 @@ class DriverManager:
                             By.CSS_SELECTOR,
                             'a[href="javascript:submitMove()"]')
                         if hits:
-                            self.one_spell_fight(
-                                slots=slots, spell=spell)
+                            # self.one_spell_fight(
+                            #     slots=slots, spell=spell)
+                            self.fight(
+                                spell_book=spell_book,
+                                default_slot=slots,
+                                default_spell=spell)
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
