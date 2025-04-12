@@ -97,7 +97,6 @@ def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
     match = re.search(intimidation_pattern, text)
     if match:
         intimidation = int(match.group(1))
-        print(f'Значение параметра Запугивание: {intimidation}')
     else:
         print('Не удалось найти значение параметра Запугивание.')
 
@@ -105,7 +104,6 @@ def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
     match = re.search(room_number_pattern, text)
     if match:
         next_room = int(match.group(1))
-        print(f'Номер следующей комнаты: {next_room}')
     else:
         print('Не удалось найти номер следующей комнаты.')
     return intimidation, next_room

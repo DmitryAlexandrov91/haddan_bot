@@ -47,6 +47,9 @@ class DriverManager:
                 self.options.add_argument('--disable-extensions')
                 # self.options.add_argument('--no-sandbox')
                 # self.options.add_argument('--disable-dev-shm-usage')
+                self.options.add_experimental_option(
+                    "excludeSwitches", ["enable-automation"]
+                )
 
                 if platform.system() == 'Windows':
                     self.options.binary_location = CHROME_PATH
@@ -61,9 +64,8 @@ class DriverManager:
                     options=self.options
                 )
                 self.thread = threading.current_thread()
-                self.driver.implicitly_wait(0.1)
-                # self.driver.set_page_load_timeout(0.1)
-                self.driver.set_script_timeout(0.1)
+                self.driver.implicitly_wait(0.05)
+                self.driver.set_script_timeout(0.05)
 
             except Exception as e:
                 configure_logging()
@@ -141,7 +143,7 @@ class DriverManager:
         """Переключается на центральный фрейм окна."""
 
         try:
-            # sleep(0.3)
+
             self.driver.switch_to.frame("frmcenterandchat")
             self.driver.switch_to.frame("frmcentral")
 
@@ -247,7 +249,9 @@ class DriverManager:
     def fight(self, spell_book, default_slot, default_spell):
         """Проводит бой."""
         round = self.get_round_number()
+        # print(round)
         kick = self.get_hit_number()
+        # print(kick)
         if not kick:
             come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
@@ -256,6 +260,8 @@ class DriverManager:
 
         else:
             try:
+                # print(spell_book[round][kick]['slot'])
+                # print(spell_book[round][kick]['spell'])
                 self.open_slot_and_choise_spell(
                     slots_number=spell_book[round][kick]['slot'],
                     spell_number=spell_book[round][kick]['spell'])
@@ -406,10 +412,11 @@ class DriverManager:
                         'img[id="roomnpc17481"]')
 
         if glade_fairy:
-            self.wait_while_element_will_be_clickable(
-                 glade_fairy[0]
-            )
-            glade_fairy[0].click()
+            # self.wait_while_element_will_be_clickable(
+            #      glade_fairy[0]
+            # )
+            self.click_to_element_with_actionchains(glade_fairy[0])
+            # glade_fairy[0].click()
             sleep(1)
     # ***************************************************************
 
@@ -565,7 +572,6 @@ class DriverManager:
                     By.CSS_SELECTOR,
                     'a[href="javascript:submitMove()"]')
                 if hits:
-                    # self.one_spell_fight(slots=slots, spell=spell)
                     self.fight(
                         spell_book=spell_book,
                         default_slot=slots,

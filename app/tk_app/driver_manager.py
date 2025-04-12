@@ -22,7 +22,10 @@ os.makedirs(profile_dir, exist_ok=True)
 manager.options.add_argument('--start-maximized')
 manager.options.add_argument(f"user-data-dir={profile_dir}")
 manager.options.add_argument('--ignore-certificate-errors')
-manager.options.add_experimental_option(
-    "excludeSwitches", ["enable-automation"]
-)
+manager.options.add_argument('--ignore-ssl-errors')
+manager.options.add_argument('--disable-default-apps')
+manager.options.add_argument('--disable-sync')
+manager.options.add_argument('--disable-web-security')
+manager.options.add_argument('--allow-running-insecure-content')
+manager.options.add_argument('--js-flags="--max-old-space-size=4096"')
 manager.options.add_experimental_option('useAutomationExtension', False)
