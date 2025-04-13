@@ -9,7 +9,7 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 
 
-def start_thread():
+def start_login_thread():
     manager.thread = threading.Thread(target=start_game)
     manager.thread.start()
 
@@ -71,7 +71,7 @@ login_to_game = tk.Button(
     text='войти',
     width=11,
     bg='#FFF4DC',
-    command=start_thread
+    command=start_login_thread
     )
 login_to_game.grid(
     row=0, column=2

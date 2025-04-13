@@ -6,12 +6,13 @@ from tk_app.core import app
 
 def open_slots():
     current_size = (app.winfo_width(), app.winfo_height())
-    min_size = 770, 313
 
-    if current_size == min_size:
-        app.maxsize(current_size[0] + 500, current_size[1])
+    max_size = 1053, 332
+
+    if current_size == max_size:
+        app.maxsize(current_size[0] - 280, current_size[1])
     else:
-        app.maxsize(min_size[0], min_size[1])
+        app.maxsize(max_size[0], max_size[1])
 
 
 quick_slots_open_btn = tk.Button(

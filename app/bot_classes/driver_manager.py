@@ -43,9 +43,9 @@ class DriverManager:
                 self.options.add_argument(
                     '--disable-blink-features=AutomationControlled'
                 )
-                self.options.add_argument('--disable-infobars')
-                self.options.add_argument('--disable-extensions')
-                # self.options.add_argument('--no-sandbox')
+                # self.options.add_argument('--disable-infobars')
+                # self.options.add_argument('--disable-extensions')
+                self.options.add_argument('--no-sandbox')
                 # self.options.add_argument('--disable-dev-shm-usage')
                 self.options.add_experimental_option(
                     "excludeSwitches", ["enable-automation"]
@@ -64,8 +64,8 @@ class DriverManager:
                     options=self.options
                 )
                 self.thread = threading.current_thread()
-                self.driver.implicitly_wait(0.05)
-                self.driver.set_script_timeout(0.05)
+                # self.driver.implicitly_wait(0.2)
+                # self.driver.set_script_timeout(0.2)
 
             except Exception as e:
                 configure_logging()
@@ -143,6 +143,9 @@ class DriverManager:
         """Переключается на центральный фрейм окна."""
 
         try:
+            self.driver.switch_to.default_content()
+
+            sleep(0.5)
 
             self.driver.switch_to.frame("frmcenterandchat")
             self.driver.switch_to.frame("frmcentral")
@@ -154,7 +157,7 @@ class DriverManager:
         """Переключается на фрейм диалога."""
 
         try:
-
+            sleep(0.5)
             self.driver.switch_to.frame("thedialog")
 
         except Exception:
@@ -277,10 +280,11 @@ class DriverManager:
                 come_back[0].click()
 
             else:
+                sleep(0.5)
                 self.driver.execute_script(
                         'touchFight();'
                     )
-                ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                # ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.fight(
                     spell_book=spell_book,
                     default_slot=default_slot,
@@ -513,6 +517,7 @@ class DriverManager:
             sleep(1)
             try:
 
+                self.try_to_switch_to_central_frame()
                 self.try_to_click_to_glade_fairy()
                 self.try_to_switch_to_dialog()
                 glade_fairy_answers = self.driver.find_elements(
@@ -526,10 +531,13 @@ class DriverManager:
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             sleep(time_extractor(wait_tag[0].text))
                         try:
+                            # self.click_to_element_with_actionchains(
+                            #     glade_fairy_answers[0]
+                            # )
                             glade_fairy_answers[0].click()
                             continue
                         except Exception:
-                            self.driver.switch_to.default_content()
+                            # self.driver.switch_to.default_content()
                             continue
 
                     if len(glade_fairy_answers) == 3:
@@ -566,7 +574,7 @@ class DriverManager:
                                 file.write(content)
                             print(message_for_log)
 
-                self.try_to_switch_to_central_frame()
+                # self.try_to_switch_to_central_frame()
 
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
@@ -580,7 +588,7 @@ class DriverManager:
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
                 self.check_error_on_page()
-                self.driver.switch_to.default_content()
+                # self.driver.switch_to.default_content()
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
