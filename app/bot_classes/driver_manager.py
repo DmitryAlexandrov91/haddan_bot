@@ -10,6 +10,7 @@ from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
                        TIME_FORMAT)
 from selenium import webdriver
+from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -21,6 +22,9 @@ from utils import (get_attr_from_string, get_intimidation_and_next_room,
                    price_counter, time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
 
+# from selenium.webdriver.firefox.service import Service
+# from webdriver_manager.firefox import GeckoDriverManager
+
 
 class DriverManager:
     """Класс управления объектом webdriver."""
@@ -28,11 +32,27 @@ class DriverManager:
     def __init__(self, bot=None):
         self.driver: webdriver.Chrome = None
         self.thread: threading = None
-        self.options: webdriver.ChromeOptions = webdriver.ChromeOptions()
+        self.options = self._get_default_options()
         self.bot: TeleBot = bot
         self.choises: dict = {}
         self.event: threading.Event = threading.Event()
         self.errors_count = 0
+        self.wait_timeout = 30
+
+    def _get_default_options(self):
+        options = webdriver.ChromeOptions()
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_experimental_option(
+            'excludeSwitches', ['enable-automation'])
+
+        if platform.system() == 'Windows':
+            options.add_argument('--start-maximized')
+            options.binary_location = CHROME_PATH
+
+        return options
 
     # Служебные методы взаимодействия. ******************************
     def start_driver(self):
@@ -40,20 +60,6 @@ class DriverManager:
         if self.driver is None:
 
             try:
-                self.options.add_argument(
-                    '--disable-blink-features=AutomationControlled'
-                )
-                # self.options.add_argument('--disable-infobars')
-                # self.options.add_argument('--disable-extensions')
-                self.options.add_argument('--no-sandbox')
-                # self.options.add_argument('--disable-dev-shm-usage')
-                self.options.add_experimental_option(
-                    "excludeSwitches", ["enable-automation"]
-                )
-
-                if platform.system() == 'Windows':
-                    self.options.binary_location = CHROME_PATH
-
                 service = Service(
                     executable_path=ChromeDriverManager().install(),
                     service_args=['--verbose'],
@@ -64,8 +70,8 @@ class DriverManager:
                     options=self.options
                 )
                 self.thread = threading.current_thread()
-                # self.driver.implicitly_wait(0.2)
-                # self.driver.set_script_timeout(0.2)
+                self.driver.set_page_load_timeout(self.wait_timeout)
+                self.driver.set_script_timeout(self.wait_timeout)
 
             except Exception as e:
                 configure_logging()
@@ -285,6 +291,7 @@ class DriverManager:
                         )
                 except Exception as e:
                     self.actions_after_exception(e)
+
                 # ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.fight(
                     spell_book=spell_book,
@@ -583,6 +590,11 @@ class DriverManager:
                     telegram_id=telegram_id)
                 self.check_error_on_page()
                 self.driver.switch_to.default_content()
+
+            except UnexpectedAlertPresentException:
+                sleep(15)
+                print('Получено уведомление, ждём!')
+
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
@@ -679,6 +691,10 @@ class DriverManager:
                             'window.alert("Мало здоровья, спим 30 секунд!");'
                         )
                     sleep(30)
+
+            except UnexpectedAlertPresentException:
+                sleep(15)
+                print('Получено уведомление, ждём!')
 
             except Exception as e:
                 self.actions_after_exception(exception=e)

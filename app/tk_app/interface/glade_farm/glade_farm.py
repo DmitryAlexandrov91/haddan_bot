@@ -5,15 +5,13 @@ import tkinter as tk
 from time import sleep
 
 from selenium.common.exceptions import InvalidSessionIdException
-
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.login import send_message_checkbox_value, tg_id_field
-from tk_app.interface.fight import fight_slot, spell_slot, get_round_spells
+from tk_app.interface.fight import fight_slot, get_round_spells, spell_slot
+from tk_app.interface.login import (send_message_checkbox_value,
+                                    start_login_thread, stop_bot, tg_id_field)
 
 from .glade_prices import GLADE_PRICES
-
-from tk_app.interface.login import start_login_thread, stop_bot
 
 
 def tk_glade_farm():
