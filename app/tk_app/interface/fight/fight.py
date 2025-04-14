@@ -23,7 +23,7 @@ def start_fight():
     user_telegram_id = tg_id_field.get().strip()
     minimum_hp = int(min_hp_field.get().strip())
 
-    manager.one_spell_farm(
+    manager.farm(
         slots=fight_slot.get(),
         spell=spell_slot.get(),
         up_down_move=up_down_move,

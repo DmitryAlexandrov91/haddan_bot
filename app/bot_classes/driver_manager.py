@@ -263,16 +263,14 @@ class DriverManager:
 
         else:
             try:
-                # print(spell_book[round][kick]['slot'])
-                # print(spell_book[round][kick]['spell'])
                 self.open_slot_and_choise_spell(
                     slots_number=spell_book[round][kick]['slot'],
                     spell_number=spell_book[round][kick]['spell'])
             except Exception:
                 self.open_slot_and_choise_spell(
                     slots_number=default_slot,
-                    spell_number=default_spell
-                )
+                    spell_number=default_spell)
+
             self.try_to_switch_to_central_frame()
             come_back = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Вернуться')
@@ -280,10 +278,13 @@ class DriverManager:
                 come_back[0].click()
 
             else:
-                sleep(0.5)
-                self.driver.execute_script(
-                        'touchFight();'
-                    )
+                # sleep(0.5)
+                try:
+                    self.driver.execute_script(
+                            'touchFight();'
+                        )
+                except Exception as e:
+                    self.actions_after_exception(e)
                 # ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.fight(
                     spell_book=spell_book,
@@ -406,7 +407,6 @@ class DriverManager:
     # Фарм поляны. **************************************************
     def try_to_click_to_glade_fairy(self):
         """Ищет фею поляны и щёлкает на неё."""
-        self.try_to_switch_to_central_frame()
         glade_fairy = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[id="roomnpc231778"]')
@@ -416,12 +416,7 @@ class DriverManager:
                         'img[id="roomnpc17481"]')
 
         if glade_fairy:
-            # self.wait_while_element_will_be_clickable(
-            #      glade_fairy[0]
-            # )
             self.click_to_element_with_actionchains(glade_fairy[0])
-            # glade_fairy[0].click()
-            sleep(1)
     # ***************************************************************
 
     def send_photo(self, photo):
@@ -444,6 +439,9 @@ class DriverManager:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
             sleep(30)
+            self.check_kaptcha(
+                message_to_tg=message_to_tg,
+                telegram_id=telegram_id)
 
     def check_health(self) -> int:
         """"Возвращает кол-во  ХП персонажа."""
@@ -531,13 +529,9 @@ class DriverManager:
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             sleep(time_extractor(wait_tag[0].text))
                         try:
-                            # self.click_to_element_with_actionchains(
-                            #     glade_fairy_answers[0]
-                            # )
                             glade_fairy_answers[0].click()
                             continue
                         except Exception:
-                            # self.driver.switch_to.default_content()
                             continue
 
                     if len(glade_fairy_answers) == 3:
@@ -574,7 +568,7 @@ class DriverManager:
                                 file.write(content)
                             print(message_for_log)
 
-                # self.try_to_switch_to_central_frame()
+                self.try_to_switch_to_central_frame()
 
                 hits = self.driver.find_elements(
                     By.CSS_SELECTOR,
@@ -588,11 +582,11 @@ class DriverManager:
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
                 self.check_error_on_page()
-                # self.driver.switch_to.default_content()
+                self.driver.switch_to.default_content()
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
-    def one_spell_farm(
+    def farm(
             self,
             slots=2,
             spell=1,
