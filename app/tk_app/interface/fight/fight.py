@@ -1,11 +1,14 @@
 # import gc
 import threading
 import tkinter as tk
+from time import sleep
 
 from constants import LABIRINT_MAP_URL, SLOT_VALUES
+from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.login import send_message_checkbox_value, tg_id_field
+from tk_app.interface.login import (send_message_checkbox_value,
+                                    start_login_thread, stop_bot, tg_id_field)
 
 from .quick_slots import get_round_spells
 
@@ -23,22 +26,31 @@ def start_fight():
     user_telegram_id = tg_id_field.get().strip()
     minimum_hp = int(min_hp_field.get().strip())
 
-    manager.farm(
-        slots=fight_slot.get(),
-        spell=spell_slot.get(),
-        up_down_move=up_down_move,
-        left_right_move=left_right_move,
-        mind_spirit_play=mind_spirit_play,
-        message_to_tg=send_message_to_tg,
-        telegram_id=user_telegram_id,
-        min_hp=minimum_hp,
-        spell_book=get_round_spells()
-    )
+    try:
+
+        manager.farm(
+            slots=fight_slot.get(),
+            spell=spell_slot.get(),
+            up_down_move=up_down_move,
+            left_right_move=left_right_move,
+            mind_spirit_play=mind_spirit_play,
+            message_to_tg=send_message_to_tg,
+            telegram_id=user_telegram_id,
+            min_hp=minimum_hp,
+            spell_book=get_round_spells()
+        )
+
+    except InvalidSessionIdException:
+        print('Драйвер не обнаружен, перезагрузка.')
+        stop_fight()
+        stop_bot()
+        start_login_thread()
+        sleep(5)
+        start_thread()
 
 
 def stop_fight():
     manager.stop_event()
-    manager.choises.clear()
     fight_start_btn.configure(foreground='black')
     print('Останавливаю автобой')
 

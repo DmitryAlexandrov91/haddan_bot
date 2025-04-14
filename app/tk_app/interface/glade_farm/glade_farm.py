@@ -30,7 +30,7 @@ def tk_glade_farm():
                 spell_book=get_round_spells()
             )
     except InvalidSessionIdException:
-        print('Ошибка, перезапускаем драйвер.')
+        print('Драйвер не обнаружен, перезагрузка.')
         stop_farm()
         stop_bot()
         start_login_thread()

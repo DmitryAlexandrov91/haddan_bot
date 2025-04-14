@@ -34,10 +34,9 @@ class DriverManager:
         self.thread: threading = None
         self.options = self._get_default_options()
         self.bot: TeleBot = bot
-        self.choises: dict = {}
         self.event: threading.Event = threading.Event()
         self.errors_count = 0
-        self.wait_timeout = 30
+        self.wait_timeout = 15
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -284,15 +283,28 @@ class DriverManager:
                 come_back[0].click()
 
             else:
-                # sleep(0.5)
+
                 try:
-                    self.driver.execute_script(
-                            'touchFight();'
+
+                    element = self.driver.execute_script(
+                        '''
+                        touchFight();
+                        return document.activeElement;
+                        '''
+                    )
+                    if element:
+                        element.click()
+                        ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                        WebDriverWait(self.driver, 30).until_not(
+                            EC.presence_of_element_located((
+                                By.XPATH,
+                                "//*[contains(text(),'Пожалуйста, подождите')]"
+                                ))
                         )
+
                 except Exception as e:
                     self.actions_after_exception(e)
 
-                # ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 self.fight(
                     spell_book=spell_book,
                     default_slot=default_slot,
@@ -306,9 +318,9 @@ class DriverManager:
                         'img[id="roomnpc1850578"]')
 
         if gamble_spirit:
-            self.wait_while_element_will_be_clickable(
-                 gamble_spirit[0]
-            )
+            # self.wait_while_element_will_be_clickable(
+            #      gamble_spirit[0]
+            # )
             gamble_spirit[0].click()
             sleep(1)
             self.try_to_switch_to_dialog()
@@ -322,6 +334,10 @@ class DriverManager:
                 if spirit_text and 'Параметры' in spirit_text[0].text:
                     intimidation, next_room = get_intimidation_and_next_room(
                         spirit_text[0].text)
+
+                    if not intimidation or not next_room:  # exp
+                        continue
+
                     if next_room >= intimidation:
                         right_choise = self.driver.find_elements(
                             By.PARTIAL_LINK_TEXT, 'Довольно')
@@ -352,9 +368,9 @@ class DriverManager:
                         By.CSS_SELECTOR,
                         'img[id="roomnpc1850579"]')
         if poetry_spirit:
-            self.wait_while_element_will_be_clickable(
-                 poetry_spirit[0]
-            )
+            # self.wait_while_element_will_be_clickable(
+            #      poetry_spirit[0]
+            # )
             poetry_spirit[0].click()
             sleep(1)
 
@@ -378,9 +394,9 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
         if mind_spirit:
-            self.wait_while_element_will_be_clickable(
-                 mind_spirit[0]
-            )
+            # self.wait_while_element_will_be_clickable(
+            #      mind_spirit[0]
+            # )
             mind_spirit[0].click()
             sleep(0.5)
             self.try_to_switch_to_dialog()
@@ -470,7 +486,7 @@ class DriverManager:
         come_back = self.driver.find_elements(
             By.CSS_SELECTOR, 'a[href="javascript:history.back()"]')
         if come_back:
-            self.wait_while_element_will_be_clickable(come_back[0])
+            # self.wait_while_element_will_be_clickable(come_back[0])
             self.click_to_element_with_actionchains(come_back[0])
 
     # Переходы ******************************************************
@@ -479,7 +495,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На север"]')
         if north:
-            self.wait_while_element_will_be_clickable(north[0])
+            # self.wait_while_element_will_be_clickable(north[0])
             north[0].click()
 
     def crossing_to_the_south(self):
@@ -487,7 +503,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На юг"]')
         if south:
-            self.wait_while_element_will_be_clickable(south[0])
+            # self.wait_while_element_will_be_clickable(south[0])
             south[0].click()
 
     def crossing_to_the_west(self):
@@ -495,7 +511,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На запад"]')
         if west:
-            self.wait_while_element_will_be_clickable(west[0])
+            # self.wait_while_element_will_be_clickable(west[0])
             west[0].click()
 
     def crossing_to_the_east(self):
@@ -503,7 +519,7 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На восток"]')
         if east:
-            self.wait_while_element_will_be_clickable(east[0])
+            # self.wait_while_element_will_be_clickable(east[0])
             east[0].click()
     #  **************************************************************
 
@@ -542,9 +558,9 @@ class DriverManager:
                             continue
 
                     if len(glade_fairy_answers) == 3:
-                        self.wait_while_element_will_be_clickable(
-                            glade_fairy_answers[1]
-                        )
+                        # self.wait_while_element_will_be_clickable(
+                        #     glade_fairy_answers[1]
+                        # )
                         glade_fairy_answers[1].click()
                     if len(glade_fairy_answers) > 3:
                         resurses = self.driver.find_elements(By.TAG_NAME, 'li')
@@ -557,9 +573,9 @@ class DriverManager:
                             now = datetime.now().strftime(TIME_FORMAT)
                             message_for_log = (
                                 f'{res_price[most_cheep_res]} {now}')
-                            self.wait_while_element_will_be_clickable(
-                                glade_fairy_answers[most_cheep_res]
-                            )
+                            # self.wait_while_element_will_be_clickable(
+                            #     glade_fairy_answers[most_cheep_res]
+                            # )
                             self.scroll_to_element(
                                 glade_fairy_answers[most_cheep_res]
                             )
@@ -620,7 +636,7 @@ class DriverManager:
                 come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
                 if come_back:
-                    self.wait_while_element_will_be_clickable(come_back[0])
+                    # self.wait_while_element_will_be_clickable(come_back[0])
                     come_back[0].click()
                 hits = self.driver.find_elements(
                         By.CSS_SELECTOR,
@@ -633,6 +649,12 @@ class DriverManager:
                         default_spell=spell)
 
                 else:
+                    WebDriverWait(self.driver, 30).until_not(
+                            EC.presence_of_element_located((
+                                By.XPATH,
+                                "//*[contains(text(),'Вы можете попасть')]"
+                                ))
+                        )
                     if up_down_move:
                         self.crossing_to_the_north()
                         self.crossing_to_the_south()
