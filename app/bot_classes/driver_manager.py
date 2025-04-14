@@ -36,7 +36,7 @@ class DriverManager:
         self.bot: TeleBot = bot
         self.event: threading.Event = threading.Event()
         self.errors_count = 0
-        self.wait_timeout = 15
+        self.wait_timeout = 30
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -138,7 +138,10 @@ class DriverManager:
         )
 
     def click_to_element_with_actionchains(self, element):
-        """Щёлкает по элементу методом click класса ActionChains"""
+        """Щёлкает по элементу методом click класса ActionChains.
+
+        Максимальная эмуляция реального нажатия мышкой*
+        """
         ActionChains(self.driver).move_to_element(
                 element).click().perform()
     #  **************************************************************
@@ -257,14 +260,10 @@ class DriverManager:
     def fight(self, spell_book, default_slot, default_spell):
         """Проводит бой."""
         round = self.get_round_number()
-        # print(round)
         kick = self.get_hit_number()
-        # print(kick)
+
         if not kick:
-            come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-            if come_back:
-                come_back[0].click()
+            self.try_to_come_back_from_fight()
 
         else:
             try:
@@ -285,7 +284,12 @@ class DriverManager:
             else:
 
                 try:
-
+                    WebDriverWait(self.driver, 30).until_not(
+                            EC.presence_of_element_located((
+                                By.XPATH,
+                                "//*[contains(text(),'Пожалуйста, подождите')]"
+                                ))
+                        )
                     element = self.driver.execute_script(
                         '''
                         touchFight();
@@ -295,12 +299,6 @@ class DriverManager:
                     if element:
                         element.click()
                         ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                        WebDriverWait(self.driver, 30).until_not(
-                            EC.presence_of_element_located((
-                                By.XPATH,
-                                "//*[contains(text(),'Пожалуйста, подождите')]"
-                                ))
-                        )
 
                 except Exception as e:
                     self.actions_after_exception(e)
@@ -318,19 +316,18 @@ class DriverManager:
                         'img[id="roomnpc1850578"]')
 
         if gamble_spirit:
-            # self.wait_while_element_will_be_clickable(
-            #      gamble_spirit[0]
-            # )
             gamble_spirit[0].click()
             sleep(1)
             self.try_to_switch_to_dialog()
             spirit_answers = self.driver.find_elements(
                 By.CLASS_NAME,
                 'talksayTak')
+
             while spirit_answers:
                 spirit_text = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayBIG')
+
                 if spirit_text and 'Параметры' in spirit_text[0].text:
                     intimidation, next_room = get_intimidation_and_next_room(
                         spirit_text[0].text)
@@ -368,9 +365,6 @@ class DriverManager:
                         By.CSS_SELECTOR,
                         'img[id="roomnpc1850579"]')
         if poetry_spirit:
-            # self.wait_while_element_will_be_clickable(
-            #      poetry_spirit[0]
-            # )
             poetry_spirit[0].click()
             sleep(1)
 
@@ -394,9 +388,6 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
         if mind_spirit:
-            # self.wait_while_element_will_be_clickable(
-            #      mind_spirit[0]
-            # )
             mind_spirit[0].click()
             sleep(0.5)
             self.try_to_switch_to_dialog()
@@ -486,7 +477,6 @@ class DriverManager:
         come_back = self.driver.find_elements(
             By.CSS_SELECTOR, 'a[href="javascript:history.back()"]')
         if come_back:
-            # self.wait_while_element_will_be_clickable(come_back[0])
             self.click_to_element_with_actionchains(come_back[0])
 
     # Переходы ******************************************************
@@ -495,7 +485,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На север"]')
         if north:
-            # self.wait_while_element_will_be_clickable(north[0])
             north[0].click()
 
     def crossing_to_the_south(self):
@@ -503,7 +492,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На юг"]')
         if south:
-            # self.wait_while_element_will_be_clickable(south[0])
             south[0].click()
 
     def crossing_to_the_west(self):
@@ -511,7 +499,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На запад"]')
         if west:
-            # self.wait_while_element_will_be_clickable(west[0])
             west[0].click()
 
     def crossing_to_the_east(self):
@@ -519,7 +506,6 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[title="На восток"]')
         if east:
-            # self.wait_while_element_will_be_clickable(east[0])
             east[0].click()
     #  **************************************************************
 
@@ -558,9 +544,6 @@ class DriverManager:
                             continue
 
                     if len(glade_fairy_answers) == 3:
-                        # self.wait_while_element_will_be_clickable(
-                        #     glade_fairy_answers[1]
-                        # )
                         glade_fairy_answers[1].click()
                     if len(glade_fairy_answers) > 3:
                         resurses = self.driver.find_elements(By.TAG_NAME, 'li')
@@ -573,9 +556,7 @@ class DriverManager:
                             now = datetime.now().strftime(TIME_FORMAT)
                             message_for_log = (
                                 f'{res_price[most_cheep_res]} {now}')
-                            # self.wait_while_element_will_be_clickable(
-                            #     glade_fairy_answers[most_cheep_res]
-                            # )
+
                             self.scroll_to_element(
                                 glade_fairy_answers[most_cheep_res]
                             )
@@ -593,10 +574,7 @@ class DriverManager:
 
                 self.try_to_switch_to_central_frame()
 
-                hits = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'a[href="javascript:submitMove()"]')
-                if hits:
+                if self.check_for_fight():
                     self.fight(
                         spell_book=spell_book,
                         default_slot=slots,
@@ -633,16 +611,10 @@ class DriverManager:
                 self.check_kaptcha(message_to_tg=message_to_tg,
                                    telegram_id=telegram_id)
                 self.check_error_on_page()
-                come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-                if come_back:
-                    # self.wait_while_element_will_be_clickable(come_back[0])
-                    come_back[0].click()
-                hits = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'a[href="javascript:submitMove()"]')
-                if hits:
 
+                self.try_to_come_back_from_fight()
+
+                if self.check_for_fight():
                     self.fight(
                         spell_book=spell_book,
                         default_slot=slots,
@@ -655,14 +627,12 @@ class DriverManager:
                                 "//*[contains(text(),'Вы можете попасть')]"
                                 ))
                         )
+
                     if up_down_move:
                         self.crossing_to_the_north()
                         self.crossing_to_the_south()
-                        hits = self.driver.find_elements(
-                            By.CSS_SELECTOR,
-                            'a[href="javascript:submitMove()"]')
-                        if hits:
 
+                        if self.check_for_fight():
                             self.fight(
                                 spell_book=spell_book,
                                 default_slot=slots,
@@ -671,10 +641,8 @@ class DriverManager:
                     if left_right_move:
                         self.crossing_to_the_west()
                         self.crossing_to_the_east()
-                        hits = self.driver.find_elements(
-                            By.CSS_SELECTOR,
-                            'a[href="javascript:submitMove()"]')
-                        if hits:
+
+                        if self.check_for_fight():
                             self.fight(
                                 spell_book=spell_book,
                                 default_slot=slots,
@@ -709,9 +677,7 @@ class DriverManager:
                             text='Здоровье упало меньше минимума!'
                         )
                     else:
-                        self.driver.execute_script(
-                            'window.alert("Мало здоровья, спим 30 секунд!");'
-                        )
+                        print('Мало хп, спим 30 секунд!')
                     sleep(30)
 
             except UnexpectedAlertPresentException:
@@ -748,16 +714,23 @@ class DriverManager:
             if right_choise:
                 right_choise[0].click()
 
-    def check_fight(self):
-        """Проверяет что идёт бой"""
+    def check_for_fight(self) -> bool:
+        """Если идёт бой, возвращает True."""
         hits = self.driver.find_elements(
             By.CSS_SELECTOR,
             'a[href="javascript:submitMove()"]'
         )
         return bool(hits)
 
-    def check_come_back(self):
-        """Проверяет, закончен ли бой."""
+    def check_come_back(self) -> bool:
+        """Если бой закончен, возвращает True."""
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         return bool(come_back)
+
+    def try_to_come_back_from_fight(self):
+        """"Если бой закончен, нажимает 'вернуться' """
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        if come_back:
+            come_back[0].click()

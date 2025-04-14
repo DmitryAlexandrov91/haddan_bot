@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def price_counter(resurses, price_diсt=FIELD_PRICES):
+def price_counter(resurses: list, price_diсt: dict = FIELD_PRICES):
     """Находит самый дорогой ресурс из списка и возвращает его индекс."""
     result = []
     for s in resurses:
