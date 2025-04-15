@@ -245,4 +245,3 @@ def get_round_spells():
         },
     }
     return spell_book
-

@@ -40,22 +40,48 @@ class DriverManager:
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
+
+        #  Работа в полном окне
+        options.add_argument('--start-maximized')
+
+        # Анти-детект
         options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')
         options.add_experimental_option(
             'excludeSwitches', ['enable-automation'])
+        options.add_experimental_option('useAutomationExtension', False)
+
+        # options.add_argument('--disable-gpu')
+
+        #  экспериментально
+        options.add_argument('--single-process')
+        options.add_argument('--disable-features=V8ProxyResolver')
+
+        #  Отключает расширения
+        options.add_argument('--disable-extensions')
+        #  Ускоряет загрузку
+        options.add_argument('--disable-plugins-discovery')
+        #  Блокируем уведомления
+        # options.add_argument('--disable-notifications')
+
+        #  Разрешить старые плагины
+        options.add_argument('--allow-outdated-plugins')
+        #  Автозагрузка плагинов
+        options.add_argument('--always-authorize-plugins')
 
         if platform.system() == 'Windows':
-            options.add_argument('--start-maximized')
             options.binary_location = CHROME_PATH
+        else:
+            #  только для linux
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
 
         return options
 
     # Служебные методы взаимодействия. ******************************
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
+        self.close_driver()
+
         if self.driver is None:
 
             try:
@@ -113,7 +139,7 @@ class DriverManager:
         В файле page.html в корне проекта.
         """
         page_source = self.driver.page_source
-        with open('page.html', "w", encoding="utf-8") as file:
+        with open('page.html', 'w', encoding='utf-8') as file:
             file.write(page_source)
 
     def start_event(self):
@@ -285,21 +311,27 @@ class DriverManager:
             else:
 
                 try:
-                    WebDriverWait(self.driver, 30).until_not(
-                            EC.presence_of_element_located((
-                                By.XPATH,
-                                "//*[contains(text(),'Пожалуйста, подождите')]"
-                                ))
-                        )
                     element = self.driver.execute_script(
                         '''
                         touchFight();
                         return document.activeElement;
                         '''
                     )
-                    if element:
+                    WebDriverWait(self.driver, 30).until_not(
+                            EC.presence_of_element_located((
+                                By.XPATH,
+                                "//*[contains(text(),'Пожалуйста, подождите')]"
+                                ))
+                        )
+
+                    # if element:
+                    #     element.click()
+                    #     ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                    if element and EC.element_to_be_clickable(element):
                         element.click()
-                        ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                        # Прямо на элемент отправляем TAB
+                        element.send_keys(Keys.TAB)
+
 
                 except Exception as e:
                     self.actions_after_exception(e)
@@ -541,9 +573,13 @@ class DriverManager:
                         wait_tag = self.driver.find_elements(
                             By.CLASS_NAME,
                             'talksayBIG')
+
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             sleep(1)
-                            sleep(time_extractor(wait_tag[0].text))
+                            time_for_wait = time_extractor(wait_tag[0].text)
+                            print(f'Ждём {time_for_wait} секунд(ы) до следующего боя.')      
+                            sleep(time_for_wait)
+
                         try:
                             glade_fairy_answers[0].click()
                             continue
@@ -551,11 +587,12 @@ class DriverManager:
                             continue
 
                     if len(glade_fairy_answers) == 3:
-
                         glade_fairy_answers[1].click()
+
                     if len(glade_fairy_answers) > 3:
                         sleep(1)
                         resurses = self.driver.find_elements(By.TAG_NAME, 'li')
+
                         if resurses:
                             res_price = [res.text for res in resurses]
                             print(res_price)
@@ -571,15 +608,18 @@ class DriverManager:
                             )
 
                             glade_fairy_answers[most_cheep_res].click()
-                            with open(
-                                'glade_farm.txt',
-                                "r+",
-                                encoding="utf-8"
-                            ) as file:
-                                content = file.read()
-                                file.seek(0)
-                                file.write(f'{message_for_log}\n')
-                                file.write(content)
+
+                            # if platform.system() == 'Windows':
+                            #     with open(
+                            #         'glade_farm.txt',
+                            #         "r+",
+                            #         encoding="utf-8"
+                            #     ) as file:
+                            #         content = file.read()
+                            #         file.seek(0)
+                            #         file.write(f'{message_for_log}\n')
+                            #         file.write(content)
+
                             print(message_for_log)
 
                 self.try_to_switch_to_central_frame()

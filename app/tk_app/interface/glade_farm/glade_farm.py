@@ -82,17 +82,17 @@ glade_farm_stop_buttton.grid(
 # Информационный блок
 
 
-def glade_farm_txt_open():
-    os.startfile('glade_farm.txt')
+# def glade_farm_txt_open():
+#     os.startfile('glade_farm.txt')
 
 
-statistic_button = tk.Button(
-    app,
-    text='лог подбора трав',
-    width=15,
-    bg='#FFF4DC',
-    command=glade_farm_txt_open
-)
-statistic_button.grid(
-    row=11, column=1
-)
+# statistic_button = tk.Button(
+#     app,
+#     text='лог подбора трав',
+#     width=15,
+#     bg='#FFF4DC',
+#     command=glade_farm_txt_open
+# )
+# statistic_button.grid(
+#     row=11, column=1
+# )

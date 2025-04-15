@@ -1,4 +1,5 @@
 """Основная конфигурация приложения tkinter."""
+import platform
 import tkinter as tk
 
 from constants import (FIRST_CHAR, MIN_HP_VALUE, PASSWORD,  # noqa
@@ -13,7 +14,8 @@ app = tk.Tk()
 app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
-app.maxsize(773, 332)
+if platform.system() == 'Windows':
+    app.maxsize(773, 332)
 
 
 app.configure(bg='#FFF4DC')

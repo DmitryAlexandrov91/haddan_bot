@@ -10,7 +10,7 @@ from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
-from .quick_slots import get_round_spells, fight_slot, spell_slot
+from .quick_slots import fight_slot, get_round_spells, spell_slot
 
 
 #  Функции блока боя одним заклинанием. ------------------------------
