@@ -71,6 +71,7 @@ class DriverManager:
                 self.thread = threading.current_thread()
                 self.driver.set_page_load_timeout(self.wait_timeout)
                 self.driver.set_script_timeout(self.wait_timeout)
+                # self.driver.implicitly_wait(0.5)
 
             except Exception as e:
                 configure_logging()
@@ -520,6 +521,7 @@ class DriverManager:
             spell_book: dict = None):
         """Фарм поляны."""
         while self.event.is_set() is True:
+            # self.driver.implicitly_wait(0.5)
 
             sleep(1)
             try:
@@ -527,15 +529,20 @@ class DriverManager:
                 self.try_to_switch_to_central_frame()
                 self.try_to_click_to_glade_fairy()
                 self.try_to_switch_to_dialog()
+
                 glade_fairy_answers = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayTak')
                 if glade_fairy_answers:
+                    sleep(1)
                     if len(glade_fairy_answers) == 1:
+
+                        sleep(1)
                         wait_tag = self.driver.find_elements(
                             By.CLASS_NAME,
                             'talksayBIG')
                         if wait_tag and 'где-то через' in wait_tag[0].text:
+                            sleep(1)
                             sleep(time_extractor(wait_tag[0].text))
                         try:
                             glade_fairy_answers[0].click()
@@ -544,8 +551,10 @@ class DriverManager:
                             continue
 
                     if len(glade_fairy_answers) == 3:
+
                         glade_fairy_answers[1].click()
                     if len(glade_fairy_answers) > 3:
+                        sleep(1)
                         resurses = self.driver.find_elements(By.TAG_NAME, 'li')
                         if resurses:
                             res_price = [res.text for res in resurses]
@@ -560,6 +569,7 @@ class DriverManager:
                             self.scroll_to_element(
                                 glade_fairy_answers[most_cheep_res]
                             )
+
                             glade_fairy_answers[most_cheep_res].click()
                             with open(
                                 'glade_farm.txt',

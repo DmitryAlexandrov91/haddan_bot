@@ -26,6 +26,24 @@ quick_slots_open_btn.grid(
     row=0, column=6, sticky='w'
 )
 
+#  Кнопки основного заклинания ----------------------------------------
+fight_slot = tk.StringVar(app)
+fight_slot.set(SLOT_VALUES[1])
+
+spell_slot = tk.StringVar(app)
+spell_slot.set(SLOT_VALUES[0])
+
+main_slot_label = tk.OptionMenu(
+    app, fight_slot, *SLOT_VALUES
+)
+main_slot_label.grid(row=1, column=5)
+
+main_spell_label = tk.OptionMenu(
+    app, spell_slot, *SLOT_VALUES,
+)
+main_spell_label.grid(row=1, column=6)
+#  --------------------------------------------------------------------
+
 
 # Раунд 1 (4 удара) ----------------------------
 for element in range(4):
@@ -39,9 +57,11 @@ for element in range(4):
 #  Р1 У1
 r1y1_slot = tk.StringVar(app)
 r1y1_slot.set(SLOT_VALUES[1])
+# r1y1_slot.set(fight_slot.get())
 
 r1y1_spell = tk.StringVar(app)
 r1y1_spell.set(SLOT_VALUES[0])
+# r1y1_spell.set(spell_slot.get())
 
 r1y1_slot_choise = tk.OptionMenu(
     app, r1y1_slot, *SLOT_VALUES,
@@ -225,3 +245,4 @@ def get_round_spells():
         },
     }
     return spell_book
+

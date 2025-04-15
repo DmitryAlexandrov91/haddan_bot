@@ -10,7 +10,7 @@ from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
-from .quick_slots import get_round_spells
+from .quick_slots import get_round_spells, fight_slot, spell_slot
 
 
 #  Функции блока боя одним заклинанием. ------------------------------
@@ -72,23 +72,7 @@ fight_panel_label = tk.Label(
 fight_panel_label.grid(row=0, column=5)
 #  --------------------------------------------------------------------
 
-#  Кнопки основного заклинания ----------------------------------------
-fight_slot = tk.StringVar(app)
-fight_slot.set(SLOT_VALUES[1])
 
-spell_slot = tk.StringVar(app)
-spell_slot.set(SLOT_VALUES[0])
-
-main_slot_label = tk.OptionMenu(
-    app, fight_slot, *SLOT_VALUES
-)
-main_slot_label.grid(row=1, column=5)
-
-main_spell_label = tk.OptionMenu(
-    app, spell_slot, *SLOT_VALUES,
-)
-main_spell_label.grid(row=1, column=6)
-#  --------------------------------------------------------------------
 
 #  Кнопки запуска и остановки боя. ------------------------------------
 fight_start_btn = tk.Button(

@@ -28,4 +28,3 @@ manager.options.add_argument('--ignore-ssl-errors')
 # manager.options.add_argument('--allow-running-insecure-content')
 manager.options.add_argument('--js-flags="--max-old-space-size=10000"')
 manager.options.add_experimental_option('useAutomationExtension', False)
-
