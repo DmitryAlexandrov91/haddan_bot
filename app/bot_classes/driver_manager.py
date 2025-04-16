@@ -67,9 +67,9 @@ class DriverManager:
         # options.add_argument('--disable-notifications')
 
         #  Разрешить старые плагины
-        options.add_argument('--allow-outdated-plugins')
+        # options.add_argument('--allow-outdated-plugins')
         #  Автозагрузка плагинов
-        options.add_argument('--always-authorize-plugins')
+        # options.add_argument('--always-authorize-plugins')
 
         if platform.system() == 'Windows':
             options.binary_location = CHROME_PATH
@@ -183,7 +183,7 @@ class DriverManager:
         try:
             self.driver.switch_to.default_content()
 
-            sleep(0.5)
+            # sleep(0.5)
 
             self.driver.switch_to.frame("frmcenterandchat")
             self.driver.switch_to.frame("frmcentral")
@@ -195,7 +195,7 @@ class DriverManager:
         """Переключается на фрейм диалога."""
 
         try:
-            sleep(0.5)
+            # sleep(0.5)
             self.driver.switch_to.frame("thedialog")
 
         except Exception:

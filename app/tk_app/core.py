@@ -15,7 +15,7 @@ app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 if platform.system() == 'Windows':
-    app.maxsize(773, 332)
+    app.maxsize(773, 352)
 
 
 app.configure(bg='#FFF4DC')
