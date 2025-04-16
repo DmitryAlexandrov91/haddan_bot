@@ -274,17 +274,18 @@ class DriverManager:
             return hit_number.text
         except Exception:
             print('Номер удара не найден.')
+            return None
 
     def get_round_number(self) -> str:
         """Возвращает номер раунда"""
-        for i in range(1, 7):
-            round_name = self.driver.find_elements(
-                    By.NAME,
-                    f'roundr{i}')
-            if not round_name:
-                return 'Раунд 1'
-            else:
-                return f'Раунд {i + 1}'
+        rounds = self.driver.find_elements(
+            By.CSS_SELECTOR, '#divlog p'
+        )
+        if rounds:
+            amount = len(rounds)
+            return f'Раунд {amount + 1}'
+        else:
+            return 'Раунд 1'
     # ***************************************************************
 
     def fight(self, spell_book, default_slot, default_spell):
@@ -327,14 +328,9 @@ class DriverManager:
                                 ))
                         )
 
-                    # if element:
-                    #     element.click()
-                    #     ActionChains(self.driver).send_keys(Keys.TAB).perform()
                     if element and EC.element_to_be_clickable(element):
                         element.click()
-                        # Прямо на элемент отправляем TAB
                         element.send_keys(Keys.TAB)
-
 
                 except Exception as e:
                     self.actions_after_exception(e)

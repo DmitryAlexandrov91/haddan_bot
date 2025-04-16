@@ -10,24 +10,29 @@ from tk_app.driver_manager import manager
 
 
 def test_1(manager: DriverManager):
-    # element = manager.driver.find_elements(By.ID, 'slotsBtn4')
-    # if element:
-    #     manager.print_element_content(element=element[0])
-    try:
-        manager.driver.execute_script("slotsShow(3)")
-        sleep(1)
-        manager.driver.execute_script(
-            'return qs_onClickSlot(event, 0)'
-        )
-    except Exception:
-        print('Не удалось выполнить действие с элементом')
+    manager.try_to_switch_to_central_frame()
+    rounds = manager.driver.find_elements(
+        By.ID, 'divlog')
+    if rounds:
+        for round in rounds:
+            manager.print_element_content(round)
 
-    # else:
-    #     print('Элемент не найден!')
+    else:
+        print('раунды не обнаружены!!')
 
 
 def test_2(manager: DriverManager):
-    pass
+    manager.try_to_switch_to_central_frame()
+    rounds = manager.driver.find_elements(
+        By.CSS_SELECTOR, '#divlog p')
+    if rounds:
+        if len(rounds) == 1:
+            print('Раунд 2')
+        else:
+            amount = len(rounds)
+            print(f'Раунд {amount + 1}')
+    else:
+        print('Раунд 1')
 
 
 def start_test_thread():
