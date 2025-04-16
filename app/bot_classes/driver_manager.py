@@ -56,11 +56,14 @@ class DriverManager:
         options.add_argument('--single-process')
         options.add_argument('--disable-features=V8ProxyResolver')
 
+        #  Только DOM
+        options.set_capability("pageLoadStrategy", "eager")
+
         #  Отключает расширения
         options.add_argument('--disable-extensions')
         #  Ускоряет загрузку
         options.add_argument('--disable-plugins-discovery')
-        #  Блокируем уведомления
+        #  Блокируем уведомления(ломает бой)
         # options.add_argument('--disable-notifications')
 
         #  Разрешить старые плагины

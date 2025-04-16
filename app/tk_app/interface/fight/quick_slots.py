@@ -7,10 +7,10 @@ from tk_app.core import app
 def open_slots():
     current_size = (app.winfo_width(), app.winfo_height())
 
-    max_size = 1053, 332
+    max_size = 773, 332
 
-    if current_size == max_size:
-        app.maxsize(current_size[0] - 280, current_size[1])
+    if current_size <= max_size:
+        app.maxsize(current_size[0] + 280, current_size[1])
     else:
         app.maxsize(max_size[0], max_size[1])
 

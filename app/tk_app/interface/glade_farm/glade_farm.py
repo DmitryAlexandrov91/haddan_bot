@@ -1,5 +1,4 @@
 """Управление фармом поляны"""
-import os
 import threading
 import tkinter as tk
 from time import sleep
@@ -12,6 +11,7 @@ from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
 from .glade_prices import GLADE_PRICES
+from constants import LABIRINT_MAP_URL
 
 
 def tk_glade_farm():
@@ -96,3 +96,26 @@ glade_farm_stop_buttton.grid(
 # statistic_button.grid(
 #     row=11, column=1
 # )
+
+
+# Карта лабиринта
+def open_map():
+    manager.driver.execute_script("window.open('');")
+    windows = manager.driver.window_handles
+    manager.driver.switch_to.window(windows[-1])
+    manager.driver.get(LABIRINT_MAP_URL)
+    manager.driver.switch_to.window(windows[0])
+
+
+labirint_map = tk.Button(
+    app,
+    text='карта лабиринта',
+    width=15,
+    bg='#FFF4DC',
+    command=open_map
+)
+labirint_map.grid(
+    row=11,
+    column=1,
+)
+#  --------------------------------------------------------------------

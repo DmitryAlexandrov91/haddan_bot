@@ -3,7 +3,7 @@ import threading
 import tkinter as tk
 from time import sleep
 
-from constants import LABIRINT_MAP_URL, SLOT_VALUES
+
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -157,27 +157,3 @@ min_hp_field.grid(
 )
 #  --------------------------------------------------------------------
 
-
-# Карта лабиринта
-def open_map():
-    manager.driver.execute_script("window.open('');")
-    windows = manager.driver.window_handles
-    manager.driver.switch_to.window(windows[-1])
-    manager.driver.get(LABIRINT_MAP_URL)
-    manager.driver.switch_to.window(windows[0])
-
-
-labirint_map = tk.Button(
-    app,
-    text='карта лабиринта',
-    width=15,
-    bg='#FFF4DC',
-    command=open_map
-)
-labirint_map.grid(
-    row=4,
-    column=5,
-    columnspan=2,
-    sticky='nw'
-)
-#  --------------------------------------------------------------------
