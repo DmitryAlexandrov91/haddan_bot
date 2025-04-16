@@ -7,7 +7,7 @@ from tk_app.core import app
 def open_slots():
     current_size = (app.winfo_width(), app.winfo_height())
 
-    max_size = 773, 352
+    max_size = 773, 500
 
     if current_size <= max_size:
         app.maxsize(current_size[0] + 280, current_size[1])
@@ -358,6 +358,160 @@ r4y4_spell_choise = tk.OptionMenu(
 )
 r4y4_spell_choise.grid(row=8, column=12)
 
+#  Раунд 5 (4 удара) --------------------------------
+for element in range(4):
+    widget = tk.Label(
+        app,
+        text=f'Р 5 У {element + 1}',
+        bg='#FFF4DC'
+    )
+    widget.grid(row=10 + element, column=7)
+
+#  Р5 У1
+r5y1_slot = tk.StringVar(app)
+r5y1_slot.set(SLOT_VALUES[1])
+
+r5y1_spell = tk.StringVar(app)
+r5y1_spell.set(SLOT_VALUES[0])
+
+r5y1_slot_choise = tk.OptionMenu(
+    app, r5y1_slot, *SLOT_VALUES,
+)
+r5y1_slot_choise.grid(row=10, column=8)
+
+r5y1_spell_choise = tk.OptionMenu(
+    app, r5y1_spell, *SLOT_VALUES,
+)
+r5y1_spell_choise.grid(row=10, column=9)
+
+#  Р5 У2
+r5y2_slot = tk.StringVar(app)
+r5y2_slot.set(SLOT_VALUES[1])
+
+r5y2_spell = tk.StringVar(app)
+r5y2_spell.set(SLOT_VALUES[0])
+
+r5y2_slot_choise = tk.OptionMenu(
+    app, r5y2_slot, *SLOT_VALUES,
+)
+r5y2_slot_choise.grid(row=11, column=8)
+
+r5y2_spell_choise = tk.OptionMenu(
+    app, r5y2_spell, *SLOT_VALUES,
+)
+r5y2_spell_choise.grid(row=11, column=9)
+
+#  Р5 У3
+r5y3_slot = tk.StringVar(app)
+r5y3_slot.set(SLOT_VALUES[1])
+
+r5y3_spell = tk.StringVar(app)
+r5y3_spell.set(SLOT_VALUES[0])
+
+r5y3_slot_choise = tk.OptionMenu(
+    app, r5y3_slot, *SLOT_VALUES,
+)
+r5y3_slot_choise.grid(row=12, column=8)
+
+r5y3_spell_choise = tk.OptionMenu(
+    app, r5y3_spell, *SLOT_VALUES,
+)
+r5y3_spell_choise.grid(row=12, column=9)
+
+#  Р5 У4
+r5y4_slot = tk.StringVar(app)
+r5y4_slot.set(SLOT_VALUES[1])
+
+r5y4_spell = tk.StringVar(app)
+r5y4_spell.set(SLOT_VALUES[0])
+
+r5y4_slot_choise = tk.OptionMenu(
+    app, r5y4_slot, *SLOT_VALUES,
+)
+r5y4_slot_choise.grid(row=13, column=8)
+
+r5y4_spell_choise = tk.OptionMenu(
+    app, r5y4_spell, *SLOT_VALUES,
+)
+r5y4_spell_choise.grid(row=13, column=9)
+
+#  Раунд 6 (4 удара) --------------------------------
+for element in range(4):
+    widget = tk.Label(
+        app,
+        text=f'Р 6 У {element + 1}',
+        bg='#FFF4DC'
+    )
+    widget.grid(row=10 + element, column=10)
+
+#  Р6 У1
+r6y1_slot = tk.StringVar(app)
+r6y1_slot.set(SLOT_VALUES[1])
+
+r6y1_spell = tk.StringVar(app)
+r6y1_spell.set(SLOT_VALUES[0])
+
+r6y1_slot_choise = tk.OptionMenu(
+    app, r6y1_slot, *SLOT_VALUES,
+)
+r6y1_slot_choise.grid(row=10, column=11)
+
+r6y1_spell_choise = tk.OptionMenu(
+    app, r6y1_spell, *SLOT_VALUES,
+)
+r6y1_spell_choise.grid(row=10, column=12)
+
+#  Р6 У2
+r6y2_slot = tk.StringVar(app)
+r6y2_slot.set(SLOT_VALUES[1])
+
+r6y2_spell = tk.StringVar(app)
+r6y2_spell.set(SLOT_VALUES[0])
+
+r6y2_slot_choise = tk.OptionMenu(
+    app, r6y2_slot, *SLOT_VALUES,
+)
+r6y2_slot_choise.grid(row=11, column=11)
+
+r6y2_spell_choise = tk.OptionMenu(
+    app, r6y2_spell, *SLOT_VALUES,
+)
+r6y2_spell_choise.grid(row=11, column=12)
+
+#  Р6 У3
+r6y3_slot = tk.StringVar(app)
+r6y3_slot.set(SLOT_VALUES[1])
+
+r6y3_spell = tk.StringVar(app)
+r6y3_spell.set(SLOT_VALUES[0])
+
+r6y3_slot_choise = tk.OptionMenu(
+    app, r6y3_slot, *SLOT_VALUES,
+)
+r6y3_slot_choise.grid(row=12, column=11)
+
+r6y3_spell_choise = tk.OptionMenu(
+    app, r6y3_spell, *SLOT_VALUES,
+)
+r6y3_spell_choise.grid(row=12, column=12)
+
+#  Р6 У4
+r6y4_slot = tk.StringVar(app)
+r6y4_slot.set(SLOT_VALUES[1])
+
+r6y4_spell = tk.StringVar(app)
+r6y4_spell.set(SLOT_VALUES[0])
+
+r6y4_slot_choise = tk.OptionMenu(
+    app, r6y4_slot, *SLOT_VALUES,
+)
+r6y4_slot_choise.grid(row=13, column=11)
+
+r6y4_spell_choise = tk.OptionMenu(
+    app, r6y4_spell, *SLOT_VALUES,
+)
+r6y4_spell_choise.grid(row=13, column=12)
+
 
 def get_round_spells():
     """Формирует книгу заклинаний."""
@@ -435,6 +589,42 @@ def get_round_spells():
             'spell': r4y4_spell.get().strip()
         },
     }
+    spell_book['Раунд 5'] = {
+        'Ударить!': {
+            'slot': r5y1_slot.get().strip(),
+            'spell': r5y1_spell.get().strip()
+        },
+        'Ударить 2й раз!': {
+            'slot': r5y2_slot.get().strip(),
+            'spell': r5y2_spell.get().strip()
+        },
+        'Ударить 3й раз!': {
+            'slot': r5y3_slot.get().strip(),
+            'spell': r5y3_spell.get().strip()
+        },
+        'Ударить 4й раз!': {
+            'slot': r5y4_slot.get().strip(),
+            'spell': r5y4_spell.get().strip()
+        },
+    }
+    spell_book['Раунд 6'] = {
+        'Ударить!': {
+            'slot': r6y1_slot.get().strip(),
+            'spell': r6y1_spell.get().strip()
+        },
+        'Ударить 2й раз!': {
+            'slot': r6y2_slot.get().strip(),
+            'spell': r6y2_spell.get().strip()
+        },
+        'Ударить 3й раз!': {
+            'slot': r6y3_slot.get().strip(),
+            'spell': r6y3_spell.get().strip()
+        },
+        'Ударить 4й раз!': {
+            'slot': r6y4_slot.get().strip(),
+            'spell': r6y4_spell.get().strip()
+        },
+    }
 
     return spell_book
 
@@ -479,6 +669,24 @@ def sync_with_main_spell():
     r4y3_spell.set(main_spell)
     r4y4_slot.set(main_slot)
     r4y4_spell.set(main_spell)
+
+    r5y1_slot.set(main_slot)
+    r5y1_spell.set(main_spell)
+    r5y2_slot.set(main_slot)
+    r5y2_spell.set(main_spell)
+    r5y3_slot.set(main_slot)
+    r5y3_spell.set(main_spell)
+    r5y4_slot.set(main_slot)
+    r5y4_spell.set(main_spell)
+
+    r6y1_slot.set(main_slot)
+    r6y1_spell.set(main_spell)
+    r6y2_slot.set(main_slot)
+    r6y2_spell.set(main_spell)
+    r6y3_slot.set(main_slot)
+    r6y3_spell.set(main_spell)
+    r6y4_slot.set(main_slot)
+    r6y4_spell.set(main_spell)
 
 
 sync_button = tk.Button(
