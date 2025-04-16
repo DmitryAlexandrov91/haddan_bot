@@ -19,7 +19,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
 from utils import (get_attr_from_string, get_intimidation_and_next_room,
-                   price_counter, time_extractor)
+                   price_counter, time_extractor, get_dragon_time_wait)
 from webdriver_manager.chrome import ChromeDriverManager
 
 # from selenium.webdriver.firefox.service import Service
@@ -181,25 +181,20 @@ class DriverManager:
         """Переключается на центральный фрейм окна."""
 
         try:
-            self.driver.switch_to.default_content()
-
-            # sleep(0.5)
-
             self.driver.switch_to.frame("frmcenterandchat")
             self.driver.switch_to.frame("frmcentral")
 
         except Exception:
-            pass
+            self.driver.switch_to.default_content()
 
     def try_to_switch_to_dialog(self):
         """Переключается на фрейм диалога."""
 
         try:
-            # sleep(0.5)
             self.driver.switch_to.frame("thedialog")
 
         except Exception:
-            pass
+            self.driver.switch_to.default_content()
 
     def find_all_iframes(self):
         """Выводит в терминал список всех iframe егов на странице."""
@@ -552,7 +547,6 @@ class DriverManager:
             spell_book: dict = None):
         """Фарм поляны."""
         while self.event.is_set() is True:
-            # self.driver.implicitly_wait(0.5)
 
             sleep(1)
             try:
@@ -576,7 +570,7 @@ class DriverManager:
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             sleep(1)
                             time_for_wait = time_extractor(wait_tag[0].text)
-                            print(f'Ждём {time_for_wait} секунд(ы) до следующего боя.')      
+                            print(f'Ждём {time_for_wait} секунд(ы).')
                             sleep(time_for_wait)
 
                         try:
@@ -607,17 +601,6 @@ class DriverManager:
                             )
 
                             glade_fairy_answers[most_cheep_res].click()
-
-                            # if platform.system() == 'Windows':
-                            #     with open(
-                            #         'glade_farm.txt',
-                            #         "r+",
-                            #         encoding="utf-8"
-                            #     ) as file:
-                            #         content = file.read()
-                            #         file.seek(0)
-                            #         file.write(f'{message_for_log}\n')
-                            #         file.write(content)
 
                             print(message_for_log)
 
@@ -652,7 +635,7 @@ class DriverManager:
             min_hp: int = None,
             telegram_id=None,
             spell_book: dict = None):
-        """Фарм с проведением боя одним заклом."""
+        """Фарм с проведением боя."""
         while self.event.is_set() is True:
 
             try:
@@ -735,6 +718,88 @@ class DriverManager:
 
             except Exception as e:
                 self.actions_after_exception(exception=e)
+
+    def dragon_farm(
+            self,
+            default_slot=2,
+            default_spell=2,
+            spell_book: dict = None,
+            message_to_tg=False,
+            telegram_id=None):
+        """"Фарм пыльных драконов."""
+
+        while self.event.is_set() is True:
+
+            try:
+
+                self.try_to_switch_to_central_frame()
+                self.check_kaptcha(
+                    message_to_tg=message_to_tg,
+                    telegram_id=telegram_id)
+                self.check_error_on_page()
+
+                self.try_to_come_back_from_fight()
+
+                if self.check_for_fight():
+                    self.fight(
+                        spell_book=spell_book,
+                        default_slot=default_slot,
+                        default_spell=default_spell)
+
+                dragon = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'img[id="roomnpc2460308"]')
+                if not dragon:
+                    dragon = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'img[id="roomnpc2337344"]')
+                if not dragon:
+                    dragon = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'img[id="roomnpc2460307"]')
+                if dragon:
+                    self.click_to_element_with_actionchains(dragon[0])
+
+                self.try_to_switch_to_dialog()
+
+                dragon_text = self.driver.find_elements(
+                    By.CLASS_NAME,
+                    'talksayBIG'
+                )
+                if dragon_text:
+                    if 'Дракон не доступен!' in dragon_text[0].text:
+                        print('Бой с драконом не доступен!')
+                        sleep(15)
+                    if 'Вам надо подождать до' in dragon_text[0].text:
+                        time_to_wait = get_dragon_time_wait(
+                            dragon_text[0].text)
+                        print(f'Ждём КД {time_to_wait} секунд.')
+                        sleep(time_to_wait)
+                        continue
+
+                    else:
+                        dragon_answers = self.driver.find_elements(
+                            By.CLASS_NAME,
+                            'talksayTak'
+                        )
+                        if dragon_answers:
+                            for answer in dragon_answers:
+                                if answer.text == 'Напасть':
+                                    answer.click()
+
+                self.try_to_switch_to_central_frame()
+
+                if self.check_for_fight():
+                    self.fight(
+                        spell_book=spell_book,
+                        default_slot=default_slot,
+                        default_spell=default_spell
+                    )
+
+                self.driver.switch_to.default_content()
+
+            except Exception as e:
+                self.actions_after_exception(e)
 
     def actions_after_exception(self, exception: Exception):
         """Общее действие обработки исключения."""

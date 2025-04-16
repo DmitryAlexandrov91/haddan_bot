@@ -3,6 +3,7 @@ import threading
 import tkinter as tk
 from time import sleep
 
+from constants import LABIRINT_MAP_URL
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -11,7 +12,6 @@ from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
 from .glade_prices import GLADE_PRICES
-from constants import LABIRINT_MAP_URL
 
 
 def tk_glade_farm():

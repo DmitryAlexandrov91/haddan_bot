@@ -3,7 +3,6 @@ import threading
 import tkinter as tk
 from time import sleep
 
-
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -13,7 +12,7 @@ from tk_app.interface.login import (send_message_checkbox_value,
 from .quick_slots import fight_slot, get_round_spells, spell_slot
 
 
-#  Функции блока боя одним заклинанием. ------------------------------
+#  Функции блока автобоя. ------------------------------
 def start_fight():
     print('Начинаю автобой')
     fight_start_btn.configure(foreground='green')
@@ -64,15 +63,13 @@ def start_thread():
 
 # values = ("1", "2", "3", "4", "5", "6", "7")
 
-#  Титульник блока боя одним заклом. ----------------------------------
+#  Титульник блока автобоя. ----------------------------------
 fight_panel_label = tk.Label(
     app,
     text='Автобой',
     bg='#FFF4DC')
 fight_panel_label.grid(row=0, column=5)
 #  --------------------------------------------------------------------
-
-
 
 #  Кнопки запуска и остановки боя. ------------------------------------
 fight_start_btn = tk.Button(
@@ -97,6 +94,7 @@ fight_stop_btn.grid(
     row=2, column=6
 )
 #  --------------------------------------------------------------------
+
 
 #  Чек боксы  ---------------------------------------------------------
 left_right_checkbox_value = tk.IntVar(value=0)

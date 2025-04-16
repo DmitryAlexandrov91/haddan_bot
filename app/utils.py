@@ -1,4 +1,5 @@
 """Утилитки приложения haddan_bot"""
+from datetime import datetime
 import re
 import tempfile
 from time import sleep
@@ -119,3 +120,22 @@ def get_attr_from_string(text: str, attr: str) -> str:
     if match:
         title_text = match.group(1)
         return title_text
+
+
+def get_dragon_time_wait(text: str):
+    time_pattern = r'(\d{2}:\d{2}(?::\d{2})?)'
+    match = re.search(time_pattern, text)
+
+    if match:
+        extracted_time = match.group(1)
+
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+
+        extracted_time_obj = datetime.strptime(extracted_time, "%H:%M:%S")
+        current_time_obj = datetime.strptime(current_time, "%H:%M:%S")
+
+        delta = extracted_time_obj - current_time_obj
+        seconds_diff = delta.total_seconds()
+
+        return int(abs(seconds_diff))

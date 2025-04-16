@@ -1,6 +1,8 @@
 import tkinter as tk
 
-from constants import SLOT_VALUES
+from constants import (ELICS, SLOT_1, SLOT_2, SLOT_3, SLOT_4, SLOT_5,  # noqa
+                       SLOT_VALUES, SPELL_1, SPELL_2, SPELL_3, SPELL_4,
+                       SPELL_5, SPELL_6, SPELL_7)
 from tk_app.core import app
 
 
@@ -28,10 +30,10 @@ quick_slots_open_btn.grid(
 
 #  Кнопки основного заклинания ----------------------------------------
 fight_slot = tk.StringVar(app)
-fight_slot.set(SLOT_VALUES[1])
+fight_slot.set(SLOT_1)
 
 spell_slot = tk.StringVar(app)
-spell_slot.set(SLOT_VALUES[0])
+spell_slot.set(SPELL_1)
 
 main_slot_label = tk.OptionMenu(
     app, fight_slot, *SLOT_VALUES
@@ -697,4 +699,79 @@ sync_button = tk.Button(
 )
 sync_button.grid(
     row=4, column=10
+)
+
+
+#  Собственные пресеты заклинаний
+def get_dragon_preset():
+    """Настраивает слоты под фарм дракона."""
+    main_slot = SLOT_1
+    main_spell = SPELL_5
+
+    fight_slot.set(main_slot)
+    spell_slot.set(main_spell)
+
+    r1y1_slot.set(SLOT_1)
+    r1y1_spell.set(SPELL_1)
+    r1y2_slot.set(SLOT_1)
+    r1y2_spell.set(SPELL_2)
+    r1y3_slot.set(SLOT_1)
+    r1y3_spell.set(SPELL_3)
+    r1y4_slot.set(main_slot)
+    r1y4_spell.set(main_spell)
+
+    r2y1_slot.set(SLOT_1)
+    r2y1_spell.set(SPELL_4)
+    r2y2_slot.set(main_slot)
+    r2y2_spell.set(main_spell)
+    r2y3_slot.set(main_slot)
+    r2y3_spell.set(main_spell)
+    r2y4_slot.set(main_slot)
+    r2y4_spell.set(main_spell)
+
+    r3y1_slot.set(main_slot)
+    r3y1_spell.set(main_spell)
+    r3y2_slot.set(main_slot)
+    r3y2_spell.set(main_spell)
+    r3y3_slot.set(main_slot)
+    r3y3_spell.set(main_spell)
+    r3y4_slot.set(main_slot)
+    r3y4_spell.set(main_spell)
+
+    r4y1_slot.set(main_slot)
+    r4y1_spell.set(main_spell)
+    r4y2_slot.set(main_slot)
+    r4y2_spell.set(main_spell)
+    r4y3_slot.set(main_slot)
+    r4y3_spell.set(main_spell)
+    r4y4_slot.set(main_slot)
+    r4y4_spell.set(main_spell)
+
+    r5y1_slot.set(SLOT_1)
+    r5y1_spell.set(SPELL_1)
+    r5y2_slot.set(SLOT_1)
+    r5y2_spell.set(SPELL_2)
+    r5y3_slot.set(SLOT_1)
+    r5y3_spell.set(SPELL_3)
+    r5y4_slot.set(main_slot)
+    r5y4_spell.set(main_spell)
+
+    r6y1_slot.set(main_slot)
+    r6y1_spell.set(main_spell)
+    r6y2_slot.set(main_slot)
+    r6y2_spell.set(main_spell)
+    r6y3_slot.set(main_slot)
+    r6y3_spell.set(main_spell)
+    r6y4_slot.set(main_slot)
+    r6y4_spell.set(main_spell)
+
+
+dragon_preset = tk.Button(
+    app,
+    text='Дракон',
+    bg='#FFF4DC',
+    command=get_dragon_preset
+)
+dragon_preset.grid(
+    row=4, column=8
 )
