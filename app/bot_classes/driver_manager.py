@@ -210,6 +210,7 @@ class DriverManager:
     def get_active_spell(self):
         """Возвращает название заклинания, которое используется в бою."""
         self.try_to_switch_to_central_frame()
+
         spell = self.driver.find_elements(
             By.CSS_SELECTOR,
             'a[href="javascript:fight_goAndShowSlots(true)"]'
@@ -303,6 +304,8 @@ class DriverManager:
                     spell_number=default_spell)
 
             self.try_to_switch_to_central_frame()
+            # sleep(0.5)
+
             come_back = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Вернуться')
             if come_back:
@@ -323,10 +326,12 @@ class DriverManager:
                                 "//*[contains(text(),'Пожалуйста, подождите')]"
                                 ))
                         )
-
-                    if element and EC.element_to_be_clickable(element):
-                        element.click()
-                        element.send_keys(Keys.TAB)
+                    try:
+                        if element and EC.element_to_be_clickable(element):
+                            element.click()
+                            element.send_keys(Keys.TAB)
+                    except Exception:
+                        pass
 
                 except Exception as e:
                     self.actions_after_exception(e)
@@ -679,8 +684,8 @@ class DriverManager:
                         )
 
                     if up_down_move:
-                        self.crossing_to_the_north()
                         self.crossing_to_the_south()
+                        self.crossing_to_the_north()
 
                         if self.check_for_fight():
                             self.fight(
@@ -888,12 +893,11 @@ class DriverManager:
             if cheerfulnes_min:
 
                 while cheerfulnes < cheerfulnes_min:
+
                     self.open_slot_and_choise_spell(
                         slots_number=cheerfulnes_slot,
                         spell_number=cheerfulnes_spell
                     )
-                    sleep(0.5)
-
                     cheerfulnes_level = self.driver.find_elements(
                         By.CLASS_NAME, 'current-bf')
                     if cheerfulnes_level:

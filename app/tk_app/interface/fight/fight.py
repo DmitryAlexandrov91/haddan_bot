@@ -200,7 +200,7 @@ cheerfulness_slot_label = tk.OptionMenu(
 cheerfulness_slot_label.grid(row=6, column=4)
 
 cheerfulness_spell_label = tk.OptionMenu(
-    app, spell_slot, *SLOT_VALUES,
+    app, cheerfulness_spell, *SLOT_VALUES,
 )
 cheerfulness_spell_label.grid(row=6, column=4, sticky='e')
 #  --------------------------------------------------------------------

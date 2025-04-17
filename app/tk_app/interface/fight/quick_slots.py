@@ -12,7 +12,7 @@ def open_slots():
     max_size = 773, 500
 
     if current_size <= max_size:
-        app.maxsize(current_size[0] + 280, current_size[1])
+        app.maxsize(current_size[0] + 300, current_size[1])
     else:
         app.maxsize(max_size[0], max_size[1])
 
@@ -774,4 +774,37 @@ dragon_preset = tk.Button(
 )
 dragon_preset.grid(
     row=4, column=8
+)
+
+
+def get_cy_preset():
+    main_slot = SLOT_1
+    main_spell = SPELL_6
+
+    fight_slot.set(main_slot)
+    spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SLOT_3)
+    r1y1_spell.set(SPELL_1)
+    r1y2_slot.set(SLOT_1)
+    r1y2_spell.set(SPELL_1)
+    r1y3_slot.set(SLOT_1)
+    r1y3_spell.set(SPELL_1)
+
+    r2y1_slot.set(SLOT_1)
+    r2y1_spell.set(SPELL_1)
+    r2y2_slot.set(SLOT_1)
+    r2y2_spell.set(SPELL_1)
+
+
+farm_CY_preset = tk.Button(
+    app,
+    text='ЦУ',
+    bg='#FFF4DC',
+    command=get_cy_preset
+)
+farm_CY_preset.grid(
+    row=4, column=12
 )
