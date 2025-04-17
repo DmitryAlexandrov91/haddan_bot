@@ -722,8 +722,8 @@ def get_dragon_preset():
 
     r2y1_slot.set(SLOT_1)
     r2y1_spell.set(SPELL_4)
-    r2y2_slot.set(main_slot)
-    r2y2_spell.set(main_spell)
+    r2y2_slot.set(SLOT_4)
+    r2y2_spell.set(SPELL_1)
     r2y3_slot.set(main_slot)
     r2y3_spell.set(main_spell)
     r2y4_slot.set(main_slot)

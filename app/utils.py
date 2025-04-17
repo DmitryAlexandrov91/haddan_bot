@@ -1,7 +1,7 @@
 """Утилитки приложения haddan_bot"""
-from datetime import datetime
 import re
 import tempfile
+from datetime import datetime
 from time import sleep
 
 from constants import FIELD_PRICES, RES_LIST, SHOP_URL
@@ -123,6 +123,11 @@ def get_attr_from_string(text: str, attr: str) -> str:
 
 
 def get_dragon_time_wait(text: str):
+    """
+    Извлекает время и дату из текста вида "09:16:12 17-04-2025",
+    сравнивает с текущим временем и возвращает разницу в секундах.
+    """
+
     time_pattern = r'(\d{2}:\d{2}(?::\d{2})?)'
     match = re.search(time_pattern, text)
 
@@ -139,3 +144,8 @@ def get_dragon_time_wait(text: str):
         seconds_diff = delta.total_seconds()
 
         return int(abs(seconds_diff))
+
+
+if __name__ == '__main__':
+    text = 'Вам нужно подождать до 10:15:10 17-04-2025'
+    print(get_dragon_time_wait(text))

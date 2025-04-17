@@ -1,10 +1,12 @@
 import threading
 import tkinter as tk
+from time import sleep
 
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.login import send_message_checkbox_value, tg_id_field
+from tk_app.interface.login import (send_message_checkbox_value,
+                                    start_login_thread, stop_bot, tg_id_field)
 
 from .quick_slots import fight_slot, get_round_spells, spell_slot
 
@@ -25,7 +27,14 @@ def start_dragon_farm():
         )
 
     except InvalidSessionIdException:
-        pass
+        print('Драйвер не обнаружен, перезагрузка.')
+        stop_dragon_farm()
+        sleep(5)
+        stop_bot()
+        sleep(5)
+        start_login_thread()
+        sleep(5)
+        start_dragon_thread()
 
 
 def stop_dragon_farm():

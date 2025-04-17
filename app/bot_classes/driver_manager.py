@@ -18,8 +18,9 @@ from selenium.webdriver.common.keys import Keys  # noqa
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
-from utils import (get_attr_from_string, get_intimidation_and_next_room,
-                   price_counter, time_extractor, get_dragon_time_wait)
+from utils import (get_attr_from_string, get_dragon_time_wait,
+                   get_intimidation_and_next_room, price_counter,
+                   time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
 
 # from selenium.webdriver.firefox.service import Service
@@ -548,27 +549,27 @@ class DriverManager:
         """Фарм поляны."""
         while self.event.is_set() is True:
 
-            sleep(1)
             try:
 
                 self.try_to_switch_to_central_frame()
+                sleep(1)
+
                 self.try_to_click_to_glade_fairy()
+
                 self.try_to_switch_to_dialog()
+                sleep(1)
 
                 glade_fairy_answers = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayTak')
                 if glade_fairy_answers:
-                    sleep(1)
                     if len(glade_fairy_answers) == 1:
 
-                        sleep(1)
                         wait_tag = self.driver.find_elements(
                             By.CLASS_NAME,
                             'talksayBIG')
 
                         if wait_tag and 'где-то через' in wait_tag[0].text:
-                            sleep(1)
                             time_for_wait = time_extractor(wait_tag[0].text)
                             print(f'Ждём {time_for_wait} секунд(ы).')
                             sleep(time_for_wait)
@@ -605,6 +606,7 @@ class DriverManager:
                             print(message_for_log)
 
                 self.try_to_switch_to_central_frame()
+                sleep(1)
 
                 if self.check_for_fight():
                     self.fight(
@@ -615,6 +617,7 @@ class DriverManager:
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
                 self.check_error_on_page()
+
                 self.driver.switch_to.default_content()
 
             except UnexpectedAlertPresentException:
@@ -634,12 +637,27 @@ class DriverManager:
             message_to_tg=False,
             min_hp: int = None,
             telegram_id=None,
-            spell_book: dict = None):
+            spell_book: dict = None,
+            cheerfulness=False,
+            cheerfulness_min=None,
+            cheerfulness_slot=1,
+            cheerfulness_spell=1
+            ):
         """Фарм с проведением боя."""
         while self.event.is_set() is True:
 
             try:
+                if cheerfulness:
+
+                    self.check_cheerfulnes_level(
+                        cheerfulnes_min=cheerfulness_min,
+                        cheerfulnes_slot=cheerfulness_slot,
+                        cheerfulnes_spell=cheerfulness_spell
+                    )
+
                 self.try_to_switch_to_central_frame()
+                sleep(1)
+
                 self.check_kaptcha(message_to_tg=message_to_tg,
                                    telegram_id=telegram_id)
                 self.check_error_on_page()
@@ -733,6 +751,8 @@ class DriverManager:
             try:
 
                 self.try_to_switch_to_central_frame()
+                sleep(1)
+
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
@@ -761,33 +781,34 @@ class DriverManager:
                     self.click_to_element_with_actionchains(dragon[0])
 
                 self.try_to_switch_to_dialog()
+                sleep(1)
 
-                dragon_text = self.driver.find_elements(
+                dragon_answers = self.driver.find_elements(
                     By.CLASS_NAME,
-                    'talksayBIG'
+                    'talksayTak'
                 )
-                if dragon_text:
-                    if 'Дракон не доступен!' in dragon_text[0].text:
-                        print('Бой с драконом не доступен!')
-                        sleep(15)
-                    if 'Вам надо подождать до' in dragon_text[0].text:
-                        time_to_wait = get_dragon_time_wait(
-                            dragon_text[0].text)
-                        print(f'Ждём КД {time_to_wait} секунд.')
-                        sleep(time_to_wait)
-                        continue
-
-                    else:
-                        dragon_answers = self.driver.find_elements(
-                            By.CLASS_NAME,
-                            'talksayTak'
-                        )
-                        if dragon_answers:
-                            for answer in dragon_answers:
-                                if answer.text == 'Напасть':
-                                    answer.click()
+                if dragon_answers:
+                    for answer in dragon_answers:
+                        if answer.text == 'Напасть':
+                            self.click_to_element_with_actionchains(answer)
+                        if answer.text == 'Уйти' or answer.text == 'Убежать':
+                            dragon_text = self.driver.find_elements(
+                                By.CLASS_NAME,
+                                'talksayBIG'
+                            )
+                            if dragon_text:
+                                title = dragon_text[0].text
+                                if 'не доступен!' in title:
+                                    print('Бой с драконом не доступен!')
+                                    sleep(15)
+                                if 'Вам надо подождать до' in title:
+                                    time_to_wait = get_dragon_time_wait(title)
+                                    print(f'Ждём КД {time_to_wait} секунд(ы).')
+                                    sleep(time_to_wait)
+                            self.click_to_element_with_actionchains(answer)
 
                 self.try_to_switch_to_central_frame()
+                sleep(1)
 
                 if self.check_for_fight():
                     self.fight(
@@ -797,6 +818,7 @@ class DriverManager:
                     )
 
                 self.driver.switch_to.default_content()
+                sleep(1)
 
             except Exception as e:
                 self.actions_after_exception(e)
@@ -848,3 +870,33 @@ class DriverManager:
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
             come_back[0].click()
+
+    def check_cheerfulnes_level(
+            self,
+            cheerfulnes_min,
+            cheerfulnes_slot,
+            cheerfulnes_spell):
+        """Проверяет уровень бодрости.
+
+        Если меньше установленного уровня, пъёт элик.
+        """
+        cheerfulnes_level = self.driver.find_elements(
+            By.CLASS_NAME, 'current-bf')
+        if cheerfulnes_level:
+            cheerfulnes = int(cheerfulnes_level[0].text)
+
+            if cheerfulnes_min:
+
+                while cheerfulnes < cheerfulnes_min:
+                    self.open_slot_and_choise_spell(
+                        slots_number=cheerfulnes_slot,
+                        spell_number=cheerfulnes_spell
+                    )
+                    sleep(0.5)
+
+                    cheerfulnes_level = self.driver.find_elements(
+                        By.CLASS_NAME, 'current-bf')
+                    if cheerfulnes_level:
+                        cheerfulnes = int(cheerfulnes_level[0].text)
+                    else:
+                        break

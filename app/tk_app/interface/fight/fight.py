@@ -11,6 +11,8 @@ from tk_app.interface.login import (send_message_checkbox_value,
 
 from .quick_slots import fight_slot, get_round_spells, spell_slot
 
+from constants import SLOT_VALUES
+
 
 #  Функции блока автобоя. ------------------------------
 def start_fight():
@@ -36,13 +38,19 @@ def start_fight():
             message_to_tg=send_message_to_tg,
             telegram_id=user_telegram_id,
             min_hp=minimum_hp,
-            spell_book=get_round_spells()
+            spell_book=get_round_spells(),
+            cheerfulness=cheerfulness_drink_checkbox_value.get(),
+            cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
+            cheerfulness_slot=cheerfulness_slot.get(),
+            cheerfulness_spell=cheerfulness_spell.get()
         )
 
     except InvalidSessionIdException:
         print('Драйвер не обнаружен, перезагрузка.')
         stop_fight()
+        sleep(5)
         stop_bot()
+        sleep(5)
         start_login_thread()
         sleep(5)
         start_thread()
@@ -60,8 +68,6 @@ def start_thread():
     manager.event.thread.start()
 #  --------------------------------------------------------------------
 
-
-# values = ("1", "2", "3", "4", "5", "6", "7")
 
 #  Титульник блока автобоя. ----------------------------------
 fight_panel_label = tk.Label(
@@ -100,6 +106,7 @@ fight_stop_btn.grid(
 left_right_checkbox_value = tk.IntVar(value=0)
 up_down_checkbox_value = tk.IntVar(value=0)
 mind_spirit_checkbox_value = tk.IntVar(value=True)
+cheerfulness_drink_checkbox_value = tk.IntVar(value=0)
 
 
 up_down_move_check_button = tk.Checkbutton(
@@ -151,7 +158,49 @@ min_hp_field = tk.Entry(
     app, width=8, justify='center'
 )
 min_hp_field.grid(
-    row=5, column=4,
+    row=5, column=4
 )
-#  --------------------------------------------------------------------
 
+#  Блок  бодрости
+cheerfulness_drink_check_button = tk.Checkbutton(
+    app,
+    text='Пить бодру',
+    variable=cheerfulness_drink_checkbox_value,
+    bg='#FFF4DC'
+)
+cheerfulness_drink_check_button.grid(
+    row=6, column=4, sticky='w')
+
+cheerfulness_level_label = tk.Label(
+    app,
+    text='Минимум бодры',
+    bg='#FFF4DC'
+)
+cheerfulness_level_label.grid(
+    row=7, column=4, sticky='w'
+)
+
+cheerfulness_drink_field = tk.Entry(
+    app, width=3, justify='center'
+)
+cheerfulness_drink_field.grid(
+    row=7, column=4
+)
+cheerfulness_drink_field.insert(0, 90)
+
+cheerfulness_slot = tk.StringVar(app)
+cheerfulness_slot.set(1)
+
+cheerfulness_spell = tk.StringVar(app)
+cheerfulness_spell.set(1)
+
+cheerfulness_slot_label = tk.OptionMenu(
+    app, cheerfulness_slot, *SLOT_VALUES
+)
+cheerfulness_slot_label.grid(row=6, column=4)
+
+cheerfulness_spell_label = tk.OptionMenu(
+    app, spell_slot, *SLOT_VALUES,
+)
+cheerfulness_spell_label.grid(row=6, column=4, sticky='e')
+#  --------------------------------------------------------------------

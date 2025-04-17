@@ -32,7 +32,9 @@ def tk_glade_farm():
     except InvalidSessionIdException:
         print('Драйвер не обнаружен, перезагрузка.')
         stop_farm()
+        sleep(5)
         stop_bot()
+        sleep(5)
         start_login_thread()
         sleep(5)
         start_glade_farm_thread()
