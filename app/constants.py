@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 from dotenv import load_dotenv
 
@@ -33,6 +34,7 @@ MEDITATION_URL = 'https://haddan.ru/room/func/temple.php'
 KAPCHA_URL = 'https://haddan.ru/inner/img/gc.php'
 SHOP_URL = 'http://ordenpegasa.ru/shop/'
 LABIRINT_MAP_URL = 'https://haddan.novikovproject.ru/maze?level=1'
+
 
 # Переменные окружения.
 FIRST_CHAR = os.getenv('FIRST_CHAR', None)
@@ -83,8 +85,30 @@ GAMBLE_SPIRIT_RIGHT_ANSWERS = (
 
 #  Константы интерфейса Tkinter
 
-SLOT_VALUES = ("1", "2", "3", "4", "5", "6", "7")
+SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7')
 
-ELICS, SLOT_1, SLOT_2, SLOT_3, SLOT_4, SLOT_5, SLOT_6 = SLOT_VALUES
 
-SPELL_1, SPELL_2, SPELL_3, SPELL_4, SPELL_5, SPELL_6, SPELL_7 = SLOT_VALUES
+class Slot(Enum):
+    _0 = '1'
+    _1 = '2'
+    _2 = '3'
+    _3 = '4'
+    _4 = '5'
+    _5 = '6'
+    _6 = '7'
+
+    def __str__(self):
+        return self.value
+
+
+class Spell(Enum):
+    _1 = '1'
+    _2 = '2'
+    _3 = '3'
+    _4 = '4'
+    _5 = '5'
+    _6 = '6'
+    _7 = '7'
+
+    def __str__(self):
+        return self.value

@@ -181,21 +181,25 @@ class DriverManager:
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
 
-        try:
-            self.driver.switch_to.frame("frmcenterandchat")
-            self.driver.switch_to.frame("frmcentral")
+        if self.driver.execute_script("return window.name;") != 'frmcentral':
 
-        except Exception:
-            self.driver.switch_to.default_content()
+            try:
+                self.driver.switch_to.frame("frmcenterandchat")
+                self.driver.switch_to.frame("frmcentral")
+
+            except Exception:
+                self.driver.switch_to.default_content()
 
     def try_to_switch_to_dialog(self):
         """Переключается на фрейм диалога."""
 
-        try:
-            self.driver.switch_to.frame("thedialog")
+        if self.driver.execute_script("return window.name;") != 'thedialog':
 
-        except Exception:
-            self.driver.switch_to.default_content()
+            try:
+                self.driver.switch_to.frame("thedialog")
+
+            except Exception:
+                self.driver.switch_to.default_content()
 
     def find_all_iframes(self):
         """Выводит в терминал список всех iframe егов на странице."""
@@ -500,6 +504,15 @@ class DriverManager:
         if health:
             hp = int(health[0].text)
             return hp
+        # if hp is not None and hp < min_hp:
+        #     if self.bot and message_to_tg and telegram_id:
+        #         self.bot.send_message(
+        #             chat_id=telegram_id,
+        #             text='Здоровье упало меньше минимума!'
+        #         )
+        #     else:
+        #         print('Мало хп, спим 30 секунд!')
+        #     sleep(30)
 
     def check_error_on_page(self):
         error = self.driver.find_elements(
@@ -805,21 +818,26 @@ class DriverManager:
                     for answer in dragon_answers:
                         sleep(1)
 
-                        if answer.text == 'Напасть':
+                        if 'Напасть' in answer.text or (
+                           'Продолжить' in answer.text):
                             self.click_to_element_with_actionchains(answer)
-                        if answer.text == 'Уйти' or answer.text == 'Убежать':
+                        if 'Уйти' in answer.text or 'Убежать' in answer.text:
                             dragon_text = self.driver.find_elements(
                                 By.CLASS_NAME,
                                 'talksayBIG'
                             )
                             if dragon_text:
                                 title = dragon_text[0].text
-                                if 'не доступен!' in title:
-                                    print('Бой с драконом не доступен!')
-                                    sleep(15)
                                 if 'Вам надо подождать до' in title:
                                     time_to_wait = get_dragon_time_wait(title)
                                     print(f'Ждём КД {time_to_wait} секунд(ы).')
+                                    sleep(time_to_wait)
+                                if 'Старт состоится' in title:
+                                    time_to_wait = get_dragon_time_wait(title)
+                                    print(
+                                        'Ждём начала ивента '
+                                        f'{time_to_wait} секунд(ы).'
+                                    )
                                     sleep(time_to_wait)
                             try:
                                 self.click_to_element_with_actionchains(answer)

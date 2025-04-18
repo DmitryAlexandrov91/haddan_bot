@@ -133,18 +133,14 @@ def get_dragon_time_wait(text: str):
     if match:
         wait_time_str = match.group()
     else:
-        raise ValueError("Время не найдено")
+        raise ValueError('Время не найдено')
 
-    # Текущее время
     current_time = datetime.now()
 
-    # Парсим время
     wait_time = datetime.strptime(wait_time_str, "%H:%M:%S %d-%m-%Y")
 
-    # Разница между двумя датами
     delta = wait_time - current_time
 
-    # Количество секунд, которое нужно ждать
     seconds_to_wait = int(delta.total_seconds())
 
     return seconds_to_wait
