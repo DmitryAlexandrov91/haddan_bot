@@ -128,22 +128,26 @@ def get_dragon_time_wait(text: str):
     сравнивает с текущим временем и возвращает разницу в секундах.
     """
 
-    time_pattern = r'(\d{2}:\d{2}(?::\d{2})?)'
-    match = re.search(time_pattern, text)
-
+    pattern = r"\d{2}:\d{2}:\d{2}\s\d{2}-\d{2}-\d{4}$"
+    match = re.search(pattern, text)
     if match:
-        extracted_time = match.group(1)
+        wait_time_str = match.group()
+    else:
+        raise ValueError("Время не найдено")
 
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
+    # Текущее время
+    current_time = datetime.now()
 
-        extracted_time_obj = datetime.strptime(extracted_time, "%H:%M:%S")
-        current_time_obj = datetime.strptime(current_time, "%H:%M:%S")
+    # Парсим время
+    wait_time = datetime.strptime(wait_time_str, "%H:%M:%S %d-%m-%Y")
 
-        delta = extracted_time_obj - current_time_obj
-        seconds_diff = delta.total_seconds()
+    # Разница между двумя датами
+    delta = wait_time - current_time
 
-        return int(abs(seconds_diff))
+    # Количество секунд, которое нужно ждать
+    seconds_to_wait = int(delta.total_seconds())
+
+    return seconds_to_wait
 
 
 if __name__ == '__main__':

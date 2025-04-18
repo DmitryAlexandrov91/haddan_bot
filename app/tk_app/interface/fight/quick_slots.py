@@ -130,7 +130,7 @@ r1y4_spell_choise.grid(row=3, column=9)
 for element in range(4):
     widget = tk.Label(
         app,
-        text=f'Р 2 У {element + 1}',
+        text=f'Р2 У{element + 1}',
         bg='#FFF4DC'
     )
     widget.grid(row=0 + element, column=10)
@@ -287,7 +287,7 @@ r3y4_spell_choise.grid(row=8, column=9)
 for element in range(4):
     widget = tk.Label(
         app,
-        text=f'Р 4 У {element + 1}',
+        text=f'Р4 У{element + 1}',
         bg='#FFF4DC'
     )
     widget.grid(row=5 + element, column=10)
@@ -364,7 +364,7 @@ r4y4_spell_choise.grid(row=8, column=12)
 for element in range(4):
     widget = tk.Label(
         app,
-        text=f'Р 5 У {element + 1}',
+        text=f'Р5 У{element + 1}',
         bg='#FFF4DC'
     )
     widget.grid(row=10 + element, column=7)
@@ -441,7 +441,7 @@ r5y4_spell_choise.grid(row=13, column=9)
 for element in range(4):
     widget = tk.Label(
         app,
-        text=f'Р 6 У {element + 1}',
+        text=f'Р6 У{element + 1}',
         bg='#FFF4DC'
     )
     widget.grid(row=10 + element, column=10)
@@ -777,6 +777,7 @@ dragon_preset.grid(
 )
 
 
+#  Пресет для кача в ЦУ
 def get_cy_preset():
     main_slot = SLOT_1
     main_spell = SPELL_6
@@ -807,4 +808,50 @@ farm_CY_preset = tk.Button(
 )
 farm_CY_preset.grid(
     row=4, column=12
+)
+
+
+#  Пресет для фарма побережья
+def get_coast_preset():
+    main_slot = SLOT_1
+    main_spell = SPELL_6
+
+    fight_slot.set(main_slot)
+    spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SLOT_3)
+    r1y1_spell.set(SPELL_1)
+    r1y2_slot.set(SLOT_1)
+    r1y2_spell.set(SPELL_1)
+    r1y3_slot.set(SLOT_1)
+    r1y3_spell.set(SPELL_2)
+
+    r2y1_slot.set(SLOT_1)
+    r2y1_spell.set(SPELL_3)
+    r2y2_slot.set(SLOT_1)
+    r2y2_spell.set(SPELL_3)
+    r2y3_slot.set(SLOT_4)
+    r2y3_spell.set(SPELL_1)
+
+    r3y1_slot.set(SLOT_1)
+    r3y1_spell.set(SPELL_4)
+    r3y2_slot.set(SLOT_1)
+    r3y2_spell.set(SPELL_4)
+
+    r4y1_slot.set(SLOT_1)
+    r4y1_spell.set(SPELL_3)
+    r4y2_slot.set(SLOT_1)
+    r4y2_spell.set(SPELL_4)
+
+
+farm_coast_preset = tk.Button(
+    app,
+    text='Берег',
+    bg='#FFF4DC',
+    command=get_coast_preset
+)
+farm_coast_preset.grid(
+    row=9, column=8
 )

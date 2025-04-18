@@ -517,6 +517,11 @@ class DriverManager:
         north = self.driver.find_elements(
             By.CSS_SELECTOR,
             'img[title="На север"]')
+        if not north:
+            north = self.driver.find_elements(
+                By.ID, 'roommarker0'
+            )
+
         if north:
             north[0].click()
 
@@ -524,6 +529,10 @@ class DriverManager:
         south = self.driver.find_elements(
             By.CSS_SELECTOR,
             'img[title="На юг"]')
+        if not south:
+            south = self.driver.find_elements(
+                By.ID, 'roommarker1'
+            )
         if south:
             south[0].click()
 
@@ -794,6 +803,8 @@ class DriverManager:
                 )
                 if dragon_answers:
                     for answer in dragon_answers:
+                        sleep(1)
+
                         if answer.text == 'Напасть':
                             self.click_to_element_with_actionchains(answer)
                         if answer.text == 'Уйти' or answer.text == 'Убежать':
@@ -810,7 +821,10 @@ class DriverManager:
                                     time_to_wait = get_dragon_time_wait(title)
                                     print(f'Ждём КД {time_to_wait} секунд(ы).')
                                     sleep(time_to_wait)
-                            self.click_to_element_with_actionchains(answer)
+                            try:
+                                self.click_to_element_with_actionchains(answer)
+                            except Exception:
+                                continue
 
                 self.try_to_switch_to_central_frame()
                 sleep(1)
@@ -898,6 +912,9 @@ class DriverManager:
                         slots_number=cheerfulnes_slot,
                         spell_number=cheerfulnes_spell
                     )
+
+                    sleep(1)
+
                     cheerfulnes_level = self.driver.find_elements(
                         By.CLASS_NAME, 'current-bf')
                     if cheerfulnes_level:

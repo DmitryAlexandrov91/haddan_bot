@@ -3,6 +3,7 @@ import threading
 import tkinter as tk
 from time import sleep
 
+from constants import SLOT_VALUES
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -10,8 +11,6 @@ from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
 from .quick_slots import fight_slot, get_round_spells, spell_slot
-
-from constants import SLOT_VALUES
 
 
 #  Функции блока автобоя. ------------------------------
