@@ -147,11 +147,11 @@ class DriverManager:
             file.write(page_source)
 
     def start_event(self):
-        """Ставит флаг запуска циклов в положение True."""
+        """Устанавливает флаг в положение True."""
         self.event.set()
 
     def stop_event(self):
-        """Ставит флаг запуска циклов в положение False."""
+        """Устанавливает флаг циклов в положение False."""
         self.event.clear()
     # ***************************************************************
 
@@ -177,7 +177,7 @@ class DriverManager:
                 element).click().perform()
     #  **************************************************************
 
-    #  Методы переключения между фреймами. **************************
+    #  Методы взаимодействия с фреймами. **************************
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
 
@@ -274,7 +274,6 @@ class DriverManager:
             )
             return hit_number.text
         except Exception:
-            print('Номер удара не найден.')
             return None
 
     def get_round_number(self) -> str:
@@ -476,6 +475,8 @@ class DriverManager:
 
     def check_kaptcha(self, message_to_tg, telegram_id=None):
         """Проверяет наличие капчи на странице."""
+        if not self.event.is_set():
+            exit()
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]'
@@ -489,13 +490,21 @@ class DriverManager:
             else:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
-            sleep(30)
+            self.sleep_while_event_is_true(time_to_sleep=30)
+            # sleep(30)
             self.check_kaptcha(
                 message_to_tg=message_to_tg,
                 telegram_id=telegram_id)
 
-    def check_health(self) -> int:
+    def check_health(
+            self,
+            min_hp,
+            message_to_tg,
+            telegram_id) -> int:
         """"Возвращает кол-во  ХП персонажа."""
+        if not self.event.is_set():
+            exit()
+
         self.driver.switch_to.default_content()
         health = self.driver.find_elements(
                     By.CSS_SELECTOR,
@@ -503,16 +512,21 @@ class DriverManager:
                 )
         if health:
             hp = int(health[0].text)
-            return hp
-        # if hp is not None and hp < min_hp:
-        #     if self.bot and message_to_tg and telegram_id:
-        #         self.bot.send_message(
-        #             chat_id=telegram_id,
-        #             text='Здоровье упало меньше минимума!'
-        #         )
-        #     else:
-        #         print('Мало хп, спим 30 секунд!')
-        #     sleep(30)
+            if hp < min_hp:
+                if self.bot and message_to_tg and telegram_id:
+                    self.bot.send_message(
+                        chat_id=telegram_id,
+                        text='Здоровье упало меньше минимума!'
+                    )
+                else:
+                    print('Мало хп, спим 30 секунд!')
+                self.sleep_while_event_is_true(time_to_sleep=30)
+                # sleep(30)
+                self.check_health(
+                    min_hp=min_hp,
+                    message_to_tg=message_to_tg,
+                    telegram_id=telegram_id
+                )
 
     def check_error_on_page(self):
         error = self.driver.find_elements(
@@ -599,7 +613,9 @@ class DriverManager:
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             time_for_wait = time_extractor(wait_tag[0].text)
                             print(f'Ждём {time_for_wait} секунд(ы).')
-                            sleep(time_for_wait)
+
+                            self.sleep_while_event_is_true(time_for_wait)
+                            # sleep(time_for_wait)
 
                         try:
                             glade_fairy_answers[0].click()
@@ -648,7 +664,8 @@ class DriverManager:
                 self.driver.switch_to.default_content()
 
             except UnexpectedAlertPresentException:
-                sleep(15)
+                self.sleep_while_event_is_true(15)
+                # sleep(15)
                 print('Получено уведомление, ждём!')
 
             except Exception as e:
@@ -744,22 +761,18 @@ class DriverManager:
                             self.driver.execute_script(
                                 'window.alert("Обнаружен дух ума!");'
                             )
-                        sleep(30)
+                        self.sleep_while_event_is_true(30)
+                        # sleep(30)
 
-                hp = self.check_health()
-                if hp is not None and hp < min_hp:
-                    if self.bot and message_to_tg and telegram_id:
-                        self.bot.send_message(
-                            chat_id=telegram_id,
-                            text='Здоровье упало меньше минимума!'
-                        )
-                    else:
-                        print('Мало хп, спим 30 секунд!')
-                    sleep(30)
+                self.check_health(
+                    min_hp=min_hp,
+                    message_to_tg=message_to_tg,
+                    telegram_id=telegram_id
+                )
 
             except UnexpectedAlertPresentException:
-                sleep(15)
                 print('Получено уведомление, ждём!')
+                self.sleep_while_event_is_true(15)
 
             except Exception as e:
                 self.actions_after_exception(exception=e)
@@ -831,14 +844,18 @@ class DriverManager:
                                 if 'Вам надо подождать до' in title:
                                     time_to_wait = get_dragon_time_wait(title)
                                     print(f'Ждём КД {time_to_wait} секунд(ы).')
-                                    sleep(time_to_wait)
+                                    self.sleep_while_event_is_true(
+                                        time_to_wait)
+                                    
                                 if 'Старт состоится' in title:
                                     time_to_wait = get_dragon_time_wait(title)
                                     print(
                                         'Ждём начала ивента '
                                         f'{time_to_wait} секунд(ы).'
                                     )
-                                    sleep(time_to_wait)
+                                    self.sleep_while_event_is_true(
+                                        time_to_wait)
+                                    
                             try:
                                 self.click_to_element_with_actionchains(answer)
                             except Exception:
@@ -857,6 +874,10 @@ class DriverManager:
                 self.driver.switch_to.default_content()
                 sleep(1)
 
+            except UnexpectedAlertPresentException:
+                print('Получено уведомление, ждём!')
+                self.sleep_while_event_is_true(15)
+
             except Exception as e:
                 self.actions_after_exception(e)
 
@@ -871,10 +892,10 @@ class DriverManager:
         self.driver.switch_to.default_content()
         self.errors_count += 1
         print(f'Текущее количество ошибок - {self.errors_count}')
-        if self.errors_count >= 30:
+        if self.errors_count >= 10:
             self.driver.refresh()
             self.errors_count = 0
-            sleep(10)
+            sleep(5)
 
     def right_answers_choise(self, right_answers):
         """Проходит циклом по правильным ответам.
@@ -939,3 +960,14 @@ class DriverManager:
                         cheerfulnes = int(cheerfulnes_level[0].text)
                     else:
                         break
+
+    def sleep_while_event_is_true(
+            self, time_to_sleep: int):
+        """Ждёт указанное количество секунд.
+
+        Пока флаг event == True.
+        """
+        counter = time_to_sleep
+        while self.event.is_set() is True and counter > 0:
+            sleep(1)
+            counter -= 1

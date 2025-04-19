@@ -185,7 +185,7 @@ cheerfulness_drink_field = tk.Entry(
 cheerfulness_drink_field.grid(
     row=7, column=4
 )
-cheerfulness_drink_field.insert(0, 90)
+cheerfulness_drink_field.insert(0, 95)
 
 cheerfulness_slot = tk.StringVar(app)
 cheerfulness_slot.set(1)
