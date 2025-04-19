@@ -23,7 +23,7 @@ def start_fight():
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
-    user_telegram_id = tg_id_field.get().strip()
+    user_telegram_id = int(tg_id_field.get().strip())
     minimum_hp = int(min_hp_field.get().strip())
 
     try:
@@ -71,7 +71,7 @@ def start_thread():
 #  Титульник блока автобоя. ----------------------------------
 fight_panel_label = tk.Label(
     app,
-    text='Автобой',
+    text='Фарм',
     bg='#FFF4DC')
 fight_panel_label.grid(row=0, column=5)
 #  --------------------------------------------------------------------
@@ -102,10 +102,10 @@ fight_stop_btn.grid(
 
 
 #  Чек боксы  ---------------------------------------------------------
-left_right_checkbox_value = tk.IntVar(value=0)
-up_down_checkbox_value = tk.IntVar(value=0)
-mind_spirit_checkbox_value = tk.IntVar(value=True)
-cheerfulness_drink_checkbox_value = tk.IntVar(value=0)
+left_right_checkbox_value = tk.BooleanVar(value=False)
+up_down_checkbox_value = tk.BooleanVar(value=False)
+mind_spirit_checkbox_value = tk.BooleanVar(value=True)
+cheerfulness_drink_checkbox_value = tk.BooleanVar(value=False)
 
 
 up_down_move_check_button = tk.Checkbutton(

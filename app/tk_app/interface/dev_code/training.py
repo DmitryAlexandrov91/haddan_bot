@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 from requests_html import HTMLSession
 
-
 if __name__ == '__main__':
     session = HTMLSession()
 

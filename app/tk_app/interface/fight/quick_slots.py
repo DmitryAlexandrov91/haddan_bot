@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from constants import Slot, Spell, SLOT_VALUES
+from constants import SLOT_VALUES, Slot, Spell
 from tk_app.core import app
 
 

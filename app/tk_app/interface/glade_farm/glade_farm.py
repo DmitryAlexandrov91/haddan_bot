@@ -18,7 +18,7 @@ def tk_glade_farm():
     manager.start_event()
 
     send_message_to_tg = send_message_checkbox_value.get()
-    user_telegram_id = tg_id_field.get().strip()
+    user_telegram_id = int(tg_id_field.get().strip())
 
     try:
         manager.glade_farm(

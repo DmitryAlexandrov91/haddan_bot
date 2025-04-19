@@ -4,6 +4,7 @@ import random
 import threading
 from datetime import datetime
 from time import sleep
+from typing import Optional
 
 from configs import configure_logging
 from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
@@ -15,6 +16,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys  # noqa
+from selenium.webdriver.remote.webdriver import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
@@ -23,8 +25,7 @@ from utils import (get_attr_from_string, get_dragon_time_wait,
                    time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
 
-# from selenium.webdriver.firefox.service import Service
-# from webdriver_manager.firefox import GeckoDriverManager
+from constants import Slot, Spell
 
 
 class DriverManager:
@@ -36,8 +37,8 @@ class DriverManager:
         self.options = self._get_default_options()
         self.bot: TeleBot = bot
         self.event: threading.Event = threading.Event()
-        self.errors_count = 0
-        self.wait_timeout = 30
+        self.errors_count: int = 0
+        self.wait_timeout: int = 30
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -125,15 +126,15 @@ class DriverManager:
                 self.driver = None
                 self.thread = None
 
-    def get_active_driver(self):
+    def get_active_driver(self) -> webdriver.Chrome:
         """Функция для проверки наличия активного драйвера."""
         return self.driver
 
-    def print_element_content(self, element):
+    def print_element_content(self, element: WebElement):
         """Выводит в терминал html код элемента"""
         print(element.get_attribute('outerHTML'))
 
-    def get_element_content(self, element):
+    def get_element_content(self, element: WebElement) -> str:
         """Возвращает сожержимое элемента."""
         return element.get_attribute('outerHTML')
 
@@ -156,19 +157,19 @@ class DriverManager:
     # ***************************************************************
 
     #  Методы взаимодействия с элементами.***************************
-    def wait_while_element_will_be_clickable(self, element):
+    def wait_while_element_will_be_clickable(self, element: WebElement):
         """Ждёт пока элемент станет кликабельным."""
         WebDriverWait(self.driver, 5).until(
             EC.element_to_be_clickable(element))
 
-    def scroll_to_element(self, element):
+    def scroll_to_element(self, element: WebElement):
         """Прокручивает до нужного жлемента."""
         self.driver.execute_script(
             "arguments[0].scrollIntoView();",
             element
         )
 
-    def click_to_element_with_actionchains(self, element):
+    def click_to_element_with_actionchains(self, element: WebElement):
         """Щёлкает по элементу методом click класса ActionChains.
 
         Максимальная эмуляция реального нажатия мышкой*
@@ -211,7 +212,7 @@ class DriverManager:
     #  **************************************************************
 
     #  Методы ведения боя. ******************************************
-    def get_active_spell(self):
+    def get_active_spell(self) -> Optional[str]:
         """Возвращает название заклинания, которое используется в бою."""
         self.try_to_switch_to_central_frame()
 
@@ -228,8 +229,8 @@ class DriverManager:
 
     def get_spell_to_cast(
             self,
-            spell_number,
-            slot_number):
+            spell_number: str,
+            slot_number: str) -> Optional[str]:
         """Возвращает название заклинания, которое нужно использовать."""
         self.driver.switch_to.default_content()
         self.driver.execute_script(
@@ -246,8 +247,8 @@ class DriverManager:
 
     def open_slot_and_choise_spell(
             self,
-            slots_number,
-            spell_number):
+            slots_number: str,
+            spell_number: str):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
         if not self.check_come_back():
             active_spell = self.get_active_spell()
@@ -265,7 +266,7 @@ class DriverManager:
                     f'return qs_onClickSlot(event,{int(spell_number) - 1})'
                 )
 
-    def get_hit_number(self) -> str:
+    def get_hit_number(self) -> Optional[str]:
         """Возвращает номер удара в бою."""
         try:
             hit_number = self.driver.find_element(
@@ -277,7 +278,10 @@ class DriverManager:
             return None
 
     def get_round_number(self) -> str:
-        """Возвращает номер раунда"""
+        """Возвращает номер раунда.
+
+        В формате "Раунд 1" и т.д.
+        """
         rounds = self.driver.find_elements(
             By.CSS_SELECTOR, '#divlog p'
         )
@@ -288,7 +292,11 @@ class DriverManager:
             return 'Раунд 1'
     # ***************************************************************
 
-    def fight(self, spell_book, default_slot, default_spell):
+    def fight(
+            self,
+            spell_book: dict,
+            default_slot: Slot,
+            default_spell: Spell):
         """Проводит бой."""
         round = self.get_round_number()
         kick = self.get_hit_number()
@@ -473,7 +481,10 @@ class DriverManager:
         """Отправляет фотку в телеграм."""
         self.bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
 
-    def check_kaptcha(self, message_to_tg, telegram_id=None):
+    def check_kaptcha(
+            self,
+            message_to_tg: bool,
+            telegram_id: int = None):
         """Проверяет наличие капчи на странице."""
         if not self.event.is_set():
             exit()
@@ -498,10 +509,15 @@ class DriverManager:
 
     def check_health(
             self,
-            min_hp,
-            message_to_tg,
-            telegram_id) -> int:
-        """"Возвращает кол-во  ХП персонажа."""
+            min_hp: int,
+            message_to_tg: bool,
+            telegram_id: int):
+        """"Проверка ХП.
+
+        :min_hp: минимальное кол-во ХП.
+        :message_to_tg: флаг отправки сообщений в ТГ.
+        :telegram_id: телеграм id куда отправлять сообщение.
+        """
         if not self.event.is_set():
             exit()
 
@@ -582,10 +598,10 @@ class DriverManager:
     def glade_farm(
             self,
             price_dict: dict = FIELD_PRICES,
-            slots=2,
-            spell=1,
-            message_to_tg=False,
-            telegram_id=None,
+            slots: Slot = Slot._1,
+            spell: Spell = Spell._1,
+            message_to_tg: bool = False,
+            telegram_id: int = None,
             spell_book: dict = None):
         """Фарм поляны."""
         while self.event.is_set() is True:
@@ -673,19 +689,19 @@ class DriverManager:
 
     def farm(
             self,
-            slots=2,
-            spell=1,
-            up_down_move=False,
-            left_right_move=False,
-            mind_spirit_play=True,
-            message_to_tg=False,
+            slots: Slot = Slot._1,
+            spell: Spell = Spell._1,
+            up_down_move: bool = False,
+            left_right_move: bool = False,
+            mind_spirit_play: bool = True,
+            message_to_tg: bool = True,
             min_hp: int = None,
-            telegram_id=None,
+            telegram_id: int = None,
             spell_book: dict = None,
-            cheerfulness=False,
-            cheerfulness_min=None,
-            cheerfulness_slot=1,
-            cheerfulness_spell=1
+            cheerfulness: bool = False,
+            cheerfulness_min: int = None,
+            cheerfulness_slot: Slot = Slot._0,
+            cheerfulness_spell: Spell = Spell._1
             ):
         """Фарм с проведением боя."""
         while self.event.is_set() is True:
@@ -779,11 +795,11 @@ class DriverManager:
 
     def dragon_farm(
             self,
-            default_slot=2,
-            default_spell=2,
+            default_slot: Slot = Slot._1,
+            default_spell: Spell = Spell._5,
             spell_book: dict = None,
-            message_to_tg=False,
-            telegram_id=None):
+            message_to_tg: bool = False,
+            telegram_id: int = None):
         """"Фарм пыльных драконов."""
 
         while self.event.is_set() is True:
@@ -846,7 +862,7 @@ class DriverManager:
                                     print(f'Ждём КД {time_to_wait} секунд(ы).')
                                     self.sleep_while_event_is_true(
                                         time_to_wait)
-                                    
+
                                 if 'Старт состоится' in title:
                                     time_to_wait = get_dragon_time_wait(title)
                                     print(
@@ -855,7 +871,7 @@ class DriverManager:
                                     )
                                     self.sleep_while_event_is_true(
                                         time_to_wait)
-                                    
+
                             try:
                                 self.click_to_element_with_actionchains(answer)
                             except Exception:
@@ -931,12 +947,15 @@ class DriverManager:
 
     def check_cheerfulnes_level(
             self,
-            cheerfulnes_min,
-            cheerfulnes_slot,
-            cheerfulnes_spell):
+            cheerfulnes_min: int,
+            cheerfulnes_slot: Slot = Slot._0,
+            cheerfulnes_spell: Spell = Spell._1):
         """Проверяет уровень бодрости.
 
         Если меньше установленного уровня, пъёт элик.
+        :cheerfulnes_min: минимальное кол-во бодрости.
+        :cheerfulnes_slot: страница слотов с бодрой.
+        :cheerfulnes_spell: номер слота с бодрой.
         """
         cheerfulnes_level = self.driver.find_elements(
             By.CLASS_NAME, 'current-bf')
@@ -966,6 +985,7 @@ class DriverManager:
         """Ждёт указанное количество секунд.
 
         Пока флаг event == True.
+        :time_to_sleep: кол-во секунд для ожидания.
         """
         counter = time_to_sleep
         while self.event.is_set() is True and counter > 0:

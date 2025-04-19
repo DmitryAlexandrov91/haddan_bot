@@ -23,7 +23,7 @@ def start_dragon_farm():
             default_spell=spell_slot.get(),
             spell_book=get_round_spells(),
             message_to_tg=send_message_checkbox_value.get(),
-            telegram_id=tg_id_field.get().strip()
+            telegram_id=int(tg_id_field.get().strip())
         )
 
     except InvalidSessionIdException:
