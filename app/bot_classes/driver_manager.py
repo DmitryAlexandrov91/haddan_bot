@@ -9,7 +9,7 @@ from typing import Optional
 from configs import configure_logging
 from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
-                       TIME_FORMAT)
+                       TIME_FORMAT, Slot, SlotsPage)
 from selenium import webdriver
 from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.webdriver.chrome.service import Service
@@ -24,8 +24,6 @@ from utils import (get_attr_from_string, get_dragon_time_wait,
                    get_intimidation_and_next_room, price_counter,
                    time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
-
-from constants import SlotsPage, Slot
 
 
 class DriverManager:
@@ -375,9 +373,6 @@ class DriverManager:
                 if spirit_text and 'Параметры' in spirit_text[0].text:
                     intimidation, next_room = get_intimidation_and_next_room(
                         spirit_text[0].text)
-
-                    if not intimidation or not next_room:  # exp
-                        continue
 
                     if next_room >= intimidation:
                         right_choise = self.driver.find_elements(

@@ -33,7 +33,7 @@ HADDAN_RESERVE_URL = 'https://www.online-igra.ru/'
 MEDITATION_URL = 'https://haddan.ru/room/func/temple.php'
 KAPCHA_URL = 'https://haddan.ru/inner/img/gc.php'
 SHOP_URL = 'http://ordenpegasa.ru/shop/'
-LABIRINT_MAP_URL = 'https://haddan.novikovproject.ru/maze?level=1'
+LABIRINT_MAP_URL = 'https://haddan.novikovproject.ru/maze?level='
 
 
 # Переменные окружения.

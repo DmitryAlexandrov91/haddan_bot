@@ -1,4 +1,4 @@
-"""Наработки по реализации функционала прохождения лабиринта."""
+"""Основные функции прохождения лабиринта."""
 import re
 from collections import deque
 from dataclasses import dataclass
@@ -6,6 +6,8 @@ from typing import List, Optional, Tuple
 
 from bs4 import BeautifulSoup
 from requests_html import HTMLSession
+
+from constants import LABIRINT_MAP_URL
 
 
 @dataclass
@@ -28,9 +30,6 @@ def text_delimetr(text: str) -> Optional[tuple[int, str]]:
         rest_part = match.group(2)
 
         return number_part, rest_part
-
-
-LAB_URL = 'https://haddan.novikovproject.ru/maze?level='
 
 
 def get_labirint_map(
@@ -118,7 +117,7 @@ def find_shortest_path(
         labirint_map: List[List[Room]],
         start_pos: Tuple[int, int],
         end_pos: Tuple[int, int]) -> Optional[List[Tuple[int, int]]]:
-    """BFS: поиск кратчайшего пути между двумя точками
+    """BFS: поиск кратчайшего пути между двумя точками.
 
     (возвращает координаты)
     """
@@ -148,45 +147,85 @@ def find_shortest_path(
     return path
 
 
-def get_outer_boxes(labirint_map: List[List[Room]]) -> List[Tuple[int, int]]:
-    """Список координат всех комнат с box_outer=True"""
-    return [
+def get_direction(
+        current_pos: Tuple[int, int],
+        next_pos: Tuple[int, int]) -> str:
+    """Определяет направление движения между двумя точками"""
+    ci, cj = current_pos
+    ni, nj = next_pos
+
+    if ni == ci - 1 and nj == cj:
+        return "север"
+    elif ni == ci + 1 and nj == cj:
+        return "юг"
+    elif ni == ci and nj == cj - 1:
+        return "запад"
+    elif ni == ci and nj == cj + 1:
+        return "восток"
+    else:
+        raise ValueError("Невозможно определить направление")
+
+
+def convert_path_to_directions(
+        labirint_map: List[List[Room]],
+        path_coords: List[Tuple[int, int]]) -> List[str]:
+    """Преобразует путь в координатах в список направлений"""
+    directions = []
+    for i in range(len(path_coords) - 1):
+        current = path_coords[i]
+        next_pos = path_coords[i + 1]
+        direction = get_direction(current, next_pos)
+        directions.append(direction)
+    return directions
+
+
+def find_path_with_directions(
+    labirint_map: List[List[Room]],
+    start_room: int,
+    end_room: int
+) -> Optional[List[str]]:
+    """Находит путь и возвращает направления (например, ['юг', 'восток'])"""
+    start_pos = find_room_position(labirint_map, start_room)
+    end_pos = find_room_position(labirint_map, end_room)
+
+    if not start_pos or not end_pos:
+        return None
+
+    path_coords = find_shortest_path(labirint_map, start_pos, end_pos)
+    if not path_coords:
+        return None
+
+    return convert_path_to_directions(labirint_map, path_coords)
+
+
+def find_path_via_boxes_with_directions(
+    labirint_map: List[List[Room]],
+    start_room: int,
+    target_room: int
+) -> Optional[List[str]]:
+    """
+    Возвращает направления для пути:
+    1) Через все комнаты с box_outer=True,
+    2) С завершением в target_room.
+    """
+    boxes = [
         (i, j)
         for i, row in enumerate(labirint_map)
         for j, room in enumerate(row)
         if room.box_outer
     ]
 
-
-def find_path_via_boxes_to_target(
-    labirint_map: List[List[Room]],
-    start_room: int,
-    target_room: int
-) -> Optional[List[int]]:
-    """
-    Находит путь, который:
-    1) Начинается в start_room,
-    2) Проходит через ВСЕ комнаты с box_outer=True,
-    3) Заканчивается в target_room.
-    """
     start_pos = find_room_position(labirint_map, start_room)
     target_pos = find_room_position(labirint_map, target_room)
+
     if not start_pos or not target_pos:
         return None
 
-    boxes = get_outer_boxes(labirint_map)
-    if not boxes:
-        # Если нет коробок, просто ищем путь до target_room
-        path_coords = find_shortest_path(labirint_map, start_pos, target_pos)
-        return [
-            labirint_map[i][j].number for (i, j) in path_coords
-            ] if path_coords else None
-
+    full_path_coords = []
     current_pos = start_pos
-    remaining_boxes = set(boxes)
-    full_path = [start_room]
 
     # Проходим через все коробки
+    remaining_boxes = set(boxes)
     while remaining_boxes:
         nearest_box = None
         shortest_path = None
@@ -200,16 +239,13 @@ def find_path_via_boxes_to_target(
                 nearest_box = box
 
         if not nearest_box:
-            return None  # Не удалось найти путь
+            return None
 
-        # Добавляем путь к коробке
-        for (i, j) in shortest_path[1:]:
-            full_path.append(labirint_map[i][j].number)
-
+        full_path_coords.extend(shortest_path[1:])  # Исключаем текущую позицию
         current_pos = nearest_box
         remaining_boxes.remove(nearest_box)
 
-    # Идём из последней коробки в target_room
+    # Идём в целевую комнату
     if current_pos != target_pos:
         path_to_target = find_shortest_path(
             labirint_map,
@@ -218,28 +254,29 @@ def find_path_via_boxes_to_target(
         )
         if not path_to_target:
             return None
-        for (i, j) in path_to_target[1:]:
-            full_path.append(labirint_map[i][j].number)
+        full_path_coords.extend(path_to_target[1:])
 
-    return full_path
+    # Преобразуем координаты в направления
+    full_path_coords = [start_pos] + full_path_coords
+    return convert_path_to_directions(labirint_map, full_path_coords)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     session = HTMLSession()
-    url = LAB_URL
-    floor = '1'
-    # 1. Получаем карту
+
     labirint_map = get_labirint_map(
-        session, url, floor)
+        session,
+        url=LABIRINT_MAP_URL,
+        floor='2')
 
-    # 2. Ищем путь через все коробки с завершением в комнате 48
-    start_room = 0
-    target_room = 0
-    path = find_path_via_boxes_to_target(labirint_map, start_room, target_room)
+    # Пример 1: Простой путь из комнаты 0 в комнату 8
+    path = find_path_with_directions(labirint_map, 0, 46)
+    print(
+        "Направления:",
+        " → ".join(path) if path else "Путь не найден")
 
-    if path:
-        print(
-            "Путь через все коробки до комнаты",
-            target_room, ":", " → ".join(map(str, path)))
-    else:
-        print("Путь не найден")
+    # Пример 2: Путь через все коробки с завершением в комнате 48
+    path_via_boxes = find_path_via_boxes_with_directions(labirint_map, 0, 236)
+    print(
+        "Путь через коробки:",
+        " → ".join(path_via_boxes) if path_via_boxes else "Путь не найден")

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from constants import SLOT_VALUES, SlotsPage, Slot
+from constants import SLOT_VALUES, Slot, SlotsPage
 from tk_app.core import app
 
 

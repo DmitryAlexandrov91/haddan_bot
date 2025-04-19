@@ -7,7 +7,8 @@ from constants import LABIRINT_MAP_URL
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.fight import main_slots_page, get_round_spells, main_spell_slot
+from tk_app.interface.fight import (get_round_spells, main_slots_page,
+                                    main_spell_slot)
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
