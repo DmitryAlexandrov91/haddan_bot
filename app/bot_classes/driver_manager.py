@@ -247,23 +247,23 @@ class DriverManager:
 
     def open_slot_and_choise_spell(
             self,
-            slots_number: str,
-            spell_number: str):
+            slots_page: SlotsPage,
+            slot: Slot):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
         if not self.check_come_back():
             active_spell = self.get_active_spell()
             # print(f'Активный закл - {active_spell}')
             spell_to_cast = self.get_spell_to_cast(
-                spell_number=spell_number,
-                slot_number=slots_number
+                spell_number=slot,
+                slot_number=slots_page
             )
             # print(f'Нужно кастануть - {spell_to_cast}')
             if spell_to_cast != active_spell and not self.check_come_back():
                 self.driver.execute_script(
-                    f'slotsShow({int(slots_number) -1 })'
+                    f'slotsShow({int(slots_page) -1 })'
                 )
                 self.driver.execute_script(
-                    f'return qs_onClickSlot(event,{int(spell_number) - 1})'
+                    f'return qs_onClickSlot(event,{int(slot) - 1})'
                 )
 
     def get_hit_number(self) -> Optional[str]:
@@ -307,12 +307,12 @@ class DriverManager:
         else:
             try:
                 self.open_slot_and_choise_spell(
-                    slots_number=spell_book[round][kick]['slot'],
-                    spell_number=spell_book[round][kick]['spell'])
+                    slots_page=spell_book[round][kick]['slot'],
+                    slot=spell_book[round][kick]['spell'])
             except Exception:
                 self.open_slot_and_choise_spell(
-                    slots_number=default_slot,
-                    spell_number=default_spell)
+                    slots_page=default_slot,
+                    slot=default_spell)
 
             self.try_to_switch_to_central_frame()
             # sleep(0.5)
@@ -967,8 +967,8 @@ class DriverManager:
                 while cheerfulnes < cheerfulnes_min:
 
                     self.open_slot_and_choise_spell(
-                        slots_number=cheerfulnes_slot,
-                        spell_number=cheerfulnes_spell
+                        slots_page=cheerfulnes_slot,
+                        slot=cheerfulnes_spell
                     )
 
                     sleep(1)
