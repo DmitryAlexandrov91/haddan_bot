@@ -88,7 +88,7 @@ GAMBLE_SPIRIT_RIGHT_ANSWERS = (
 SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7')
 
 
-class Slot(Enum):
+class SlotsPage(Enum):
     _0 = '1'
     _1 = '2'
     _2 = '3'

@@ -25,7 +25,7 @@ from utils import (get_attr_from_string, get_dragon_time_wait,
                    time_extractor)
 from webdriver_manager.chrome import ChromeDriverManager
 
-from constants import Slot, Spell
+from constants import SlotsPage, Spell
 
 
 class DriverManager:
@@ -295,8 +295,8 @@ class DriverManager:
     def fight(
             self,
             spell_book: dict,
-            default_slot: Slot,
-            default_spell: Spell):
+            default_slot: SlotsPage = SlotsPage._1,
+            default_spell: Spell = Spell._1):
         """Проводит бой."""
         round = self.get_round_number()
         kick = self.get_hit_number()
@@ -598,7 +598,7 @@ class DriverManager:
     def glade_farm(
             self,
             price_dict: dict = FIELD_PRICES,
-            slots: Slot = Slot._1,
+            slots: SlotsPage = SlotsPage._1,
             spell: Spell = Spell._1,
             message_to_tg: bool = False,
             telegram_id: int = None,
@@ -689,7 +689,7 @@ class DriverManager:
 
     def farm(
             self,
-            slots: Slot = Slot._1,
+            slots: SlotsPage = SlotsPage._1,
             spell: Spell = Spell._1,
             up_down_move: bool = False,
             left_right_move: bool = False,
@@ -700,7 +700,7 @@ class DriverManager:
             spell_book: dict = None,
             cheerfulness: bool = False,
             cheerfulness_min: int = None,
-            cheerfulness_slot: Slot = Slot._0,
+            cheerfulness_slot: SlotsPage = SlotsPage._0,
             cheerfulness_spell: Spell = Spell._1
             ):
         """Фарм с проведением боя."""
@@ -795,7 +795,7 @@ class DriverManager:
 
     def dragon_farm(
             self,
-            default_slot: Slot = Slot._1,
+            default_slot: SlotsPage = SlotsPage._1,
             default_spell: Spell = Spell._5,
             spell_book: dict = None,
             message_to_tg: bool = False,
@@ -948,7 +948,7 @@ class DriverManager:
     def check_cheerfulnes_level(
             self,
             cheerfulnes_min: int,
-            cheerfulnes_slot: Slot = Slot._0,
+            cheerfulnes_slot: SlotsPage = SlotsPage._0,
             cheerfulnes_spell: Spell = Spell._1):
         """Проверяет уровень бодрости.
 
