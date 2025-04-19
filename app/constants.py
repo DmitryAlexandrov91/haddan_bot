@@ -112,3 +112,9 @@ class Slot(Enum):
 
     def __str__(self):
         return self.value
+
+
+class Floor(Enum):
+    FIRST_FLOOR = '1'
+    SECOND_FLOOR = '2'
+    THIRD_FLOOR = '3'

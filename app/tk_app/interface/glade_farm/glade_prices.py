@@ -156,12 +156,12 @@ mandragora_label = tk.Label(
     text='Мандрагора',
     bg='#FFF4DC'
 )
-mandragora_label.grid(row=8, column=0, sticky='w')
+mandragora_label.grid(row=7, column=0, sticky='w')
 
 mandragora_field = tk.Entry(
     app, width=5
 )
-mandragora_field.grid(row=8, column=0, sticky='e')
+mandragora_field.grid(row=7, column=0, sticky='e')
 
 mandragora_button = tk.Button(
     app,
@@ -170,19 +170,19 @@ mandragora_button = tk.Button(
     bg='#FFF4DC',
     command=lambda: price_change(mandragora_label, mandragora_field)
     )
-mandragora_button.grid(row=8, column=2)
+mandragora_button.grid(row=7, column=2)
 
 # Зеленая Массивка
 green_mass_label = tk.Label(
     text='Зеленая массивка',
     bg='#FFF4DC'
 )
-green_mass_label.grid(row=9, column=0, sticky='w')
+green_mass_label.grid(row=8, column=0, sticky='w')
 
 green_mass_field = tk.Entry(
     app, width=5
 )
-green_mass_field.grid(row=9, column=0, sticky='e')
+green_mass_field.grid(row=8, column=0, sticky='e')
 
 green_mass_button = tk.Button(
     app,
@@ -191,19 +191,19 @@ green_mass_button = tk.Button(
     bg='#FFF4DC',
     command=lambda: price_change(green_mass_label, green_mass_field)
     )
-green_mass_button.grid(row=9, column=2)
+green_mass_button.grid(row=8, column=2)
 
 # Колючник Черный
 koluchka_label = tk.Label(
     text='Колючник Черный',
     bg='#FFF4DC'
 )
-koluchka_label.grid(row=10, column=0, sticky='w')
+koluchka_label.grid(row=9, column=0, sticky='w')
 
 koluchka_field = tk.Entry(
     app, width=5
 )
-koluchka_field.grid(row=10, column=0, sticky='e')
+koluchka_field.grid(row=9, column=0, sticky='e')
 
 koluchka_button = tk.Button(
     app,
@@ -212,19 +212,19 @@ koluchka_button = tk.Button(
     bg='#FFF4DC',
     command=lambda: price_change(koluchka_label, koluchka_field)
     )
-koluchka_button.grid(row=10, column=2)
+koluchka_button.grid(row=9, column=2)
 
 # Гертаниум
 gertanium_label = tk.Label(
     text='Гертаниум',
     bg='#FFF4DC'
 )
-gertanium_label.grid(row=11, column=0, sticky='w')
+gertanium_label.grid(row=10, column=0, sticky='w')
 
 gertanium_field = tk.Entry(
     app, width=5
 )
-gertanium_field.grid(row=11, column=0, sticky='e')
+gertanium_field.grid(row=10, column=0, sticky='e')
 
 gertanium_button = tk.Button(
     app,
@@ -233,4 +233,4 @@ gertanium_button = tk.Button(
     bg='#FFF4DC',
     command=lambda: price_change(gertanium_label, gertanium_field)
     )
-gertanium_button.grid(row=11, column=2)
+gertanium_button.grid(row=10, column=2)

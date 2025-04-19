@@ -119,7 +119,7 @@ labirint_map = tk.Button(
     command=open_map
 )
 labirint_map.grid(
-    row=11,
+    row=10,
     column=1,
 )
 #  --------------------------------------------------------------------

@@ -29,6 +29,7 @@ from tk_app.interface.dev_code import *  # noqa
 from tk_app.interface.fight import *  # noqa
 from tk_app.interface.glade_farm import *  # noqa
 from tk_app.interface.login import *  # noqa
+from tk_app.interface.maze import *  # noqa
 
 
 def start_app():

@@ -5,9 +5,8 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 from bs4 import BeautifulSoup
+from constants import LABIRINT_MAP_URL, Floor
 from requests_html import HTMLSession
-
-from constants import LABIRINT_MAP_URL
 
 
 @dataclass
@@ -35,7 +34,7 @@ def text_delimetr(text: str) -> Optional[tuple[int, str]]:
 def get_labirint_map(
         session: HTMLSession,
         url: str,
-        floor: str) -> list[Room]:
+        floor: Floor) -> list[Room]:
     parsed_url = url + floor
     response = session.get(parsed_url)
     response.html.render(sleep=3)
@@ -261,22 +260,18 @@ def find_path_via_boxes_with_directions(
     return convert_path_to_directions(labirint_map, full_path_coords)
 
 
-if __name__ == '__main__':
+def get_floor_map(floor: Floor) -> list[list[Room]]:
     session = HTMLSession()
 
     labirint_map = get_labirint_map(
         session,
         url=LABIRINT_MAP_URL,
-        floor='2')
+        floor=floor)
 
-    # Пример 1: Простой путь из комнаты 0 в комнату 8
-    path = find_path_with_directions(labirint_map, 0, 46)
-    print(
-        "Направления:",
-        " → ".join(path) if path else "Путь не найден")
+    return labirint_map
 
-    # Пример 2: Путь через все коробки с завершением в комнате 48
-    path_via_boxes = find_path_via_boxes_with_directions(labirint_map, 0, 236)
-    print(
-        "Путь через коробки:",
-        " → ".join(path_via_boxes) if path_via_boxes else "Путь не найден")
+
+if __name__ == '__main__':
+    print(get_floor_map(
+        floor=Floor.FIRST_FLOOR.value
+    ))
