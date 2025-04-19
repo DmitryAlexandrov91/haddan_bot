@@ -101,7 +101,7 @@ class SlotsPage(Enum):
         return self.value
 
 
-class Spell(Enum):
+class Slot(Enum):
     _1 = '1'
     _2 = '2'
     _3 = '3'

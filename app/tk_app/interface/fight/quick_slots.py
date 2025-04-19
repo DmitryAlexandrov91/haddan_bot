@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from constants import SLOT_VALUES, SlotsPage, Spell
+from constants import SLOT_VALUES, SlotsPage, Slot
 from tk_app.core import app
 
 
@@ -31,7 +31,7 @@ fight_slot = tk.StringVar(app)
 fight_slot.set(SlotsPage._1)
 
 spell_slot = tk.StringVar(app)
-spell_slot.set(Spell._1)
+spell_slot.set(Slot._1)
 
 main_slot_label = tk.OptionMenu(
     app, fight_slot, *SLOT_VALUES
@@ -59,7 +59,7 @@ r1y1_slot = tk.StringVar(app)
 r1y1_slot.set(SlotsPage._1)
 
 r1y1_spell = tk.StringVar(app)
-r1y1_spell.set(Spell._1)
+r1y1_spell.set(Slot._1)
 
 r1y1_slot_choise = tk.OptionMenu(
     app, r1y1_slot, *SLOT_VALUES,
@@ -76,7 +76,7 @@ r1y2_slot = tk.StringVar(app)
 r1y2_slot.set(SlotsPage._1)
 
 r1y2_spell = tk.StringVar(app)
-r1y2_spell.set(Spell._1)
+r1y2_spell.set(Slot._1)
 
 r1y2_slot_choise = tk.OptionMenu(
     app, r1y2_slot, *SLOT_VALUES,
@@ -93,7 +93,7 @@ r1y3_slot = tk.StringVar(app)
 r1y3_slot.set(SlotsPage._1)
 
 r1y3_spell = tk.StringVar(app)
-r1y3_spell.set(Spell._1)
+r1y3_spell.set(Slot._1)
 
 r1y3_slot_choise = tk.OptionMenu(
     app, r1y3_slot, *SLOT_VALUES,
@@ -111,7 +111,7 @@ r1y4_slot = tk.StringVar(app)
 r1y4_slot.set(SlotsPage._1)
 
 r1y4_spell = tk.StringVar(app)
-r1y4_spell.set(Spell._1)
+r1y4_spell.set(Slot._1)
 
 r1y4_slot_choise = tk.OptionMenu(
     app, r1y4_slot, *SLOT_VALUES,
@@ -139,7 +139,7 @@ r2y1_slot = tk.StringVar(app)
 r2y1_slot.set(SlotsPage._1)
 
 r2y1_spell = tk.StringVar(app)
-r2y1_spell.set(Spell._1)
+r2y1_spell.set(Slot._1)
 
 r2y1_slot_choise = tk.OptionMenu(
     app, r2y1_slot, *SLOT_VALUES,
@@ -156,7 +156,7 @@ r2y2_slot = tk.StringVar(app)
 r2y2_slot.set(SlotsPage._1)
 
 r2y2_spell = tk.StringVar(app)
-r2y2_spell.set(Spell._1)
+r2y2_spell.set(Slot._1)
 
 r2y2_slot_choise = tk.OptionMenu(
     app, r2y2_slot, *SLOT_VALUES,
@@ -173,7 +173,7 @@ r2y3_slot = tk.StringVar(app)
 r2y3_slot.set(SlotsPage._1)
 
 r2y3_spell = tk.StringVar(app)
-r2y3_spell.set(Spell._1)
+r2y3_spell.set(Slot._1)
 
 r2y3_slot_choise = tk.OptionMenu(
     app, r2y3_slot, *SLOT_VALUES,
@@ -191,7 +191,7 @@ r2y4_slot = tk.StringVar(app)
 r2y4_slot.set(SlotsPage._1)
 
 r2y4_spell = tk.StringVar(app)
-r2y4_spell.set(Spell._1)
+r2y4_spell.set(Slot._1)
 
 r2y4_slot_choise = tk.OptionMenu(
     app, r2y4_slot, *SLOT_VALUES
@@ -217,7 +217,7 @@ r3y1_slot = tk.StringVar(app)
 r3y1_slot.set(SlotsPage._1)
 
 r3y1_spell = tk.StringVar(app)
-r3y1_spell.set(Spell._1)
+r3y1_spell.set(Slot._1)
 
 r3y1_slot_choise = tk.OptionMenu(
     app, r3y1_slot, *SLOT_VALUES,
@@ -234,7 +234,7 @@ r3y2_slot = tk.StringVar(app)
 r3y2_slot.set(SlotsPage._1)
 
 r3y2_spell = tk.StringVar(app)
-r3y2_spell.set(Spell._1)
+r3y2_spell.set(Slot._1)
 
 r3y2_slot_choise = tk.OptionMenu(
     app, r3y2_slot, *SLOT_VALUES,
@@ -251,7 +251,7 @@ r3y3_slot = tk.StringVar(app)
 r3y3_slot.set(SlotsPage._1)
 
 r3y3_spell = tk.StringVar(app)
-r3y3_spell.set(Spell._1)
+r3y3_spell.set(Slot._1)
 
 r3y3_slot_choise = tk.OptionMenu(
     app, r3y3_slot, *SLOT_VALUES,
@@ -268,7 +268,7 @@ r3y4_slot = tk.StringVar(app)
 r3y4_slot.set(SlotsPage._1)
 
 r3y4_spell = tk.StringVar(app)
-r3y4_spell.set(Spell._1)
+r3y4_spell.set(Slot._1)
 
 r3y4_slot_choise = tk.OptionMenu(
     app, r3y4_slot, *SLOT_VALUES,
@@ -295,7 +295,7 @@ r4y1_slot = tk.StringVar(app)
 r4y1_slot.set(SlotsPage._1)
 
 r4y1_spell = tk.StringVar(app)
-r4y1_spell.set(Spell._1)
+r4y1_spell.set(Slot._1)
 
 r4y1_slot_choise = tk.OptionMenu(
     app, r4y1_slot, *SLOT_VALUES,
@@ -312,7 +312,7 @@ r4y2_slot = tk.StringVar(app)
 r4y2_slot.set(SlotsPage._1)
 
 r4y2_spell = tk.StringVar(app)
-r4y2_spell.set(Spell._1)
+r4y2_spell.set(Slot._1)
 
 r4y2_slot_choise = tk.OptionMenu(
     app, r4y2_slot, *SLOT_VALUES,
@@ -329,7 +329,7 @@ r4y3_slot = tk.StringVar(app)
 r4y3_slot.set(SlotsPage._1)
 
 r4y3_spell = tk.StringVar(app)
-r4y3_spell.set(Spell._1)
+r4y3_spell.set(Slot._1)
 
 r4y3_slot_choise = tk.OptionMenu(
     app, r4y3_slot, *SLOT_VALUES,
@@ -346,7 +346,7 @@ r4y4_slot = tk.StringVar(app)
 r4y4_slot.set(SlotsPage._1)
 
 r4y4_spell = tk.StringVar(app)
-r4y4_spell.set(Spell._1)
+r4y4_spell.set(Slot._1)
 
 r4y4_slot_choise = tk.OptionMenu(
     app, r4y4_slot, *SLOT_VALUES,
@@ -372,7 +372,7 @@ r5y1_slot = tk.StringVar(app)
 r5y1_slot.set(SlotsPage._1)
 
 r5y1_spell = tk.StringVar(app)
-r5y1_spell.set(Spell._1)
+r5y1_spell.set(Slot._1)
 
 r5y1_slot_choise = tk.OptionMenu(
     app, r5y1_slot, *SLOT_VALUES,
@@ -389,7 +389,7 @@ r5y2_slot = tk.StringVar(app)
 r5y2_slot.set(SlotsPage._1)
 
 r5y2_spell = tk.StringVar(app)
-r5y2_spell.set(Spell._1)
+r5y2_spell.set(Slot._1)
 
 r5y2_slot_choise = tk.OptionMenu(
     app, r5y2_slot, *SLOT_VALUES,
@@ -406,7 +406,7 @@ r5y3_slot = tk.StringVar(app)
 r5y3_slot.set(SlotsPage._1)
 
 r5y3_spell = tk.StringVar(app)
-r5y3_spell.set(Spell._1)
+r5y3_spell.set(Slot._1)
 
 r5y3_slot_choise = tk.OptionMenu(
     app, r5y3_slot, *SLOT_VALUES,
@@ -423,7 +423,7 @@ r5y4_slot = tk.StringVar(app)
 r5y4_slot.set(SlotsPage._1)
 
 r5y4_spell = tk.StringVar(app)
-r5y4_spell.set(Spell._1)
+r5y4_spell.set(Slot._1)
 
 r5y4_slot_choise = tk.OptionMenu(
     app, r5y4_slot, *SLOT_VALUES,
@@ -449,7 +449,7 @@ r6y1_slot = tk.StringVar(app)
 r6y1_slot.set(SlotsPage._1)
 
 r6y1_spell = tk.StringVar(app)
-r6y1_spell.set(Spell._1)
+r6y1_spell.set(Slot._1)
 
 r6y1_slot_choise = tk.OptionMenu(
     app, r6y1_slot, *SLOT_VALUES,
@@ -466,7 +466,7 @@ r6y2_slot = tk.StringVar(app)
 r6y2_slot.set(SlotsPage._1)
 
 r6y2_spell = tk.StringVar(app)
-r6y2_spell.set(Spell._1)
+r6y2_spell.set(Slot._1)
 
 r6y2_slot_choise = tk.OptionMenu(
     app, r6y2_slot, *SLOT_VALUES,
@@ -483,7 +483,7 @@ r6y3_slot = tk.StringVar(app)
 r6y3_slot.set(SlotsPage._1)
 
 r6y3_spell = tk.StringVar(app)
-r6y3_spell.set(Spell._1)
+r6y3_spell.set(Slot._1)
 
 r6y3_slot_choise = tk.OptionMenu(
     app, r6y3_slot, *SLOT_VALUES,
@@ -500,7 +500,7 @@ r6y4_slot = tk.StringVar(app)
 r6y4_slot.set(SlotsPage._1)
 
 r6y4_spell = tk.StringVar(app)
-r6y4_spell.set(Spell._1)
+r6y4_spell.set(Slot._1)
 
 r6y4_slot_choise = tk.OptionMenu(
     app, r6y4_slot, *SLOT_VALUES,
@@ -703,24 +703,24 @@ sync_button.grid(
 def get_dragon_preset():
     """Пресет для фарма драконов."""
     main_slot = SlotsPage._1
-    main_spell = Spell._5
+    main_spell = Slot._5
 
     fight_slot.set(main_slot)
     spell_slot.set(main_spell)
 
     r1y1_slot.set(SlotsPage._1)
-    r1y1_spell.set(Spell._1)
+    r1y1_spell.set(Slot._1)
     r1y2_slot.set(SlotsPage._1)
-    r1y2_spell.set(Spell._2)
+    r1y2_spell.set(Slot._2)
     r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Spell._3)
+    r1y3_spell.set(Slot._3)
     r1y4_slot.set(main_slot)
     r1y4_spell.set(main_spell)
 
     r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Spell._4)
+    r2y1_spell.set(Slot._4)
     r2y2_slot.set(SlotsPage._4)
-    r2y2_spell.set(Spell._1)
+    r2y2_spell.set(Slot._1)
     r2y3_slot.set(main_slot)
     r2y3_spell.set(main_spell)
     r2y4_slot.set(main_slot)
@@ -745,11 +745,11 @@ def get_dragon_preset():
     r4y4_spell.set(main_spell)
 
     r5y1_slot.set(SlotsPage._1)
-    r5y1_spell.set(Spell._1)
+    r5y1_spell.set(Slot._1)
     r5y2_slot.set(SlotsPage._1)
-    r5y2_spell.set(Spell._2)
+    r5y2_spell.set(Slot._2)
     r5y3_slot.set(SlotsPage._1)
-    r5y3_spell.set(Spell._3)
+    r5y3_spell.set(Slot._3)
     r5y4_slot.set(main_slot)
     r5y4_spell.set(main_spell)
 
@@ -777,7 +777,7 @@ dragon_preset.grid(
 def get_cy_preset():
     """Пресет для кача в ЦУ."""
     main_slot = SlotsPage._1
-    main_spell = Spell._6
+    main_spell = Slot._6
 
     fight_slot.set(main_slot)
     spell_slot.set(main_spell)
@@ -785,16 +785,16 @@ def get_cy_preset():
     sync_with_main_spell()
 
     r1y1_slot.set(SlotsPage._3)
-    r1y1_spell.set(Spell._1)
+    r1y1_spell.set(Slot._1)
     r1y2_slot.set(SlotsPage._1)
-    r1y2_spell.set(Spell._1)
+    r1y2_spell.set(Slot._1)
     r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Spell._1)
+    r1y3_spell.set(Slot._1)
 
     r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Spell._1)
+    r2y1_spell.set(Slot._1)
     r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Spell._1)
+    r2y2_spell.set(Slot._1)
 
 
 farm_CY_preset = tk.Button(
@@ -811,7 +811,7 @@ farm_CY_preset.grid(
 def get_coast_preset():
     """Пресет для фарма побережья."""
     main_slot = SlotsPage._1
-    main_spell = Spell._6
+    main_spell = Slot._6
 
     fight_slot.set(main_slot)
     spell_slot.set(main_spell)
@@ -819,28 +819,28 @@ def get_coast_preset():
     sync_with_main_spell()
 
     r1y1_slot.set(SlotsPage._3)
-    r1y1_spell.set(Spell._1)
+    r1y1_spell.set(Slot._1)
     r1y2_slot.set(SlotsPage._1)
-    r1y2_spell.set(Spell._1)
+    r1y2_spell.set(Slot._1)
     r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Spell._2)
+    r1y3_spell.set(Slot._2)
 
     r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Spell._3)
+    r2y1_spell.set(Slot._3)
     r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Spell._3)
+    r2y2_spell.set(Slot._3)
     r2y3_slot.set(SlotsPage._4)
-    r2y3_spell.set(Spell._1)
+    r2y3_spell.set(Slot._1)
 
     r3y1_slot.set(SlotsPage._1)
-    r3y1_spell.set(Spell._4)
+    r3y1_spell.set(Slot._4)
     r3y2_slot.set(SlotsPage._1)
-    r3y2_spell.set(Spell._4)
+    r3y2_spell.set(Slot._4)
 
     r4y1_slot.set(SlotsPage._1)
-    r4y1_spell.set(Spell._3)
+    r4y1_spell.set(Slot._3)
     r4y2_slot.set(SlotsPage._1)
-    r4y2_spell.set(Spell._4)
+    r4y2_spell.set(Slot._4)
 
 
 farm_coast_preset = tk.Button(
