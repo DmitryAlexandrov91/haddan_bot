@@ -27,19 +27,19 @@ quick_slots_open_btn.grid(
 )
 
 #  Кнопки основного заклинания ----------------------------------------
-fight_slot = tk.StringVar(app)
-fight_slot.set(SlotsPage._1)
+main_slots_page = tk.StringVar(app)
+main_slots_page.set(SlotsPage._1)
 
-spell_slot = tk.StringVar(app)
-spell_slot.set(Slot._1)
+main_spell_slot = tk.StringVar(app)
+main_spell_slot.set(Slot._1)
 
 main_slot_label = tk.OptionMenu(
-    app, fight_slot, *SLOT_VALUES
+    app, main_slots_page, *SLOT_VALUES
 )
 main_slot_label.grid(row=1, column=5)
 
 main_spell_label = tk.OptionMenu(
-    app, spell_slot, *SLOT_VALUES,
+    app, main_spell_slot, *SLOT_VALUES,
 )
 main_spell_label.grid(row=1, column=6)
 #  --------------------------------------------------------------------
@@ -631,8 +631,8 @@ def get_round_spells():
 
 def sync_with_main_spell():
     """Синхронизирует все слоты с основным ударом."""
-    main_slot = fight_slot.get()
-    main_spell = spell_slot.get()
+    main_slot = main_slots_page.get()
+    main_spell = main_spell_slot.get()
 
     r1y1_slot.set(main_slot)
     r1y1_spell.set(main_spell)
@@ -705,8 +705,8 @@ def get_dragon_preset():
     main_slot = SlotsPage._1
     main_spell = Slot._5
 
-    fight_slot.set(main_slot)
-    spell_slot.set(main_spell)
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
 
     r1y1_slot.set(SlotsPage._1)
     r1y1_spell.set(Slot._1)
@@ -779,8 +779,8 @@ def get_cy_preset():
     main_slot = SlotsPage._1
     main_spell = Slot._6
 
-    fight_slot.set(main_slot)
-    spell_slot.set(main_spell)
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
 
     sync_with_main_spell()
 
@@ -813,8 +813,8 @@ def get_coast_preset():
     main_slot = SlotsPage._1
     main_spell = Slot._6
 
-    fight_slot.set(main_slot)
-    spell_slot.set(main_spell)
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
 
     sync_with_main_spell()
 

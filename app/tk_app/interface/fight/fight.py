@@ -10,7 +10,7 @@ from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
-from .quick_slots import fight_slot, get_round_spells, spell_slot
+from .quick_slots import main_slots_page, get_round_spells, main_spell_slot
 
 
 #  Функции блока автобоя. ------------------------------
@@ -29,8 +29,8 @@ def start_fight():
     try:
 
         manager.farm(
-            slots=fight_slot.get(),
-            spell=spell_slot.get(),
+            slots=main_slots_page.get(),
+            spell=main_spell_slot.get(),
             up_down_move=up_down_move,
             left_right_move=left_right_move,
             mind_spirit_play=mind_spirit_play,

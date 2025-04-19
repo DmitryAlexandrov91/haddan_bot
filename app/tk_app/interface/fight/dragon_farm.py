@@ -8,7 +8,7 @@ from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
-from .quick_slots import fight_slot, get_round_spells, spell_slot
+from .quick_slots import main_slots_page, get_round_spells, main_spell_slot
 
 
 #  Функции фарма драконов.
@@ -19,8 +19,8 @@ def start_dragon_farm():
 
     try:
         manager.dragon_farm(
-            default_slot=fight_slot.get(),
-            default_spell=spell_slot.get(),
+            default_slot=main_slots_page.get(),
+            default_spell=main_spell_slot.get(),
             spell_book=get_round_spells(),
             message_to_tg=send_message_checkbox_value.get(),
             telegram_id=int(tg_id_field.get().strip())
