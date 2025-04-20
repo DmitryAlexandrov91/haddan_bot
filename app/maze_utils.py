@@ -1,23 +1,13 @@
 """Основные функции прохождения лабиринта."""
+import asyncio
 import re
 from collections import deque
-from dataclasses import dataclass
+from multiprocessing import Pool
 from typing import List, Optional, Tuple
 
 from bs4 import BeautifulSoup
-from constants import LABIRINT_MAP_URL, Floor
+from constants import LABIRINT_MAP_URL, Floor, Room
 from requests_html import HTMLSession
-
-
-@dataclass
-class Room:
-    number: int
-    box_outer: bool = False
-    box_item: Optional[str] = None
-    north: bool = False
-    south: bool = False
-    west: bool = False
-    east: bool = False
 
 
 def text_delimetr(text: str) -> Optional[tuple[int, str]]:
@@ -32,13 +22,14 @@ def text_delimetr(text: str) -> Optional[tuple[int, str]]:
 
 
 def get_labirint_map(
-        session: HTMLSession,
         url: str,
         floor: Floor) -> list[Room]:
     parsed_url = url + floor
-    response = session.get(parsed_url)
-    response.html.render(sleep=3)
-    soup = BeautifulSoup(response.html.html, 'lxml')
+
+    with Pool(1) as pool:
+        html = pool.apply(render_url, (parsed_url,))
+
+    soup = BeautifulSoup(html, 'lxml')
     map = soup.find(class_='maze-map__content')
     rows = map.find_all('tr')
     labirint_map = []
@@ -260,11 +251,16 @@ def find_path_via_boxes_with_directions(
     return convert_path_to_directions(labirint_map, full_path_coords)
 
 
-def get_floor_map(floor: Floor) -> list[list[Room]]:
+def render_url(url):
     session = HTMLSession()
+    response = session.get(url)
+    response.html.render(sleep=3)
+    return response.html.html
+
+
+def get_floor_map(floor: Floor) -> list[list[Room]]:
 
     labirint_map = get_labirint_map(
-        session,
         url=LABIRINT_MAP_URL,
         floor=floor)
 

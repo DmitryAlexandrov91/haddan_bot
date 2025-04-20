@@ -43,6 +43,8 @@ def tk_glade_farm():
 
 def stop_farm():
     manager.stop_event()
+    while manager.event.thread.is_alive():
+        sleep(1)
     glade_farm_start_buttton.configure(foreground="black")
     print('Останавливаю фарм поляны')
 
@@ -50,8 +52,8 @@ def stop_farm():
 def start_glade_farm_thread():
     manager.stop_event()
     glade_farm_start_buttton.configure(foreground="green")
-    manager.thread = threading.Thread(target=tk_glade_farm, daemon=True)
-    manager.thread.start()
+    manager.event.thread = threading.Thread(target=tk_glade_farm, daemon=True)
+    manager.event.thread.start()
 
 
 glade__farm_lable = tk.Label(

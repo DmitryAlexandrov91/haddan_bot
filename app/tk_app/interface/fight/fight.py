@@ -57,6 +57,8 @@ def start_fight():
 
 def stop_fight():
     manager.stop_event()
+    while manager.event.thread.is_alive():
+        sleep(1)
     fight_start_btn.configure(foreground='black')
     print('Останавливаю автобой')
 

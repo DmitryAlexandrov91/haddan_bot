@@ -1,5 +1,7 @@
 import os
+from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -118,3 +120,14 @@ class Floor(Enum):
     FIRST_FLOOR = '1'
     SECOND_FLOOR = '2'
     THIRD_FLOOR = '3'
+
+
+@dataclass
+class Room:
+    number: int
+    box_outer: bool = False
+    box_item: Optional[str] = None
+    north: bool = False
+    south: bool = False
+    west: bool = False
+    east: bool = False

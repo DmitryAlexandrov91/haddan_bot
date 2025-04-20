@@ -8,7 +8,8 @@ from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
 
-from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
+from .quick_slots import (get_dragon_preset, get_round_spells, main_slots_page,
+                          main_spell_slot)
 
 
 #  Функции фарма драконов.
@@ -34,11 +35,14 @@ def start_dragon_farm():
         sleep(5)
         start_login_thread()
         sleep(5)
+        get_dragon_preset()
         start_dragon_thread()
 
 
 def stop_dragon_farm():
     manager.stop_event()
+    while manager.event.thread.is_alive():
+        sleep(1) 
     dragon_farm_start_button.configure(foreground='black')
     print('Останавливаю фарм драконов')
 
