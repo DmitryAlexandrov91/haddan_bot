@@ -374,6 +374,7 @@ class DriverManager:
                     'talksayTak')
 
                 while spirit_answers:
+
                     spirit_text = self.driver.find_elements(
                         By.CLASS_NAME,
                         'talksayBIG')
@@ -1028,7 +1029,7 @@ class DriverManager:
         :cheerfulnes_slot: страница слотов с бодрой.
         :cheerfulnes_spell: номер слота с бодрой.
         """
-        if not self.check_for_fight():
+        if self.check_for_fight() is False:
             cheerfulnes_level = self.driver.find_elements(
                 By.CLASS_NAME, 'current-bf')
             if cheerfulnes_level:

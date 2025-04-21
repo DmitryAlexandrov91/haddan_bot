@@ -264,9 +264,3 @@ def get_floor_map(floor: Floor) -> list[list[Room]]:
         floor=floor)
 
     return labirint_map
-
-
-if __name__ == '__main__':
-    print(get_floor_map(
-        floor=Floor.FIRST_FLOOR.value
-    ))

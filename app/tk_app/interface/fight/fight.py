@@ -19,12 +19,15 @@ def start_fight():
     fight_start_btn.configure(foreground='green')
     manager.start_event()
 
+    telegram_id = tg_id_field.get().strip()
+    min_hp = min_hp_field.get().strip()
+
     up_down_move = up_down_checkbox_value.get()
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
-    user_telegram_id = int(tg_id_field.get().strip())
-    minimum_hp = int(min_hp_field.get().strip())
+    user_telegram_id = int(telegram_id) if telegram_id else None
+    minimum_hp = int(min_hp) if min_hp else 0
 
     try:
 

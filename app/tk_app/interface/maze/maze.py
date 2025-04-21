@@ -14,9 +14,10 @@ from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
 from tk_app.interface.fight.quick_slots import get_round_spells
 
 
-def maze_passing():
+def start_maze_passing():
     print('Начинаем прохождение лаба')
     manager.start_event()
+    maze_passing_start_button.configure(foreground="green")
 
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
@@ -45,8 +46,9 @@ def maze_passing():
 
 def start_maze_passing_thread():
     manager.stop_event()
-    maze_passing_start_button.configure(foreground="green")
-    manager.event.thread = threading.Thread(target=maze_passing, daemon=True)
+    manager.event.thread = threading.Thread(
+        target=start_maze_passing,
+        daemon=True)
     manager.event.thread.start()
 
 
