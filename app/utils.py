@@ -144,8 +144,3 @@ def get_dragon_time_wait(text: str):
     seconds_to_wait = int(delta.total_seconds())
 
     return seconds_to_wait
-
-
-if __name__ == '__main__':
-    text = 'Вам нужно подождать до 10:15:10 17-04-2025'
-    print(get_dragon_time_wait(text))

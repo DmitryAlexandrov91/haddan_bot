@@ -40,6 +40,7 @@ class DriverManager:
         self.event: threading.Event = threading.Event()
         self.errors_count: int = 0
         self.wait_timeout: int = 30
+        self.app: 
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -1086,12 +1087,22 @@ class DriverManager:
             ):
         """Прохождение лабиринта."""
 
+        temp_manager = DriverManager()
+
         if first_floor:
-            labirint_map = get_floor_map(floor=Floor.FIRST_FLOOR.value)
+            labirint_map = get_floor_map(
+                floor=Floor.FIRST_FLOOR.value,
+                manager=temp_manager)
         if second_floor:
-            labirint_map = get_floor_map(floor=Floor.SECOND_FLOOR.value)
+            labirint_map = get_floor_map(
+                floor=Floor.SECOND_FLOOR.value,
+                manager=temp_manager
+                )
         if third_floor:
-            labirint_map = get_floor_map(floor=Floor.THIRD_FLOOR.value)
+            labirint_map = get_floor_map(
+                floor=Floor.THIRD_FLOOR.value,
+                manager=temp_manager
+                )
 
         while self.event.is_set() is True:
 

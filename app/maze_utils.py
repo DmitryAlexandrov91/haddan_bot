@@ -1,12 +1,11 @@
 """Основные функции прохождения лабиринта."""
 import re
 from collections import deque
-from multiprocessing import Pool
 from typing import List, Optional, Tuple
+import tempfile
 
-from bs4 import BeautifulSoup
 from constants import LABIRINT_MAP_URL, Floor, Room
-from requests_html import HTMLSession
+from selenium.webdriver.common.by import By
 
 
 def text_delimetr(text: str) -> Optional[tuple[int, str]]:
@@ -22,51 +21,56 @@ def text_delimetr(text: str) -> Optional[tuple[int, str]]:
 
 def get_labirint_map(
         url: str,
-        floor: Floor) -> list[Room]:
-    parsed_url = url + floor
+        floor: Floor,
+        manager) -> list[Room]:
+    lab_url = url + floor
 
-    with Pool(1) as pool:
-        html = pool.apply(render_url, (parsed_url,))
+    manager.driver.set_page_load_timeout(30)
+    manager.driver.set_script_timeout(30)
 
-    soup = BeautifulSoup(html, 'lxml')
-    map = soup.find(class_='maze-map__content')
-    rows = map.find_all('tr')
-    labirint_map = []
+    manager.driver.get(lab_url)
 
-    for row in rows:
-        rooms_in_row = row.find_all('td')
+    map_table = manager.driver.find_elements(By.CLASS_NAME, 'maze-map__content')
+    if map_table:
+        rows = map_table[0].find_elements(By.TAG_NAME, 'tr')
 
-        line = []
-        for room in rooms_in_row:
-            text = room.text.strip()
-            gif_path = room['background']
-            gif_name = gif_path.split('/')[-1][:4]
-            north, south, west, east = gif_name
+        labirint_map = []
 
-            if len(text) <= 3:
-                line.append(
-                    Room(
-                        number=int(text),
-                        north=bool(int(north)),
-                        south=bool(int(south)),
-                        west=bool(int(west)),
-                        east=bool(int(east))
+        for row in rows:
+            rooms_in_row = row.find_elements(By.TAG_NAME, 'td')
+            line = []
+
+            for room in rooms_in_row:
+                # Получаем текст и атрибуты комнаты
+                text = room.text.strip()
+                gif_path = room.get_attribute('background')
+                gif_name = gif_path.split('/')[-1][:4]
+                north, south, west, east = gif_name
+
+                if len(text) <= 3:
+                    line.append(
+                        Room(
+                            number=int(text),
+                            north=bool(int(north)),
+                            south=bool(int(south)),
+                            west=bool(int(west)),
+                            east=bool(int(east))
+                        )
                     )
-                )
-            else:
-                room_number, rest_part = text_delimetr(text)
-                line.append(
-                    Room(
-                        number=room_number,
-                        box_outer=True if 'портал' not in rest_part else False,
-                        box_item=rest_part,
-                        north=bool(int(north)),
-                        south=bool(int(south)),
-                        west=bool(int(west)),
-                        east=bool(int(east))
+                else:
+                    room_number, rest_part = text_delimetr(text)
+                    line.append(
+                        Room(
+                            number=room_number,
+                            box_outer='портал' not in rest_part,
+                            box_item=rest_part,
+                            north=bool(int(north)),
+                            south=bool(int(south)),
+                            west=bool(int(west)),
+                            east=bool(int(east))
+                        )
                     )
-                )
-        labirint_map.append(line)
+            labirint_map.append(line)
 
     return labirint_map
 
@@ -250,17 +254,17 @@ def find_path_via_boxes_with_directions(
     return convert_path_to_directions(labirint_map, full_path_coords)
 
 
-def render_url(url):
-    session = HTMLSession()
-    response = session.get(url)
-    response.html.render(sleep=3)
-    return response.html.html
-
-
-def get_floor_map(floor: Floor) -> list[list[Room]]:
+def get_floor_map(
+        floor: Floor,
+        manager) -> list[list[Room]]:
+    manager.options.add_argument('--headless')
+    temp_directory = tempfile.mkdtemp()
+    manager.options.add_argument(f'--user-data-dir={temp_directory}')
+    manager.start_driver()
 
     labirint_map = get_labirint_map(
         url=LABIRINT_MAP_URL,
-        floor=floor)
+        floor=floor,
+        manager=manager)
 
     return labirint_map
