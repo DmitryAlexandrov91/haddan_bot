@@ -828,12 +828,12 @@ def get_coast_preset():
     r2y1_slot.set(SlotsPage._1)
     r2y1_spell.set(Slot._3)
     r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Slot._3)
+    r2y2_spell.set(Slot._4)
     r2y3_slot.set(SlotsPage._4)
     r2y3_spell.set(Slot._1)
 
     r3y1_slot.set(SlotsPage._1)
-    r3y1_spell.set(Slot._4)
+    r3y1_spell.set(Slot._3)
     r3y2_slot.set(SlotsPage._1)
     r3y2_spell.set(Slot._4)
 

@@ -1,5 +1,4 @@
 """Основные функции прохождения лабиринта."""
-import asyncio
 import re
 from collections import deque
 from multiprocessing import Pool

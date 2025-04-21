@@ -11,7 +11,8 @@ from configs import configure_logging
 from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
                        TIME_FORMAT, Floor, Slot, SlotsPage)
-from maze_utils import find_path_with_directions, get_floor_map
+from maze_utils import (find_path_via_boxes_with_directions,
+                        find_path_with_directions, get_floor_map)
 from selenium import webdriver
 from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.webdriver.chrome.service import Service
@@ -355,50 +356,70 @@ class DriverManager:
     #  Методы игры с духами. ****************************************
     def play_with_gamble_spirit(self):
         """Игра с духом азарта."""
-        gamble_spirit = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'img[id="roomnpc1850578"]')
+        try:
+            self.try_to_switch_to_central_frame()
 
-        if gamble_spirit:
-            gamble_spirit[0].click()
-            sleep(1)
-            self.try_to_switch_to_dialog()
-            spirit_answers = self.driver.find_elements(
-                By.CLASS_NAME,
-                'talksayTak')
+            gamble_spirit = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'img[id="roomnpc1850578"]')
 
-            while spirit_answers:
-                spirit_text = self.driver.find_elements(
+            if gamble_spirit:
+                gamble_spirit[0].click()
+                print('Играем с духом азарта.')
+                sleep(1)
+
+                self.try_to_switch_to_dialog()
+                spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
-                    'talksayBIG')
+                    'talksayTak')
 
-                if spirit_text and 'Параметры' in spirit_text[0].text:
-                    intimidation, next_room = get_intimidation_and_next_room(
-                        spirit_text[0].text)
+                while spirit_answers:
+                    spirit_text = self.driver.find_elements(
+                        By.CLASS_NAME,
+                        'talksayBIG')
 
-                    if next_room >= intimidation:
-                        right_choise = self.driver.find_elements(
-                            By.PARTIAL_LINK_TEXT, 'Довольно')
-                        right_choise[0].click()
-                    else:
-                        right_choise = self.driver.find_elements(
-                            By.PARTIAL_LINK_TEXT, 'Дальше!')
-                        right_choise[0].click()
+                    if spirit_text and 'Параметры' in spirit_text[0].text:
+                        intimidation, next_room = get_intimidation_and_next_room(
+                            spirit_text[0].text)
+
+                        if next_room >= intimidation:
+                            right_choise = self.driver.find_elements(
+                                By.PARTIAL_LINK_TEXT, 'Довольно')
+                            right_choise[0].click()
+                        else:
+                            right_choise = self.driver.find_elements(
+                                By.PARTIAL_LINK_TEXT, 'Дальше!')
+                            right_choise[0].click()
+
+                        spirit_answers = self.driver.find_elements(
+                            By.CLASS_NAME,
+                            'talksayTak'
+                        )
+                        sleep(0.5)
+                        continue
+
+                    self.right_answers_choise(GAMBLE_SPIRIT_RIGHT_ANSWERS)
 
                     spirit_answers = self.driver.find_elements(
                         By.CLASS_NAME,
                         'talksayTak'
                     )
                     sleep(0.5)
-                    continue
 
-                self.right_answers_choise(GAMBLE_SPIRIT_RIGHT_ANSWERS)
+        except Exception as e:
+            print(
+                'При игре с духом азарта возникла ошибка: ',
+                str(e)
+            )
+            self.try_to_switch_to_central_frame()
 
-                spirit_answers = self.driver.find_elements(
-                    By.CLASS_NAME,
-                    'talksayTak'
-                )
-                sleep(0.5)
+            gamble_spirit = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'img[id="roomnpc1850578"]')
+
+            if gamble_spirit:
+                self.play_with_gamble_spirit()
+            pass
 
     def play_with_poetry_spirit(self):
         """Игра с духом поэзии."""
@@ -406,21 +427,35 @@ class DriverManager:
                         By.CSS_SELECTOR,
                         'img[id="roomnpc1850579"]')
         if poetry_spirit:
-            poetry_spirit[0].click()
-            sleep(1)
+            try:
+                poetry_spirit[0].click()
+                sleep(1)
 
-            print('Играем с духом поэзии.')
-            self.try_to_switch_to_dialog()
-            spirit_answers = self.driver.find_elements(
-                By.CLASS_NAME,
-                'talksayTak0')
-            while spirit_answers:
-                self.right_answers_choise(POETRY_SPIRIT_RIGHT_ANSWERS)
+                print('Играем с духом поэзии.')
+                self.try_to_switch_to_dialog()
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
-                    'talksayTak0'
+                    'talksayTak0')
+                while spirit_answers:
+                    self.right_answers_choise(POETRY_SPIRIT_RIGHT_ANSWERS)
+                    spirit_answers = self.driver.find_elements(
+                        By.CLASS_NAME,
+                        'talksayTak0'
+                    )
+                    sleep(0.5)
+            except Exception as e:
+                print(
+                    'При игре с духом поэзии возникла ошибка: ',
+                    str(e)
                 )
-                sleep(0.5)
+                self.try_to_switch_to_central_frame()
+
+                poetry_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850579"]')
+                if poetry_spirit:
+                    self.play_with_poetry_spirit()
+                pass
 
     def play_with_mind_spirit(self):
         """Игра с духом ума."""
@@ -429,34 +464,50 @@ class DriverManager:
                         'img[id="roomnpc1850577"]')
 
         if mind_spirit:
-            mind_spirit[0].click()
-            sleep(0.5)
-            self.try_to_switch_to_dialog()
-
-            spirit_answers = self.driver.find_elements(
-                By.CLASS_NAME,
-                'talksayTak0')
-            while spirit_answers:
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Легко')
-                if right_choise:
-                    right_choise[0].click()
-
-                random_play = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Сходить')
-
-                if random_play:
-                    random_play[random.choice([0, 1])].click()
-
-                right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Телепортироваться')
-                if right_choise:
-                    right_choise[0].click()
+            try:
+                mind_spirit[0].click()
+                sleep(0.5)
+                self.try_to_switch_to_dialog()
 
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayTak0')
-                sleep(0.5)
+                while spirit_answers:
+                    right_choise = self.driver.find_elements(
+                            By.PARTIAL_LINK_TEXT, 'Легко')
+                    if right_choise:
+                        right_choise[0].click()
+
+                    random_play = self.driver.find_elements(
+                            By.PARTIAL_LINK_TEXT, 'Сходить')
+
+                    if random_play:
+                        random_play[random.choice([0, 1])].click()
+
+                    right_choise = self.driver.find_elements(
+                            By.PARTIAL_LINK_TEXT, 'Телепортироваться')
+                    if right_choise:
+                        right_choise[0].click()
+
+                    spirit_answers = self.driver.find_elements(
+                        By.CLASS_NAME,
+                        'talksayTak0')
+                    sleep(0.5)
+
+            except Exception as e:
+                print(
+                    'При игре с духом ума возникла ошибка: ',
+                    str(e)
+                )
+                self.try_to_switch_to_central_frame()
+
+                mind_spirit = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850577"]'
+                    )
+                if mind_spirit:
+                    self.play_with_mind_spirit()
+                pass
     #  **************************************************************
 
     # Фарм поляны. **************************************************
@@ -931,7 +982,7 @@ class DriverManager:
         if self.errors_count >= 10:
             self.driver.refresh()
             self.errors_count = 0
-            sleep(5)
+            self.sleep_while_event_is_true(5)
 
     def right_answers_choise(self, right_answers):
         """Проходит циклом по правильным ответам.
@@ -977,28 +1028,29 @@ class DriverManager:
         :cheerfulnes_slot: страница слотов с бодрой.
         :cheerfulnes_spell: номер слота с бодрой.
         """
-        cheerfulnes_level = self.driver.find_elements(
-            By.CLASS_NAME, 'current-bf')
-        if cheerfulnes_level:
-            cheerfulnes = int(cheerfulnes_level[0].text)
+        if not self.check_for_fight():
+            cheerfulnes_level = self.driver.find_elements(
+                By.CLASS_NAME, 'current-bf')
+            if cheerfulnes_level:
+                cheerfulnes = int(cheerfulnes_level[0].text)
 
-            if cheerfulnes_min:
+                if cheerfulnes_min:
 
-                while cheerfulnes < cheerfulnes_min:
+                    while cheerfulnes < cheerfulnes_min:
 
-                    self.open_slot_and_choise_spell(
-                        slots_page=cheerfulnes_slot,
-                        slot=cheerfulnes_spell
-                    )
+                        self.open_slot_and_choise_spell(
+                            slots_page=cheerfulnes_slot,
+                            slot=cheerfulnes_spell
+                        )
 
-                    sleep(1)
+                        sleep(1)
 
-                    cheerfulnes_level = self.driver.find_elements(
-                        By.CLASS_NAME, 'current-bf')
-                    if cheerfulnes_level:
-                        cheerfulnes = int(cheerfulnes_level[0].text)
-                    else:
-                        break
+                        cheerfulnes_level = self.driver.find_elements(
+                            By.CLASS_NAME, 'current-bf')
+                        if cheerfulnes_level:
+                            cheerfulnes = int(cheerfulnes_level[0].text)
+                        else:
+                            break
 
     def sleep_while_event_is_true(
             self, time_to_sleep: int):
@@ -1027,7 +1079,7 @@ class DriverManager:
             cheerfulness_min: int = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
             cheerfulness_spell: Slot = Slot._1,
-            first_floor: bool = True,
+            first_floor: bool = False,
             second_floor: bool = False,
             third_floor: bool = False
             ):
@@ -1041,81 +1093,171 @@ class DriverManager:
             labirint_map = get_floor_map(floor=Floor.THIRD_FLOOR.value)
 
         while self.event.is_set() is True:
-            print('Начинаем какой-то цикл')
 
-            self.default_maze_actions(
-                message_to_tg=message_to_tg,
-                telegram_id=telegram_id,
-                slots=slots,
-                spell=spell,
-                mind_spirit_play=mind_spirit_play,
-                min_hp=min_hp,
-                spell_book=spell_book,
-                cheerfulness=cheerfulness,
-                cheerfulness_min=cheerfulness_min,
-                cheerfulness_slot=cheerfulness_slot,
-                cheerfulness_spell=cheerfulness_spell
-            )
+            try:
 
-            if to_the_room is not None and not via_drop:
-
-                self.try_to_switch_to_central_frame()
-
-                print(
-                    f'Двигаемся по прямой в комнату {to_the_room}',
-                    f'Из комнаты {self.get_room_number()}'
-                )
-                path = find_path_with_directions(
-                    labirint_map=labirint_map,
-                    start_room=self.get_room_number(),
-                    end_room=to_the_room
+                self.default_maze_actions(
+                    message_to_tg=message_to_tg,
+                    telegram_id=telegram_id,
+                    slots=slots,
+                    spell=spell,
+                    mind_spirit_play=mind_spirit_play,
+                    min_hp=min_hp,
+                    spell_book=spell_book,
+                    cheerfulness=cheerfulness,
+                    cheerfulness_min=cheerfulness_min,
+                    cheerfulness_slot=cheerfulness_slot,
+                    cheerfulness_spell=cheerfulness_spell
                 )
 
-                print(f'Путь - {path}')
+                my_room = self.get_room_number()
+
+                #  Если указана комната и не стоит выбор через весь дроп.
+                if to_the_room is not None and not via_drop:
+
+                    print(
+                        f'Двигаемся по прямой в комнату {to_the_room}',
+                        f'из комнаты {my_room}'
+                    )
+                    path = find_path_with_directions(
+                        labirint_map=labirint_map,
+                        start_room=my_room,
+                        end_room=to_the_room
+                    )
+
+                #  Если указана комната и стоит выбор через весь дроп.
+                if to_the_room is not None and via_drop:
+
+                    print(
+                        f'Двигаемся через весь дроп в комнату {to_the_room}',
+                        f'из комнаты {my_room}'
+                    )
+
+                    path = find_path_via_boxes_with_directions(
+                        labirint_map=labirint_map,
+                        start_room=my_room,
+                        target_room=to_the_room
+                    )
+
+                attempt = 0  # Счётчик попыток.
 
                 while path:
 
-                    print(f'Путь - {path}')
+                    try:
+                        print(f'Осталось комнат: {len(path)}')
 
-                    WebDriverWait(self.driver, 30).until_not(
-                            EC.presence_of_element_located((
-                                By.XPATH,
-                                "//*[contains(text(),'Вы можете попасть')]"
-                                ))
+                        self.try_to_switch_to_central_frame()
+                        sleep(1)
+
+                        WebDriverWait(self.driver, 30).until_not(
+                                EC.presence_of_element_located((
+                                    By.XPATH,
+                                    "//*[contains(text(),'Вы можете попасть')]"
+                                    ))
+                            )
+
+                        self.default_maze_actions(
+                            message_to_tg=message_to_tg,
+                            telegram_id=telegram_id,
+                            slots=slots,
+                            spell=spell,
+                            mind_spirit_play=mind_spirit_play,
+                            min_hp=min_hp,
+                            spell_book=spell_book,
+                            cheerfulness=cheerfulness,
+                            cheerfulness_min=cheerfulness_min,
+                            cheerfulness_slot=cheerfulness_slot,
+                            cheerfulness_spell=cheerfulness_spell
                         )
 
-                    self.default_maze_actions(
-                        message_to_tg=message_to_tg,
-                        telegram_id=telegram_id,
-                        slots=slots,
-                        spell=spell,
-                        mind_spirit_play=mind_spirit_play,
-                        min_hp=min_hp,
-                        spell_book=spell_book,
-                        cheerfulness=cheerfulness,
-                        cheerfulness_min=cheerfulness_min,
-                        cheerfulness_slot=cheerfulness_slot,
-                        cheerfulness_spell=cheerfulness_spell
-                    )
+                        if path[0] == 'запад':
+                            if self.crossing_to_the_west():
+                                sleep(1)
+                                last_turn = path.pop(0)
+                                attempt = 0
+                                continue
+                            else:
+                                attempt += 1
+                                if attempt > 10:
+                                    self.return_back_to_previous_room(
+                                        last_turn=last_turn
+                                    )
 
-                    if path[0] == 'запад':
-                        if self.crossing_to_the_west():
-                            path.pop(0)
-                            continue
-                    if path[0] == 'юг':
-                        if self.crossing_to_the_south():
-                            path.pop(0)
-                            continue
-                    if path[0] == 'север':
-                        if self.crossing_to_the_north():
-                            path.pop(0)
-                            continue
-                    if path[0] == 'восток':
-                        if self.crossing_to_the_east():
-                            path.pop(0)
-                            continue
+                        if path[0] == 'юг':
+                            if self.crossing_to_the_south():
+                                sleep(1)
+                                last_turn = path.pop(0)
+                                attempt = 0
+                                continue
+                            else:
+                                attempt += 1
+                                if attempt > 10:
+                                    self.return_back_to_previous_room(
+                                        last_turn=last_turn
+                                    )
+                        if path[0] == 'север':
+                            if self.crossing_to_the_north():
+                                sleep(1)
+                                last_turn = path.pop(0)
+                                attempt = 0
+                                continue
+                            else:
+                                attempt += 1
+                                if attempt > 10:
+                                    self.return_back_to_previous_room(
+                                        last_turn=last_turn
+                                    )
 
-            self.sleep_while_event_is_true(5)
+                        if path[0] == 'восток':
+                            if self.crossing_to_the_east():
+                                sleep(1)
+                                last_turn = path.pop(0)
+                                attempt = 0
+                                continue
+                            else:
+                                attempt += 1
+                                if attempt > 10:
+                                    self.return_back_to_previous_room(
+                                        last_turn=last_turn
+                                    )
+
+                    except Exception as e:
+                        print(
+                            'По пути возникла ошибка: ',
+                            str(e)
+                        )
+                        self.driver._switch_to.default_content()
+                        sleep(1)
+                        self.default_maze_actions(
+                            message_to_tg=message_to_tg,
+                            telegram_id=telegram_id,
+                            slots=slots,
+                            spell=spell,
+                            mind_spirit_play=mind_spirit_play,
+                            min_hp=min_hp,
+                            spell_book=spell_book,
+                            cheerfulness=cheerfulness,
+                            cheerfulness_min=cheerfulness_min,
+                            cheerfulness_slot=cheerfulness_slot,
+                            cheerfulness_spell=cheerfulness_spell
+                        )
+
+                        actual_room = self.get_room_number()
+                        if actual_room and (
+                            to_the_room is not None
+                        ) and not via_drop:
+                            path = find_path_with_directions(
+                                labirint_map=labirint_map,
+                                start_room=actual_room,
+                                end_room=to_the_room
+                            )
+                        continue
+
+                print('Путь окончен!')
+                self.stop_event()
+
+            except Exception as e:
+                self.actions_after_exception(e)
 
     def get_room_number(self) -> Optional[int]:
         """Возвращает номер комнаты в лабе, в которой находится персонаж."""
@@ -1153,7 +1295,7 @@ class DriverManager:
             )
 
         self.try_to_switch_to_central_frame()
-        sleep(1)
+        # sleep(1)
 
         self.check_kaptcha(
             message_to_tg=message_to_tg,
@@ -1202,6 +1344,7 @@ class DriverManager:
         )
 
     def check_room_for_drop(self):
+        """Проверяет наличие дропа к комнате лабиринта."""
         self.try_to_switch_to_central_frame()
 
         drop = self.driver.find_elements(
@@ -1221,3 +1364,20 @@ class DriverManager:
 
         if drop:
             drop[0].click()
+
+    def return_back_to_previous_room(
+            self,
+            last_turn):
+        """"Действие возврата в предыдущую комнату."""
+
+        if last_turn == 'запад':
+            self.crossing_to_the_east()
+
+        if last_turn == 'восток':
+            self.crossing_to_the_west()
+
+        if last_turn == 'север':
+            self.crossing_to_the_south()
+
+        if last_turn == 'юг':
+            self.crossing_to_the_north()

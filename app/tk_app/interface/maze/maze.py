@@ -37,6 +37,9 @@ def maze_passing():
             cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
             cheerfulness_slot=cheerfulness_slot.get(),
             cheerfulness_spell=cheerfulness_spell.get(),
+            first_floor=first_floor_checkbox_value.get(),
+            second_floor=second_floor_checkbox_value.get(),
+            third_floor=third_floor_checkbox_value.get()
         )
 
 
@@ -96,7 +99,7 @@ direct_path_field = tk.Entry(
 )
 direct_path_field.grid(row=12, column=0, sticky='e')
 
-via_drop_checkbox_value = tk.BooleanVar(value=True)
+via_drop_checkbox_value = tk.BooleanVar(value=False)
 
 
 via_drop_checkbox_button = tk.Checkbutton(
@@ -111,7 +114,7 @@ via_drop_checkbox_button.grid(
 )
 
 
-first_floor_checkbox_value = tk.BooleanVar(value=True)
+first_floor_checkbox_value = tk.BooleanVar(value=False)
 
 
 first_floor_checkbox_button = tk.Checkbutton(
