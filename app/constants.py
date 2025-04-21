@@ -122,6 +122,13 @@ class Floor(Enum):
     THIRD_FLOOR = '3'
 
 
+class TkAlarmColors(Enum):
+    APP = '#FFF4DC'
+    RED = '#FF0000'
+    GREEN = 'green'
+    BLACK = 'black'
+
+
 @dataclass
 class Room:
     number: int
@@ -131,3 +138,6 @@ class Room:
     south: bool = False
     west: bool = False
     east: bool = False
+
+
+DEFAULT_TK_ALARM = 'Бот готов к работе'

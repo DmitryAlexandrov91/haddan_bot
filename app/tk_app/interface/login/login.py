@@ -15,9 +15,14 @@ def start_login_thread():
 
 
 def start_game(manager=manager):
+
     try:
         char = username_field.get().strip()
         password = password_field.get().strip()
+
+        manager.send_alarm_message(
+            text=f'Заходим в игру персонажем {char}'
+        )
 
         if char and password:
             manager.start_driver()
@@ -27,6 +32,7 @@ def start_game(manager=manager):
                 driver=manager.driver)
             User.login_to_game()
             login_to_game.configure(foreground='green')
+            manager.send_alarm_message()
     except Exception as e:
         configure_logging()
         logging.exception(
@@ -101,3 +107,15 @@ tg_id_label = tk.Label(
     bg='#FFF4DC',
 )
 tg_id_label.grid(row=1, column=4, sticky='w')
+
+
+# Лейбл блока уведомлений
+alarm_label = tk.Label(
+    app,
+    text='',
+    bg='#FFF4DC',
+    fg='#FF0000')
+alarm_label.grid(
+    row=12, rowspan=2,
+    column=3, columnspan=3
+)

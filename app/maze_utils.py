@@ -1,8 +1,9 @@
 """Основные функции прохождения лабиринта."""
 import re
-from collections import deque
-from typing import List, Optional, Tuple
 import tempfile
+from collections import deque
+from time import sleep
+from typing import List, Optional, Tuple
 
 from constants import LABIRINT_MAP_URL, Floor, Room
 from selenium.webdriver.common.by import By
@@ -30,7 +31,13 @@ def get_labirint_map(
 
     manager.driver.get(lab_url)
 
-    map_table = manager.driver.find_elements(By.CLASS_NAME, 'maze-map__content')
+    sleep(1)
+
+    map_table = manager.driver.find_elements(
+        By.CLASS_NAME, 'maze-map__content')
+
+    sleep(1)
+
     if map_table:
         rows = map_table[0].find_elements(By.TAG_NAME, 'tr')
 

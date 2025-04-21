@@ -41,9 +41,10 @@ def start_dragon_farm():
 
 def stop_dragon_farm():
     manager.stop_event()
-    while manager.event.thread.is_alive():
-        sleep(1)
+    # while manager.event.thread.is_alive():
+    #     sleep(1)
     dragon_farm_start_button.configure(foreground='black')
+    manager.send_alarm_message()
     print('Останавливаю фарм драконов')
 
 

@@ -17,6 +17,9 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 def start_fight():
     print('Начинаю автобой')
     fight_start_btn.configure(foreground='green')
+    manager.send_alarm_message(
+        text='Начинаем гонять мобов'
+    )
     manager.start_event()
 
     telegram_id = tg_id_field.get().strip()
@@ -60,9 +63,10 @@ def start_fight():
 
 def stop_fight():
     manager.stop_event()
-    while manager.event.thread.is_alive():
-        sleep(1)
+    # while manager.event.thread.is_alive():
+    #     sleep(1)
     fight_start_btn.configure(foreground='black')
+    manager.send_alarm_message()
     print('Останавливаю автобой')
 
 

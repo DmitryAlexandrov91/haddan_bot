@@ -43,9 +43,8 @@ def tk_glade_farm():
 
 def stop_farm():
     manager.stop_event()
-    while manager.event.thread.is_alive():
-        sleep(1)
     glade_farm_start_buttton.configure(foreground="black")
+    manager.send_alarm_message()
     print('Останавливаю фарм поляны')
 
 

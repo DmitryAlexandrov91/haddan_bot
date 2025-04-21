@@ -57,6 +57,7 @@ def stop_maze_passing():
     while manager.event.thread.is_alive():
         sleep(1)
     maze_passing_start_button.configure(foreground='black')
+    manager.send_alarm_message()
     print('Останавливаем прохождение лаба')
 
 

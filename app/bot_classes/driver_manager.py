@@ -3,14 +3,16 @@ import platform
 import random
 import re
 import threading
+import tkinter as tk
 from datetime import datetime
 from time import sleep
 from typing import Optional
 
 from configs import configure_logging
-from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
+from constants import (CHROME_PATH, DEFAULT_TK_ALARM, FIELD_PRICES,
+                       GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
-                       TIME_FORMAT, Floor, Slot, SlotsPage)
+                       TIME_FORMAT, Floor, Slot, SlotsPage, TkAlarmColors)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_floor_map)
 from selenium import webdriver
@@ -40,7 +42,7 @@ class DriverManager:
         self.event: threading.Event = threading.Event()
         self.errors_count: int = 0
         self.wait_timeout: int = 30
-        self.app: 
+        self.alarm_label: tk.Label = None
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -305,8 +307,14 @@ class DriverManager:
 
         if not kick:
             self.try_to_come_back_from_fight()
+            self.send_alarm_message(
+                text='Бой завершён'
+            )
 
         else:
+            self.send_alarm_message(
+                text='Проводим бой'
+            )
             try:
                 self.open_slot_and_choise_spell(
                     slots_page=spell_book[round][kick]['slot'],
@@ -323,6 +331,9 @@ class DriverManager:
                         By.PARTIAL_LINK_TEXT, 'Вернуться')
             if come_back:
                 come_back[0].click()
+                self.send_alarm_message(
+                    text='Бой завершён'
+                )
 
             else:
 
@@ -697,7 +708,8 @@ class DriverManager:
 
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             time_for_wait = time_extractor(wait_tag[0].text)
-                            print(f'Ждём {time_for_wait} секунд(ы).')
+
+                            # print(f'Ждём {time_for_wait} секунд(ы).')
 
                             self.sleep_while_event_is_true(time_for_wait)
                             # sleep(time_for_wait)
@@ -731,7 +743,9 @@ class DriverManager:
 
                             glade_fairy_answers[most_cheep_res].click()
 
-                            print(message_for_log)
+                            self.send_alarm_message(
+                                text=f'Получено у феи: {message_for_log}'
+                            )
 
                 self.try_to_switch_to_central_frame()
                 sleep(1)
@@ -1065,6 +1079,11 @@ class DriverManager:
         while self.event.is_set() is True and counter > 0:
             sleep(1)
             counter -= 1
+            self.send_alarm_message(
+                text=f'Ждём секунд: {counter}',
+                color=TkAlarmColors.BLACK
+            )
+        self.send_alarm_message()
 
     def maze_passing(
             self,
@@ -1088,6 +1107,10 @@ class DriverManager:
         """Прохождение лабиринта."""
 
         temp_manager = DriverManager()
+        self.send_alarm_message(
+                text='Рисуем маршрут по наводке от Макса...',
+                color=TkAlarmColors.GREEN
+            )
 
         if first_floor:
             labirint_map = get_floor_map(
@@ -1103,6 +1126,14 @@ class DriverManager:
                 floor=Floor.THIRD_FLOOR.value,
                 manager=temp_manager
                 )
+
+        if not labirint_map:
+            self.send_alarm_message(
+                text='Не получилось нарисовать маршрут, '
+                'нажмите стоп и попробуйте ещё раз.',
+                color=TkAlarmColors.RED
+            )
+            self.stop_event()
 
         while self.event.is_set() is True:
 
@@ -1127,10 +1158,15 @@ class DriverManager:
                 #  Если указана комната и не стоит выбор через весь дроп.
                 if to_the_room is not None and not via_drop:
 
-                    print(
+                    message = (
                         f'Двигаемся по прямой в комнату {to_the_room}',
                         f'из комнаты {my_room}'
                     )
+                    self.send_alarm_message(
+                        text=message,
+                        color=TkAlarmColors.GREEN
+                    )
+
                     path = find_path_with_directions(
                         labirint_map=labirint_map,
                         start_room=my_room,
@@ -1140,9 +1176,13 @@ class DriverManager:
                 #  Если указана комната и стоит выбор через весь дроп.
                 if to_the_room is not None and via_drop:
 
-                    print(
+                    message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room}',
                         f'из комнаты {my_room}'
+                    )
+                    self.send_alarm_message(
+                        text=message,
+                        color=TkAlarmColors.GREEN
                     )
 
                     path = find_path_via_boxes_with_directions(
@@ -1156,7 +1196,12 @@ class DriverManager:
                 while path:
 
                     try:
-                        print(f'Осталось комнат: {len(path)}')
+                        message = (f'Осталось комнат: {len(path)}')
+
+                        self.send_alarm_message(
+                            text=message,
+                            color=TkAlarmColors.BLACK
+                        )
 
                         self.try_to_switch_to_central_frame()
                         sleep(1)
@@ -1265,7 +1310,10 @@ class DriverManager:
                             )
                         continue
 
-                print('Путь окончен!')
+                self.send_alarm_message(
+                    text='Путь завершён, нажмите стоп.',
+                    color=TkAlarmColors.GREEN
+                )
                 self.stop_event()
 
             except Exception as e:
@@ -1393,3 +1441,13 @@ class DriverManager:
 
         if last_turn == 'юг':
             self.crossing_to_the_north()
+
+    def send_alarm_message(
+            self,
+            color: TkAlarmColors = TkAlarmColors.BLACK,
+            text: str = DEFAULT_TK_ALARM):
+        """Выдаёт уведомление в окне Tkinter."""
+        self.alarm_label.configure(
+            text=text,
+            fg=color.value
+        )
