@@ -14,7 +14,9 @@ from .quick_slots import (get_dragon_preset, get_round_spells, main_slots_page,
 
 #  Функции фарма драконов.
 def start_dragon_farm():
-    print('Начинаем фарм дракона.')
+    manager.send_status_message(
+        text='Начинаем фарм дракона.'
+    )
     dragon_farm_start_button.configure(foreground='green')
     manager.start_event()
 
@@ -44,7 +46,7 @@ def stop_dragon_farm():
     # while manager.event.thread.is_alive():
     #     sleep(1)
     dragon_farm_start_button.configure(foreground='black')
-    manager.send_alarm_message()
+    manager.send_status_message()
     print('Останавливаю фарм драконов')
 
 

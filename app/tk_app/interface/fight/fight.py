@@ -17,7 +17,7 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 def start_fight():
     print('Начинаю автобой')
     fight_start_btn.configure(foreground='green')
-    manager.send_alarm_message(
+    manager.send_status_message(
         text='Начинаем гонять мобов'
     )
     manager.start_event()
@@ -66,7 +66,7 @@ def stop_fight():
     # while manager.event.thread.is_alive():
     #     sleep(1)
     fight_start_btn.configure(foreground='black')
-    manager.send_alarm_message()
+    manager.send_status_message()
     print('Останавливаю автобой')
 
 

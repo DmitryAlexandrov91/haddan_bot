@@ -20,7 +20,7 @@ def start_game(manager=manager):
         char = username_field.get().strip()
         password = password_field.get().strip()
 
-        manager.send_alarm_message(
+        manager.send_status_message(
             text=f'Заходим в игру персонажем {char}'
         )
 
@@ -32,7 +32,7 @@ def start_game(manager=manager):
                 driver=manager.driver)
             User.login_to_game()
             login_to_game.configure(foreground='green')
-            manager.send_alarm_message()
+            manager.send_status_message('Бот готов к работе')
     except Exception as e:
         configure_logging()
         logging.exception(
@@ -45,6 +45,7 @@ def stop_bot(manager=manager):
     manager.event.clear()
     manager.close_driver()
     login_to_game.configure(foreground='black')
+    manager.clean_label_messages()
 
 
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')
@@ -114,8 +115,28 @@ alarm_label = tk.Label(
     app,
     text='',
     bg='#FFF4DC',
-    fg='#FF0000')
+    fg='red')
 alarm_label.grid(
-    row=12, rowspan=2,
+    row=13,
+    column=3, columnspan=3
+)
+
+info_label = tk.Label(
+    app,
+    text='',
+    bg='#FFF4DC',
+    fg='green')
+info_label.grid(
+    row=12,
+    column=3, columnspan=3
+)
+
+status_label = tk.Label(
+    app,
+    text='',
+    bg='#FFF4DC',
+    fg='black')
+status_label.grid(
+    row=11,
     column=3, columnspan=3
 )

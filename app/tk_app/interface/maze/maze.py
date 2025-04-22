@@ -24,23 +24,28 @@ def start_maze_passing():
     user_telegram_id = int(tg_id_field.get().strip())
     minimum_hp = int(min_hp_field.get().strip())
 
-    manager.maze_passing(
-            via_drop=via_drop_checkbox_value.get(),
-            to_the_room=int(direct_path_field.get().strip()),
-            slots=main_slots_page.get(),
-            spell=main_spell_slot.get(),
-            mind_spirit_play=mind_spirit_play,
-            message_to_tg=send_message_to_tg,
-            telegram_id=user_telegram_id,
-            min_hp=minimum_hp,
-            spell_book=get_round_spells(),
-            cheerfulness=cheerfulness_drink_checkbox_value.get(),
-            cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
-            cheerfulness_slot=cheerfulness_slot.get(),
-            cheerfulness_spell=cheerfulness_spell.get(),
-            first_floor=first_floor_checkbox_value.get(),
-            second_floor=second_floor_checkbox_value.get(),
-            third_floor=third_floor_checkbox_value.get()
+    try:
+        manager.maze_passing(
+                via_drop=via_drop_checkbox_value.get(),
+                to_the_room=int(direct_path_field.get().strip()),
+                slots=main_slots_page.get(),
+                spell=main_spell_slot.get(),
+                mind_spirit_play=mind_spirit_play,
+                message_to_tg=send_message_to_tg,
+                telegram_id=user_telegram_id,
+                min_hp=minimum_hp,
+                spell_book=get_round_spells(),
+                cheerfulness=cheerfulness_drink_checkbox_value.get(),
+                cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
+                cheerfulness_slot=cheerfulness_slot.get(),
+                cheerfulness_spell=cheerfulness_spell.get(),
+                first_floor=first_floor_checkbox_value.get(),
+                second_floor=second_floor_checkbox_value.get(),
+                third_floor=third_floor_checkbox_value.get()
+            )
+    except ValueError:
+        manager.send_alarm_message(
+            'Введите номер комнаты и выберите один нужный этаж!'
         )
 
 
@@ -54,10 +59,10 @@ def start_maze_passing_thread():
 
 def stop_maze_passing():
     manager.stop_event()
-    while manager.event.thread.is_alive():
-        sleep(1)
+    # while manager.event.thread.is_alive():
+    #     sleep(1)
     maze_passing_start_button.configure(foreground='black')
-    manager.send_alarm_message()
+    manager.send_status_message()
     print('Останавливаем прохождение лаба')
 
 

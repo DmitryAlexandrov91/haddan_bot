@@ -15,8 +15,8 @@ app.title("Haddan bot v1.1.2 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 
-if platform.system() == 'Windows':
-    app.maxsize(773, 500)
+# if platform.system() == 'Windows':
+#     app.maxsize(773, 500)
 
 
 app.configure(bg='#FFF4DC')
@@ -43,4 +43,6 @@ def start_app():
     # password_field.insert(0, USER_PASSWORD)  # noqa
     # tg_id_field.insert(0, USER_CHAR_ID)  # noqa
     manager.alarm_label = alarm_label  # noqa
+    manager.status_label = status_label  # noqa
+    manager.info_label = info_label  # noqa
     app.mainloop()

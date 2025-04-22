@@ -22,6 +22,9 @@ def tk_glade_farm():
     user_telegram_id = int(tg_id_field.get().strip())
 
     try:
+        manager.send_status_message(
+            'Начинаем фарм полянки'
+        )
         manager.glade_farm(
                 price_dict=GLADE_PRICES,
                 message_to_tg=send_message_to_tg,
@@ -44,7 +47,7 @@ def tk_glade_farm():
 def stop_farm():
     manager.stop_event()
     glade_farm_start_buttton.configure(foreground="black")
-    manager.send_alarm_message()
+    manager.send_status_message()
     print('Останавливаю фарм поляны')
 
 

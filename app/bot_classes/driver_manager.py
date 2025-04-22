@@ -4,15 +4,14 @@ import random
 import re
 import threading
 import tkinter as tk
-from datetime import datetime
 from time import sleep
 from typing import Optional
 
 from configs import configure_logging
-from constants import (CHROME_PATH, DEFAULT_TK_ALARM, FIELD_PRICES,
+from constants import (CHROME_PATH, FIELD_PRICES,
                        GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
-                       TIME_FORMAT, Floor, Slot, SlotsPage, TkAlarmColors)
+                       Floor, Slot, SlotsPage, TkAlarmColors)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_floor_map)
 from selenium import webdriver
@@ -43,6 +42,8 @@ class DriverManager:
         self.errors_count: int = 0
         self.wait_timeout: int = 30
         self.alarm_label: tk.Label = None
+        self.info_label: tk.Label = None
+        self.status_label: tk.Label = None
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -307,12 +308,12 @@ class DriverManager:
 
         if not kick:
             self.try_to_come_back_from_fight()
-            self.send_alarm_message(
+            self.send_info_message(
                 text='Бой завершён'
             )
 
         else:
-            self.send_alarm_message(
+            self.send_info_message(
                 text='Проводим бой'
             )
             try:
@@ -377,9 +378,12 @@ class DriverManager:
 
             if gamble_spirit:
                 gamble_spirit[0].click()
-                print('Играем с духом азарта.')
                 sleep(1)
 
+                print('Играем с духом азарта.')
+                self.send_info_message(
+                    text='Пойманы духом азарта'
+                )
                 self.try_to_switch_to_dialog()
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
@@ -444,6 +448,9 @@ class DriverManager:
                 poetry_spirit[0].click()
                 sleep(1)
 
+                self.send_info_message(
+                    text='Пойманы духом поэзии'
+                )
                 print('Играем с духом поэзии.')
                 self.try_to_switch_to_dialog()
                 spirit_answers = self.driver.find_elements(
@@ -480,6 +487,11 @@ class DriverManager:
             try:
                 mind_spirit[0].click()
                 sleep(0.5)
+
+                print('Играем с духом ума')
+                self.send_info_message(
+                    text='Пойманы духом ума'
+                )
                 self.try_to_switch_to_dialog()
 
                 spirit_answers = self.driver.find_elements(
@@ -733,9 +745,8 @@ class DriverManager:
                             most_cheep_res = price_counter(
                                 res_price,
                                 price_diсt=price_dict)
-                            now = datetime.now().strftime(TIME_FORMAT)
                             message_for_log = (
-                                f'{res_price[most_cheep_res]} {now}')
+                                f'{res_price[most_cheep_res]}')
 
                             self.scroll_to_element(
                                 glade_fairy_answers[most_cheep_res]
@@ -743,7 +754,7 @@ class DriverManager:
 
                             glade_fairy_answers[most_cheep_res].click()
 
-                            self.send_alarm_message(
+                            self.send_info_message(
                                 text=f'Получено у феи: {message_for_log}'
                             )
 
@@ -1079,11 +1090,10 @@ class DriverManager:
         while self.event.is_set() is True and counter > 0:
             sleep(1)
             counter -= 1
-            self.send_alarm_message(
-                text=f'Ждём секунд: {counter}',
-                color=TkAlarmColors.BLACK
+            self.send_status_message(
+                text=f'Ждём секунд: {counter}'
             )
-        self.send_alarm_message()
+        self.send_status_message()
 
     def maze_passing(
             self,
@@ -1107,31 +1117,35 @@ class DriverManager:
         """Прохождение лабиринта."""
 
         temp_manager = DriverManager()
-        self.send_alarm_message(
+        self.send_status_message(
                 text='Рисуем маршрут по наводке от Макса...',
-                color=TkAlarmColors.GREEN
             )
 
         if first_floor:
             labirint_map = get_floor_map(
-                floor=Floor.FIRST_FLOOR.value,
+                floor=Floor.FIRST_FLOOR,
                 manager=temp_manager)
         if second_floor:
             labirint_map = get_floor_map(
-                floor=Floor.SECOND_FLOOR.value,
+                floor=Floor.SECOND_FLOOR,
                 manager=temp_manager
                 )
         if third_floor:
             labirint_map = get_floor_map(
-                floor=Floor.THIRD_FLOOR.value,
+                floor=Floor.THIRD_FLOOR,
                 manager=temp_manager
                 )
+
+        if not first_floor and not second_floor and not third_floor:
+            self.send_alarm_message(
+                text='Выберите этаж на котором вы находитесь.',
+            )
+            self.stop_event()
 
         if not labirint_map:
             self.send_alarm_message(
                 text='Не получилось нарисовать маршрут, '
                 'нажмите стоп и попробуйте ещё раз.',
-                color=TkAlarmColors.RED
             )
             self.stop_event()
 
@@ -1162,9 +1176,9 @@ class DriverManager:
                         f'Двигаемся по прямой в комнату {to_the_room}',
                         f'из комнаты {my_room}'
                     )
-                    self.send_alarm_message(
+                    print(message)
+                    self.send_info_message(
                         text=message,
-                        color=TkAlarmColors.GREEN
                     )
 
                     path = find_path_with_directions(
@@ -1180,9 +1194,9 @@ class DriverManager:
                         f'Двигаемся через весь дроп в комнату {to_the_room}',
                         f'из комнаты {my_room}'
                     )
-                    self.send_alarm_message(
-                        text=message,
-                        color=TkAlarmColors.GREEN
+                    print(message)
+                    self.send_info_message(
+                        text=message
                     )
 
                     path = find_path_via_boxes_with_directions(
@@ -1198,9 +1212,8 @@ class DriverManager:
                     try:
                         message = (f'Осталось комнат: {len(path)}')
 
-                        self.send_alarm_message(
+                        self.send_status_message(
                             text=message,
-                            color=TkAlarmColors.BLACK
                         )
 
                         self.try_to_switch_to_central_frame()
@@ -1279,10 +1292,7 @@ class DriverManager:
                                     )
 
                     except Exception as e:
-                        print(
-                            'По пути возникла ошибка: ',
-                            str(e)
-                        )
+                        print('По пути возникла ошибка: ', e)
                         self.driver._switch_to.default_content()
                         sleep(1)
                         self.default_maze_actions(
@@ -1310,9 +1320,8 @@ class DriverManager:
                             )
                         continue
 
-                self.send_alarm_message(
-                    text='Путь завершён, нажмите стоп.',
-                    color=TkAlarmColors.GREEN
+                self.send_status_message(
+                    text='Путь завершён, нажмите стоп.'
                 )
                 self.stop_event()
 
@@ -1411,12 +1420,15 @@ class DriverManager:
             By.CSS_SELECTOR,
             'img[alt="Гора Черепов"]'
         )
+        message = 'Найдена гора черепов'
         if not drop:
             drop = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[alt="Сундук"]'
             )
+            message = 'Найден сундук'
         if not drop:
+            message = 'Найден окованный сундук'
             drop = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[alt="Окованный Cундук"]'
@@ -1424,6 +1436,7 @@ class DriverManager:
 
         if drop:
             drop[0].click()
+            self.send_info_message(message)
 
     def return_back_to_previous_room(
             self,
@@ -1444,10 +1457,30 @@ class DriverManager:
 
     def send_alarm_message(
             self,
-            color: TkAlarmColors = TkAlarmColors.BLACK,
-            text: str = DEFAULT_TK_ALARM):
-        """Выдаёт уведомление в окне Tkinter."""
+            text: str = ''):
+        """Меняет текст alarm_label Tkinter."""
         self.alarm_label.configure(
-            text=text,
-            fg=color.value
+            text=text
         )
+
+    def send_info_message(
+            self,
+            text: str = ''):
+        """Меняет текст info_label Tkinter."""
+        self.info_label.configure(
+            text=text
+        )
+
+    def send_status_message(
+            self,
+            text: str = ''):
+        """Меняет текст status_label Tkinter."""
+        self.status_label.configure(
+            text=text
+        )
+
+    def clean_label_messages(self):
+        """Очищает все уведомления."""
+        self.send_alarm_message()
+        self.send_info_message()
+        self.send_status_message()

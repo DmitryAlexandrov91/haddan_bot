@@ -140,4 +140,4 @@ class Room:
     east: bool = False
 
 
-DEFAULT_TK_ALARM = 'Бот готов к работе'
+DEFAULT_TK_STATUS = 'Бот готов к работе'

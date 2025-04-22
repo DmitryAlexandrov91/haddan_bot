@@ -49,7 +49,7 @@ def get_labirint_map(
 
             for room in rooms_in_row:
                 # Получаем текст и атрибуты комнаты
-                text = room.text.strip()
+                text = room.get_attribute('textContent').strip()
                 gif_path = room.get_attribute('background')
                 gif_name = gif_path.split('/')[-1][:4]
                 north, south, west, east = gif_name
@@ -271,7 +271,9 @@ def get_floor_map(
 
     labirint_map = get_labirint_map(
         url=LABIRINT_MAP_URL,
-        floor=floor,
+        floor=floor.value,
         manager=manager)
 
     return labirint_map
+
+
