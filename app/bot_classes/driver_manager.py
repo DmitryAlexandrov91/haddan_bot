@@ -11,7 +11,7 @@ from configs import configure_logging
 from constants import (CHROME_PATH, FIELD_PRICES,
                        GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
-                       Floor, Slot, SlotsPage, TkAlarmColors)
+                       Floor, Slot, SlotsPage)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_floor_map)
 from selenium import webdriver
@@ -44,6 +44,7 @@ class DriverManager:
         self.alarm_label: tk.Label = None
         self.info_label: tk.Label = None
         self.status_label: tk.Label = None
+        self.start_button: tk.Button = None
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -1002,14 +1003,22 @@ class DriverManager:
             f'\nВозникло исключение {str(exception)}\n',
             stack_info=False
         )
+        try:
 
-        self.driver.switch_to.default_content()
-        self.errors_count += 1
-        print(f'Текущее количество ошибок - {self.errors_count}')
-        if self.errors_count >= 10:
-            self.driver.refresh()
-            self.errors_count = 0
-            self.sleep_while_event_is_true(5)
+            self.driver.switch_to.default_content()
+            self.errors_count += 1
+            print(f'Текущее количество ошибок - {self.errors_count}')
+            if self.errors_count >= 10:
+                self.driver.refresh()
+                self.errors_count = 0
+                self.sleep_while_event_is_true(5)
+
+        except AttributeError:
+            self.clean_label_messages()
+            self.send_alarm_message(
+                'Сначала войдите в игру!'
+            )
+            self.stop_event()
 
     def right_answers_choise(self, right_answers):
         """Проходит циклом по правильным ответам.
@@ -1173,7 +1182,7 @@ class DriverManager:
                 if to_the_room is not None and not via_drop:
 
                     message = (
-                        f'Двигаемся по прямой в комнату {to_the_room}',
+                        f'Двигаемся по прямой в комнату {to_the_room} '
                         f'из комнаты {my_room}'
                     )
                     print(message)
@@ -1191,7 +1200,7 @@ class DriverManager:
                 if to_the_room is not None and via_drop:
 
                     message = (
-                        f'Двигаемся через весь дроп в комнату {to_the_room}',
+                        f'Двигаемся через весь дроп в комнату {to_the_room} '
                         f'из комнаты {my_room}'
                     )
                     print(message)
@@ -1204,6 +1213,15 @@ class DriverManager:
                         start_room=my_room,
                         target_room=to_the_room
                     )
+
+                if not path:
+                    self.clean_label_messages()
+                    self.send_alarm_message(
+                        'Путь не найден, проверьте карту!'
+                    )
+                    self.stop_event()
+                    self.start_button.configure(fg='black')
+                    continue
 
                 attempt = 0  # Счётчик попыток.
 
@@ -1321,9 +1339,10 @@ class DriverManager:
                         continue
 
                 self.send_status_message(
-                    text='Путь завершён, нажмите стоп.'
+                    text=f'Путь до комнаты {to_the_room} пройден.'
                 )
                 self.stop_event()
+                self.start_button.configure(fg='black')
 
             except Exception as e:
                 self.actions_after_exception(e)
@@ -1402,6 +1421,9 @@ class DriverManager:
                     self.driver.execute_script(
                         'window.alert("Обнаружен дух ума!");'
                     )
+                self.send_info_message(
+                    'Пойманы духом ума'
+                )
                 self.sleep_while_event_is_true(30)
 
         self.check_room_for_drop()
