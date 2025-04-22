@@ -15,7 +15,7 @@ from constants import (CHROME_PATH, FIELD_PRICES,
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_floor_map)
 from selenium import webdriver
-from selenium.common.exceptions import UnexpectedAlertPresentException
+from selenium.common.exceptions import UnexpectedAlertPresentException, StaleElementReferenceException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -834,9 +834,8 @@ class DriverManager:
                         )
 
                     if up_down_move:
-
-                        if not self.crossing_to_the_south():
-                            self.crossing_to_the_north()
+                        self.crossing_to_the_south()
+                        self.crossing_to_the_north()
 
                         if self.check_for_fight():
                             self.fight(
@@ -1033,6 +1032,7 @@ class DriverManager:
 
     def check_for_fight(self) -> bool:
         """Если идёт бой, возвращает True."""
+        self.try_to_switch_to_central_frame()
         hits = self.driver.find_elements(
             By.CSS_SELECTOR,
             'a[href="javascript:submitMove()"]'
@@ -1047,6 +1047,7 @@ class DriverManager:
 
     def try_to_come_back_from_fight(self):
         """"Если бой закончен, нажимает 'вернуться' """
+        self.try_to_switch_to_central_frame()
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
@@ -1064,7 +1065,9 @@ class DriverManager:
         :cheerfulnes_slot: страница слотов с бодрой.
         :cheerfulnes_spell: номер слота с бодрой.
         """
+
         if self.check_for_fight() is False:
+            self.driver.switch_to.default_content()
             cheerfulnes_level = self.driver.find_elements(
                 By.CLASS_NAME, 'current-bf')
             if cheerfulnes_level:
@@ -1220,7 +1223,8 @@ class DriverManager:
                         'Путь не найден, проверьте карту!'
                     )
                     self.stop_event()
-                    self.start_button.configure(fg='black')
+                    if self.start_button:
+                        self.start_button.configure(fg='black')
                     continue
 
                 attempt = 0  # Счётчик попыток.
@@ -1235,7 +1239,7 @@ class DriverManager:
                         )
 
                         self.try_to_switch_to_central_frame()
-                        sleep(1)
+                        # sleep(1)
 
                         WebDriverWait(self.driver, 30).until_not(
                                 EC.presence_of_element_located((
@@ -1309,8 +1313,8 @@ class DriverManager:
                                         last_turn=last_turn
                                     )
 
-                    except Exception as e:
-                        print('По пути возникла ошибка: ', e)
+                    except Exception:
+                        # print('По пути возникла ошибка: ', e)
                         self.driver._switch_to.default_content()
                         sleep(1)
                         self.default_maze_actions(
@@ -1338,11 +1342,13 @@ class DriverManager:
                             )
                         continue
 
+                message = f'Путь до комнаты {to_the_room} пройден!'
                 self.send_status_message(
-                    text=f'Путь до комнаты {to_the_room} пройден.'
+                    text=message
                 )
                 self.stop_event()
-                self.start_button.configure(fg='black')
+                if self.start_button:
+                    self.start_button.configure(fg='black')
 
             except Exception as e:
                 self.actions_after_exception(e)
@@ -1438,27 +1444,32 @@ class DriverManager:
         """Проверяет наличие дропа к комнате лабиринта."""
         self.try_to_switch_to_central_frame()
 
-        drop = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[alt="Гора Черепов"]'
-        )
-        message = 'Найдена гора черепов'
-        if not drop:
-            drop = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[alt="Сундук"]'
-            )
-            message = 'Найден сундук'
-        if not drop:
-            message = 'Найден окованный сундук'
-            drop = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[alt="Окованный Cундук"]'
-            )
+        try:
 
-        if drop:
-            drop[0].click()
-            self.send_info_message(message)
+            drop = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[alt="Гора Черепов"]'
+            )
+            message = 'Найдена гора черепов'
+            if not drop:
+                drop = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[alt="Сундук"]'
+                )
+                message = 'Найден сундук'
+            if not drop:
+                message = 'Найден окованный сундук'
+                drop = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[alt="Окованный Cундук"]'
+                )
+
+            if drop:
+                drop[0].click()
+                self.send_info_message(message)
+
+        except StaleElementReferenceException:
+            pass
 
     def return_back_to_previous_room(
             self,
@@ -1483,7 +1494,7 @@ class DriverManager:
         """Меняет текст alarm_label Tkinter."""
         self.alarm_label.configure(
             text=text
-        )
+        ) if self.alarm_label else print(text)
 
     def send_info_message(
             self,
@@ -1491,7 +1502,7 @@ class DriverManager:
         """Меняет текст info_label Tkinter."""
         self.info_label.configure(
             text=text
-        )
+        ) if self.info_label else print(text)
 
     def send_status_message(
             self,
@@ -1499,7 +1510,7 @@ class DriverManager:
         """Меняет текст status_label Tkinter."""
         self.status_label.configure(
             text=text
-        )
+        ) if self.status_label else print(text)
 
     def clean_label_messages(self):
         """Очищает все уведомления."""

@@ -48,7 +48,7 @@ def get_labirint_map(
             line = []
 
             for room in rooms_in_row:
-                # Получаем текст и атрибуты комнаты
+
                 text = room.get_attribute('textContent').strip()
                 gif_path = room.get_attribute('background')
                 gif_name = gif_path.split('/')[-1][:4]

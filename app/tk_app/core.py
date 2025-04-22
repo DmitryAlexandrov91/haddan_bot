@@ -35,10 +35,10 @@ from tk_app.interface.maze import *  # noqa
 
 
 def start_app():
-    # username_field.insert(0, FIRST_CHAR)  # noqa
-    # password_field.insert(0, PASSWORD)  # noqa
-    # tg_id_field.insert(0, TELEGRAM_CHAT_ID)  # noqa
-    # min_hp_field.insert(0, MIN_HP_VALUE)  # noqa
+    username_field.insert(0, FIRST_CHAR)  # noqa
+    password_field.insert(0, PASSWORD)  # noqa
+    tg_id_field.insert(0, TELEGRAM_CHAT_ID)  # noqa
+    min_hp_field.insert(0, MIN_HP_VALUE)  # noqa
     # username_field.insert(0, USER_CHAR)  # noqa
     # password_field.insert(0, USER_PASSWORD)  # noqa
     # tg_id_field.insert(0, USER_CHAR_ID)  # noqa

@@ -42,8 +42,8 @@ LABIRINT_MAP_URL = 'https://haddan.novikovproject.ru/maze?level='
 FIRST_CHAR = os.getenv('FIRST_CHAR', None)
 SECOND_CHAR = os.getenv('SECOND_CHAR', None)
 PASSWORD = os.getenv('HADDAN_PASSWORD', None)
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', None)
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', None)
 
 # Заказные данные
 USER_CHAR = 'фантазёрка'

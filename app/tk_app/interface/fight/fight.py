@@ -17,10 +17,11 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 def start_fight():
     print('Начинаю автобой')
     fight_start_btn.configure(foreground='green')
-    manager.send_status_message(
-        text='Начинаем гонять мобов'
-    )
+
     manager.start_event()
+    manager.send_status_message(
+        text='Фарм включен'
+    )
 
     telegram_id = tg_id_field.get().strip()
     min_hp = min_hp_field.get().strip()
@@ -63,8 +64,6 @@ def start_fight():
 
 def stop_fight():
     manager.stop_event()
-    # while manager.event.thread.is_alive():
-    #     sleep(1)
     fight_start_btn.configure(foreground='black')
     manager.send_status_message()
     print('Останавливаю автобой')
