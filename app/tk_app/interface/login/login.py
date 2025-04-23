@@ -3,7 +3,7 @@ import logging
 import threading
 import tkinter as tk
 
-from bot_classes import HaddanBot
+from bot_classes import HaddanUser
 from configs import configure_logging
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -26,7 +26,7 @@ def start_game(manager=manager):
 
         if char and password:
             manager.start_driver()
-            User = HaddanBot(
+            User = HaddanUser(
                 char=char,
                 password=password,
                 driver=manager.driver)

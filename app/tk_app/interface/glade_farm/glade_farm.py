@@ -22,9 +22,7 @@ def tk_glade_farm():
     user_telegram_id = int(tg_id_field.get().strip())
 
     try:
-        manager.send_status_message(
-            'Начинаем фарм полянки'
-        )
+        manager.send_status_message('Начинаем фарм полянки')
         manager.glade_farm(
                 price_dict=GLADE_PRICES,
                 message_to_tg=send_message_to_tg,
@@ -46,16 +44,19 @@ def tk_glade_farm():
 
 def stop_farm():
     manager.stop_event()
+    if manager.cycle_thread.is_alive():
+        manager.send_status_message('Останавливаем фарм поляны')
+        manager.send_alarm_message('Дождитесь завершения цикла')
+    else:
+        manager.send_status_message('Бот готов к работе')
     glade_farm_start_buttton.configure(foreground="black")
-    manager.send_status_message()
-    print('Останавливаю фарм поляны')
 
 
 def start_glade_farm_thread():
     manager.stop_event()
     glade_farm_start_buttton.configure(foreground="green")
-    manager.event.thread = threading.Thread(target=tk_glade_farm, daemon=True)
-    manager.event.thread.start()
+    manager.cycle_thread = threading.Thread(target=tk_glade_farm, daemon=True)
+    manager.cycle_thread.start()
 
 
 glade__farm_lable = tk.Label(

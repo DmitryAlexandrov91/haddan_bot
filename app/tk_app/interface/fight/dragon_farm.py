@@ -43,16 +43,19 @@ def start_dragon_farm():
 
 def stop_dragon_farm():
     manager.stop_event()
+    if manager.cycle_thread.is_alive():
+        manager.send_status_message('Останавливаем фарм драконов')
+        manager.send_alarm_message('Дождитесь завершения цикла')
+    else:
+        manager.send_status_message('Бот готов к работе')
     dragon_farm_start_button.configure(foreground='black')
-    manager.send_status_message()
-    print('Останавливаю фарм драконов')
 
 
 def start_dragon_thread():
     manager.stop_event()
-    manager.event.thread = threading.Thread(
+    manager.cycle_thread = threading.Thread(
         target=start_dragon_farm, daemon=True)
-    manager.event.thread.start()
+    manager.cycle_thread.start()
 
 
 #  Кнопки запуска и остановки фарма драконов. --------------------------------

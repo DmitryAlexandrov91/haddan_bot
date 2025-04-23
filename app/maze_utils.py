@@ -69,7 +69,7 @@ def get_labirint_map(
                     line.append(
                         Room(
                             number=room_number,
-                            box_outer='портал' not in rest_part,
+                            box_outer='ортал' not in rest_part,
                             box_item=rest_part,
                             north=bool(int(north)),
                             south=bool(int(south)),
@@ -277,3 +277,21 @@ def get_floor_map(
     return labirint_map
 
 
+def get_sity_portal_room_number(
+        labirint_map: list[list[Room]]
+) -> int:
+    """Возвращает номер команты с порталом в город."""
+    for line in labirint_map:
+        for room in line:
+            if room.box_item and 'город' in room.box_item:
+                return room.number
+
+
+def get_upper_portal_room_number(
+        labirint_map: list[list[Room]]
+) -> int:
+    """Возвращает номер команты с порталом на следующий этаж."""
+    for line in labirint_map:
+        for room in line:
+            if room.box_item and 'портал' in room.box_item:
+                return room.number

@@ -2,14 +2,17 @@
 import os
 import platform
 
-from bot_classes import DriverManager
+from bot_classes import HaddanDriverManager
 from constants import (LINUX_PROFILE_DIR, TELEGRAM_BOT_TOKEN,
                        WINDOWS_PROFILE_DIR)
 from telebot import TeleBot
 
-manager = DriverManager(
-    bot=TeleBot(token=TELEGRAM_BOT_TOKEN)
-)
+if TELEGRAM_BOT_TOKEN:
+    manager = HaddanDriverManager(
+        bot=TeleBot(token=TELEGRAM_BOT_TOKEN)
+    )
+else:
+    manager = HaddanDriverManager()
 
 
 if platform.system() == 'Windows':

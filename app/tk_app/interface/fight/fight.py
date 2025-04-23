@@ -14,8 +14,8 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 
 #  Функции блока автобоя. ------------------------------
-def start_fight():
-    print('Начинаю автобой')
+def start_farm():
+    print('Начинаю фарм')
     fight_start_btn.configure(foreground='green')
 
     manager.start_event()
@@ -53,7 +53,7 @@ def start_fight():
 
     except InvalidSessionIdException:
         print('Драйвер не обнаружен, перезагрузка.')
-        stop_fight()
+        stop_farm()
         sleep(5)
         stop_bot()
         sleep(5)
@@ -62,17 +62,20 @@ def start_fight():
         start_thread()
 
 
-def stop_fight():
+def stop_farm():
     manager.stop_event()
+    if manager.cycle_thread.is_alive():
+        manager.send_status_message('Останавливаем фарм')
+        manager.send_alarm_message('Дождитесь завершения цикла')
+    else:
+        manager.send_status_message('Бот готов к работе')
     fight_start_btn.configure(foreground='black')
-    manager.send_status_message()
-    print('Останавливаю автобой')
 
 
 def start_thread():
     manager.stop_event()
-    manager.event.thread = threading.Thread(target=start_fight, daemon=True)
-    manager.event.thread.start()
+    manager.cycle_thread = threading.Thread(target=start_farm, daemon=True)
+    manager.cycle_thread.start()
 #  --------------------------------------------------------------------
 
 
@@ -101,7 +104,7 @@ fight_stop_btn = tk.Button(
     text='стоп',
     width=9,
     bg='#FFF4DC',
-    command=stop_fight
+    command=stop_farm
     )
 fight_stop_btn.grid(
     row=2, column=6
