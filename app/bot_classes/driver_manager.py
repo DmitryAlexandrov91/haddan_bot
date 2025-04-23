@@ -1512,8 +1512,3 @@ class DriverManager:
         self.send_alarm_message()
         self.send_info_message()
         self.send_status_message()
-
-
-class DriverManagerChecker(DriverManager):
-    """"Содержит в себе все методы проверок объекта DriverManager."""
-    
