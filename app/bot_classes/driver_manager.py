@@ -8,14 +8,14 @@ from time import sleep
 from typing import Optional
 
 from configs import configure_logging
-from constants import (CHROME_PATH, FIELD_PRICES,
-                       GAMBLE_SPIRIT_RIGHT_ANSWERS,
-                       POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID,
-                       Floor, Slot, SlotsPage)
+from constants import (CHROME_PATH, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
+                       POETRY_SPIRIT_RIGHT_ANSWERS, TELEGRAM_CHAT_ID, Floor,
+                       Slot, SlotsPage)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_floor_map)
 from selenium import webdriver
-from selenium.common.exceptions import UnexpectedAlertPresentException, StaleElementReferenceException
+from selenium.common.exceptions import (StaleElementReferenceException,
+                                        UnexpectedAlertPresentException)
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -31,7 +31,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class DriverManager:
-    """Класс управления объектом webdriver."""
+    """Класс для создания и управления объектом Chrome webdriver."""
 
     def __init__(self, bot=None):
         self.driver: webdriver.Chrome = None
@@ -576,7 +576,6 @@ class DriverManager:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
             self.sleep_while_event_is_true(time_to_sleep=30)
-            # sleep(30)
             self.check_kaptcha(
                 message_to_tg=message_to_tg,
                 telegram_id=telegram_id)
@@ -742,7 +741,6 @@ class DriverManager:
 
                         if resurses:
                             res_price = [res.text for res in resurses]
-                            print(res_price)
                             most_cheep_res = price_counter(
                                 res_price,
                                 price_diсt=price_dict)
@@ -758,9 +756,6 @@ class DriverManager:
                             self.send_info_message(
                                 text=f'Получено у феи: {message_for_log}'
                             )
-
-                self.try_to_switch_to_central_frame()
-                sleep(1)
 
                 if self.check_for_fight():
                     self.fight(
@@ -1517,3 +1512,8 @@ class DriverManager:
         self.send_alarm_message()
         self.send_info_message()
         self.send_status_message()
+
+
+class DriverManagerChecker(DriverManager):
+    """"Содержит в себе все методы проверок объекта DriverManager."""
+    
