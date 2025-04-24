@@ -61,6 +61,9 @@ def start_farm():
         sleep(5)
         start_thread()
 
+    finally:
+        manager.send_alarm_message()
+
 
 def stop_farm():
     manager.stop_event()

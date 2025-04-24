@@ -7,6 +7,7 @@ from constants import (LINUX_PROFILE_DIR, TELEGRAM_BOT_TOKEN,
                        WINDOWS_PROFILE_DIR)
 from telebot import TeleBot
 
+
 if TELEGRAM_BOT_TOKEN:
     manager = HaddanDriverManager(
         bot=TeleBot(token=TELEGRAM_BOT_TOKEN)

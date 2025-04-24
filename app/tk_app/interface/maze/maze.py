@@ -23,25 +23,49 @@ def start_maze_passing():
     user_telegram_id = tg_id_field.get().strip()
     minimum_hp = min_hp_field.get().strip()
     to_the_room = direct_path_field.get().strip()
+    first_floor = first_floor_checkbox_value.get()
+    second_floor = second_floor_checkbox_value.get()
+    third_floor = third_floor_checkbox_value.get()
 
-    manager.maze_passing(
-            via_drop=via_drop_checkbox_value.get(),
-            to_the_room=int(to_the_room) if to_the_room else None,
-            slots=main_slots_page.get(),
-            spell=main_spell_slot.get(),
-            mind_spirit_play=mind_spirit_play,
-            message_to_tg=send_message_to_tg,
-            telegram_id=int(user_telegram_id) if user_telegram_id else None,
-            min_hp=int(minimum_hp) if minimum_hp else None,
-            spell_book=get_round_spells(),
-            cheerfulness=cheerfulness_drink_checkbox_value.get(),
-            cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
-            cheerfulness_slot=cheerfulness_slot.get(),
-            cheerfulness_spell=cheerfulness_spell.get(),
-            first_floor=first_floor_checkbox_value.get(),
-            second_floor=second_floor_checkbox_value.get(),
-            third_floor=third_floor_checkbox_value.get()
+    if not first_floor and not second_floor and not third_floor:
+        manager.send_alarm_message(
+            text='Выберите этаж, на котором вы находитесь!',
         )
+        manager.stop_event()
+        manager.start_button.configure(fg='black')
+        exit()
+
+    try:
+
+        manager.maze_passing(
+                via_drop=via_drop_checkbox_value.get(),
+                to_the_room=int(to_the_room) if to_the_room else None,
+                slots=main_slots_page.get(),
+                spell=main_spell_slot.get(),
+                mind_spirit_play=mind_spirit_play,
+                message_to_tg=send_message_to_tg,
+                telegram_id=int(
+                    user_telegram_id
+                ) if user_telegram_id else None,
+                min_hp=int(minimum_hp) if minimum_hp else None,
+                spell_book=get_round_spells(),
+                cheerfulness=cheerfulness_drink_checkbox_value.get(),
+                cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
+                cheerfulness_slot=cheerfulness_slot.get(),
+                cheerfulness_spell=cheerfulness_spell.get(),
+                first_floor=first_floor_checkbox_value.get(),
+                second_floor=second_floor_checkbox_value.get(),
+                third_floor=third_floor_checkbox_value.get()
+            )
+
+    except Exception as e:
+        manager.send_alarm_message(
+            f'При старте прохождения лабиринта возникла ошибка - {e}'
+        )
+
+    finally:
+        manager.send_alarm_message()
+        manager.send_status_message('Бот готов к работе')
 
 
 def start_maze_passing_thread():
@@ -56,7 +80,6 @@ def stop_maze_passing():
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем прохождение лабиринта')
-        manager.send_alarm_message('Дождитесь завершения цикла')
     else:
         manager.send_status_message('Бот готов к работе')
     maze_passing_start_button.configure(foreground='black')

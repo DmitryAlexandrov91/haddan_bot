@@ -40,6 +40,10 @@ def start_dragon_farm():
         get_dragon_preset()
         start_dragon_thread()
 
+    finally:
+        manager.send_alarm_message()
+        manager.send_status_message('Бот готов к работе')
+
 
 def stop_dragon_farm():
     manager.stop_event()

@@ -200,8 +200,11 @@ class HaddanDriverManager(DriverManager):
                                 ))
                         )
                     try:
-                        if element and EC.element_to_be_clickable(element):
-                            element.click()
+                        if element:
+                            # self.send_alarm_message(
+                            #     'Элемент нашёлся!'
+                            # )
+                            # element.click()
                             element.send_keys(Keys.TAB)
                     except Exception:
                         pass
@@ -626,9 +629,6 @@ class HaddanDriverManager(DriverManager):
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
-        self.send_alarm_message()
-        self.send_status_message('Бот готов к работе')
-
     def farm(
             self,
             slots: SlotsPage = SlotsPage._1,
@@ -737,9 +737,6 @@ class HaddanDriverManager(DriverManager):
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
-        self.send_alarm_message()
-        self.send_status_message('Бот готов к работе')
-
     def dragon_farm(
             self,
             default_slot: SlotsPage = SlotsPage._1,
@@ -846,9 +843,6 @@ class HaddanDriverManager(DriverManager):
 
             except Exception as e:
                 self.actions_after_exception(e)
-
-        self.send_alarm_message()
-        self.send_status_message('Бот готов к работе')
 
     def actions_after_exception(self, exception: Exception):
         """Общее действие обработки исключения."""
@@ -1003,18 +997,14 @@ class HaddanDriverManager(DriverManager):
                 manager=temp_manager
                 )
 
-        if not first_floor and not second_floor and not third_floor:
-            self.send_alarm_message(
-                text='Выберите этаж, на котором вы находитесь.',
-            )
-            self.stop_event()
-
         if not labirint_map:
             self.send_alarm_message(
                 text='Не получилось нарисовать маршрут, '
-                'нажмите стоп и попробуйте ещё раз.',
+                'попробуйте ещё раз.',
             )
             self.stop_event()
+            self.start_button.configure(fg='black')
+            exit()
 
         while self.event.is_set() is True:
 
@@ -1152,7 +1142,7 @@ class HaddanDriverManager(DriverManager):
 
                         if path[0] == 'запад':
                             if self.crossing_to_the_west():
-                                sleep(1)
+                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1165,7 +1155,7 @@ class HaddanDriverManager(DriverManager):
 
                         if path[0] == 'юг':
                             if self.crossing_to_the_south():
-                                sleep(1)
+                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1177,7 +1167,7 @@ class HaddanDriverManager(DriverManager):
                                     )
                         if path[0] == 'север':
                             if self.crossing_to_the_north():
-                                sleep(1)
+                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1190,7 +1180,7 @@ class HaddanDriverManager(DriverManager):
 
                         if path[0] == 'восток':
                             if self.crossing_to_the_east():
-                                sleep(1)
+                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1203,7 +1193,7 @@ class HaddanDriverManager(DriverManager):
 
                     except Exception:
                         self.driver._switch_to.default_content()
-                        sleep(1)
+                        # sleep(1)
                         self.default_maze_actions(
                             message_to_tg=message_to_tg,
                             telegram_id=telegram_id,
@@ -1241,9 +1231,6 @@ class HaddanDriverManager(DriverManager):
             except Exception as e:
                 self.actions_after_exception(e)
 
-        self.send_alarm_message()
-        self.send_status_message('Бот готов к работе')
-
     def get_room_number(self) -> Optional[int]:
         """Возвращает номер комнаты в лабе, в которой находится персонаж."""
         self.try_to_switch_to_central_frame()
@@ -1280,7 +1267,7 @@ class HaddanDriverManager(DriverManager):
             )
 
         self.try_to_switch_to_central_frame()
-        # sleep(1)
+        sleep(0.5)
 
         self.check_kaptcha(
             message_to_tg=message_to_tg,
@@ -1294,8 +1281,6 @@ class HaddanDriverManager(DriverManager):
                 spell_book=spell_book,
                 default_slot=slots,
                 default_spell=spell)
-
-        self.check_room_for_drop()
 
         self.play_with_poetry_spirit()
         self.play_with_gamble_spirit()
@@ -1334,6 +1319,7 @@ class HaddanDriverManager(DriverManager):
     def check_room_for_drop(self):
         """Проверяет наличие дропа к комнате лабиринта."""
         self.try_to_switch_to_central_frame()
+        sleep(0.5)
 
         try:
 
@@ -1358,13 +1344,12 @@ class HaddanDriverManager(DriverManager):
             if drop:
                 drop[0].click()
                 self.send_info_message(message)
-                sleep(1)
                 self.check_room_for_drop()
             else:
                 pass
 
         except StaleElementReferenceException:
-            pass
+            self.check_room_for_drop()
 
     def return_back_to_previous_room(
             self,

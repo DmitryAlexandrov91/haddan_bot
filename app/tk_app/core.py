@@ -1,5 +1,5 @@
 """Основная конфигурация приложения tkinter."""
-import platform
+import platform  # noqa
 import tkinter as tk
 
 from constants import (FIRST_CHAR, MIN_HP_VALUE, PASSWORD,  # noqa
