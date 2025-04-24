@@ -1,8 +1,5 @@
 """"Методы интерфейса tkinter."""
-import threading
 import tkinter as tk
-
-from bot_classes import HaddanDriverManager
 
 
 def label_packing(

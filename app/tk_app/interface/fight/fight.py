@@ -15,6 +15,12 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 #  Функции блока автобоя. ------------------------------
 def start_farm():
+    """Точка входа в цикл farm."""
+    if not manager.driver:
+        manager.send_alarm_message(
+            'Сначала войдите в игру!')
+        exit()
+
     print('Начинаю фарм')
     fight_start_btn.configure(foreground='green')
     manager.send_alarm_message()
@@ -69,11 +75,16 @@ def start_farm():
 
 def stop_farm():
     manager.stop_event()
-    if manager.cycle_thread.is_alive():
+    if manager.cycle_thread and manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем фарм')
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
-        manager.send_status_message('Бот готов к работе')
+        manager.send_alarm_message()
+        manager.send_status_message(
+            'Бот готов к работе'
+        ) if manager.driver else manager.send_alarm_message(
+            'Игра не запущена'
+        )
     fight_start_btn.configure(foreground='black')
 
 
@@ -84,6 +95,7 @@ def start_thread():
             target=start_farm, daemon=True
         )
         manager.cycle_thread.start()
+
     else:
         manager.send_alarm_message(
             'Сначала завершите активный цикл!'

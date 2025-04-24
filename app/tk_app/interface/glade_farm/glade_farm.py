@@ -16,6 +16,12 @@ from .glade_prices import GLADE_PRICES
 
 
 def tk_glade_farm():
+    """Точка входа в цикл glade_farm."""
+    if not manager.driver:
+        manager.send_alarm_message(
+            'Сначала войдите в игру!')
+        exit()
+
     manager.start_event()
     glade_farm_start_buttton.configure(foreground="green")
     manager.send_alarm_message()
@@ -56,7 +62,12 @@ def stop_farm():
         manager.send_status_message('Останавливаем фарм поляны')
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
-        manager.send_status_message('Бот готов к работе')
+        manager.send_alarm_message()
+        manager.send_status_message(
+            'Бот готов к работе'
+        ) if manager.driver else manager.send_alarm_message(
+            'Игра не запущена'
+        )
     glade_farm_start_buttton.configure(foreground="black")
 
 

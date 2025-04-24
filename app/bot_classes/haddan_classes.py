@@ -7,7 +7,7 @@ from typing import Optional
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        HADDAN_MAIN_URL, POETRY_SPIRIT_RIGHT_ANSWERS,
-                       TELEGRAM_CHAT_ID, Room, Slot, SlotsPage)
+                       TELEGRAM_CHAT_ID, Room, Slot, SlotsPage, LICH_ROOM)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions,
                         get_sity_portal_room_number,
@@ -999,7 +999,7 @@ class HaddanDriverManager(DriverManager):
                 my_room = self.get_room_number()
 
                 #  Если указана комната и не стоит выбор через весь дроп.
-                if to_the_room is not None and not via_drop:
+                if to_the_room and not via_drop:
 
                     message = (
                         f'Двигаемся по прямой в комнату {to_the_room} '
@@ -1017,7 +1017,7 @@ class HaddanDriverManager(DriverManager):
                     )
 
                 #  Если указана комната и стоит выбор через весь дроп.
-                if to_the_room is not None and via_drop:
+                if to_the_room and via_drop:
 
                     message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room} '
@@ -1065,6 +1065,49 @@ class HaddanDriverManager(DriverManager):
                         labirint_map=labirint_map,
                         start_room=my_room,
                         target_room=to_the_room
+                    )
+
+                #  Если не указана комната и не стоит выбор через весь дроп.
+                if not to_the_room and not via_drop:
+
+                    if first_floor:
+                        to_the_room = get_upper_portal_room_number(
+                            labirint_map=labirint_map
+                        )
+                        message = (
+                            'Двигаемся напрямую к '
+                            'порталу на второй этаж '
+                            f'в комнату {to_the_room} '
+                            f'из комнаты {my_room}'
+                        )
+                    if second_floor:
+                        to_the_room = get_upper_portal_room_number(
+                            labirint_map=labirint_map
+                        )
+                        message = (
+                            'Двигаемся напрямую к '
+                            'порталу на третий этаж '
+                            f'в комнату {to_the_room} '
+                            f'из комнаты {my_room}'
+                        )
+
+                    if third_floor:
+                        to_the_room = LICH_ROOM
+                        message = (
+                            'Двигаемся напрямую к '
+                            'личу '
+                            f'в комнату {to_the_room} '
+                            f'из комнаты {my_room}'
+                        )
+
+                    self.send_info_message(
+                        text=message
+                    )
+
+                    path = find_path_with_directions(
+                        labirint_map=labirint_map,
+                        start_room=my_room,
+                        end_room=to_the_room
                     )
 
                 if not path:

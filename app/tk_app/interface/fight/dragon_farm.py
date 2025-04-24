@@ -14,6 +14,12 @@ from .quick_slots import (get_dragon_preset, get_round_spells, main_slots_page,
 
 #  Функции фарма драконов.
 def start_dragon_farm():
+    """Точка входа в цикл dragon_farm."""
+    if not manager.driver:
+        manager.send_alarm_message(
+            'Сначала войдите в игру!')
+        exit()
+
     manager.send_status_message(
         text='Начинаем фарм дракона'
     )
@@ -53,7 +59,12 @@ def stop_dragon_farm():
         manager.send_status_message('Останавливаем фарм драконов')
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
-        manager.send_status_message('Бот готов к работе')
+        manager.send_alarm_message()
+        manager.send_status_message(
+            'Бот готов к работе'
+        ) if manager.driver else manager.send_alarm_message(
+            'Игра не запущена'
+        )
     dragon_farm_start_button.configure(foreground='black')
 
 

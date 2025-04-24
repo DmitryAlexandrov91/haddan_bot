@@ -20,6 +20,11 @@ from .validators import send_message_and_stop_cycle
 
 def start_maze_passing():
     """Точка входа в цикл farm."""
+    if not manager.driver:
+        manager.send_alarm_message(
+            'Сначала войдите в игру!')
+        exit()
+
     manager.start_event()
     maze_passing_start_button.configure(foreground="green")
     manager.send_alarm_message()
@@ -37,18 +42,6 @@ def start_maze_passing():
     if not first_floor and not second_floor and not third_floor:
         send_message_and_stop_cycle(
             message='Выберите этаж, на котором вы находитесь!',
-            manager=manager
-        )
-
-    if third_floor and not to_the_room:
-        send_message_and_stop_cycle(
-            message='Выберите целевую комнату!',
-            manager=manager
-        )
-
-    if not to_the_room and not via_drop:
-        send_message_and_stop_cycle(
-            message='Куда идем и по какому пути?',
             manager=manager
         )
 
@@ -133,7 +126,12 @@ def stop_maze_passing():
         manager.send_status_message('Останавливаем прохождение лабиринта')
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
-        manager.send_status_message('Бот готов к работе')
+        manager.send_alarm_message()
+        manager.send_status_message(
+            'Бот готов к работе'
+        ) if manager.driver else manager.send_alarm_message(
+            'Игра не запущена'
+        )
     maze_passing_start_button.configure(foreground='black')
 
 
