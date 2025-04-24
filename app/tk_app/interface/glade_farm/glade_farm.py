@@ -17,6 +17,8 @@ from .glade_prices import GLADE_PRICES
 
 def tk_glade_farm():
     manager.start_event()
+    glade_farm_start_buttton.configure(foreground="green")
+    manager.send_alarm_message()
 
     send_message_to_tg = send_message_checkbox_value.get()
     user_telegram_id = tg_id_field.get().strip()
@@ -59,11 +61,15 @@ def stop_farm():
 
 
 def start_glade_farm_thread():
-    manager.stop_event()
-    glade_farm_start_buttton.configure(foreground="green")
-    manager.send_alarm_message()
-    manager.cycle_thread = threading.Thread(target=tk_glade_farm, daemon=True)
-    manager.cycle_thread.start()
+    if not manager.cycle_thread or not manager.cycle_thread.is_alive():
+        manager.stop_event()
+        manager.cycle_thread = threading.Thread(
+            target=tk_glade_farm, daemon=True)
+        manager.cycle_thread.start()
+    else:
+        manager.send_alarm_message(
+            'Сначала завершите активный цикл!'
+        )
 
 
 glade__farm_lable = tk.Label(

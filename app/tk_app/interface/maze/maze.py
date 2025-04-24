@@ -116,11 +116,15 @@ def start_maze_passing():
 
 
 def start_maze_passing_thread():
-    manager.stop_event()
-    manager.cycle_thread = threading.Thread(
-        target=start_maze_passing,
-        daemon=True)
-    manager.cycle_thread.start()
+    if not manager.cycle_thread or not manager.cycle_thread.is_alive():
+        manager.stop_event()
+        manager.cycle_thread = threading.Thread(
+            target=start_maze_passing, daemon=True)
+        manager.cycle_thread.start()
+    else:
+        manager.send_alarm_message(
+            'Сначала завершите активный цикл!'
+        )
 
 
 def stop_maze_passing():

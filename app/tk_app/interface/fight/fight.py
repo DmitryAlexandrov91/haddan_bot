@@ -78,9 +78,16 @@ def stop_farm():
 
 
 def start_thread():
-    manager.stop_event()
-    manager.cycle_thread = threading.Thread(target=start_farm, daemon=True)
-    manager.cycle_thread.start()
+    if not manager.cycle_thread or not manager.cycle_thread.is_alive():
+        manager.stop_event()
+        manager.cycle_thread = threading.Thread(
+            target=start_farm, daemon=True
+        )
+        manager.cycle_thread.start()
+    else:
+        manager.send_alarm_message(
+            'Сначала завершите активный цикл!'
+        )
 #  --------------------------------------------------------------------
 
 
