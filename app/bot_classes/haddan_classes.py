@@ -7,7 +7,7 @@ from typing import Optional
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        HADDAN_MAIN_URL, POETRY_SPIRIT_RIGHT_ANSWERS,
-                       TELEGRAM_CHAT_ID, Floor, Slot, SlotsPage)
+                       TELEGRAM_CHAT_ID, Floor, Slot, SlotsPage, Room)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_floor_map,
                         get_sity_portal_room_number,
@@ -958,6 +958,7 @@ class HaddanDriverManager(DriverManager):
 
     def maze_passing(
             self,
+            labirint_map: list[list[Room]],
             via_drop: bool = True,
             to_the_room: int = None,
             message_to_tg: bool = False,
@@ -976,35 +977,6 @@ class HaddanDriverManager(DriverManager):
             third_floor: bool = False
             ):
         """Прохождение лабиринта."""
-
-        temp_manager = DriverManager()
-        self.send_status_message(
-                text='Рисуем маршрут по наводке от Макса...',
-            )
-
-        if first_floor:
-            labirint_map = get_floor_map(
-                floor=Floor.FIRST_FLOOR,
-                manager=temp_manager)
-        if second_floor:
-            labirint_map = get_floor_map(
-                floor=Floor.SECOND_FLOOR,
-                manager=temp_manager
-                )
-        if third_floor:
-            labirint_map = get_floor_map(
-                floor=Floor.THIRD_FLOOR,
-                manager=temp_manager
-                )
-
-        if not labirint_map:
-            self.send_alarm_message(
-                text='Не получилось нарисовать маршрут, '
-                'попробуйте ещё раз.',
-            )
-            self.stop_event()
-            self.start_button.configure(fg='black')
-            exit()
 
         while self.event.is_set() is True:
 
@@ -1226,7 +1198,6 @@ class HaddanDriverManager(DriverManager):
                 self.stop_event()
                 if self.start_button:
                     self.start_button.configure(fg='black')
-                self.send_alarm_message()
 
             except Exception as e:
                 self.actions_after_exception(e)

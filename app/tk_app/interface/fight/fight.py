@@ -62,6 +62,7 @@ def start_farm():
         start_thread()
 
     finally:
+        manager.send_status_message('Бот готов к работе')
         manager.send_alarm_message()
 
 

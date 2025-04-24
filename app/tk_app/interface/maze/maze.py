@@ -2,6 +2,7 @@
 import threading
 import tkinter as tk
 
+from maze_utils import get_floor_map
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
@@ -12,9 +13,13 @@ from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
                                     send_message_checkbox_value, tg_id_field)
 from tk_app.interface.fight.quick_slots import get_round_spells
 
+from bot_classes import DriverManager
+from constants import Floor
+from .validators import send_message_and_stop_cycle
+
 
 def start_maze_passing():
-    print('Начинаем прохождение лаба')
+    """Точка входа в цикл farm."""
     manager.start_event()
     maze_passing_start_button.configure(foreground="green")
 
@@ -28,16 +33,50 @@ def start_maze_passing():
     third_floor = third_floor_checkbox_value.get()
 
     if not first_floor and not second_floor and not third_floor:
-        manager.send_alarm_message(
-            text='Выберите этаж, на котором вы находитесь!',
+        send_message_and_stop_cycle(
+            message='Выберите этаж, на котором вы находитесь!',
+            manager=manager
         )
-        manager.stop_event()
-        manager.start_button.configure(fg='black')
-        exit()
+
+    if third_floor and not to_the_room:
+        send_message_and_stop_cycle(
+            message='Выберите целевую комнату!',
+            manager=manager
+        )
+
+    temp_manager = DriverManager()
+    manager.send_status_message(
+            text='Рисуем маршрут по наводке от Макса...',
+        )
+
+    if first_floor:
+        labirint_map = get_floor_map(
+            floor=Floor.FIRST_FLOOR,
+            manager=temp_manager)
+    if second_floor:
+        labirint_map = get_floor_map(
+            floor=Floor.SECOND_FLOOR,
+            manager=temp_manager
+            )
+    if third_floor:
+        labirint_map = get_floor_map(
+            floor=Floor.THIRD_FLOOR,
+            manager=temp_manager
+            )
+
+    if not labirint_map:
+        send_message_and_stop_cycle(
+            message=(
+                'Не получилось нарисовать маршрут, '
+                'попробуйте ещё раз.'
+            ),
+            manager=manager
+        )
 
     try:
 
         manager.maze_passing(
+                labirint_map=labirint_map,
                 via_drop=via_drop_checkbox_value.get(),
                 to_the_room=int(to_the_room) if to_the_room else None,
                 slots=main_slots_page.get(),
