@@ -17,6 +17,7 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 def start_farm():
     print('Начинаю фарм')
     fight_start_btn.configure(foreground='green')
+    manager.send_alarm_message()
 
     manager.start_event()
     manager.send_status_message(

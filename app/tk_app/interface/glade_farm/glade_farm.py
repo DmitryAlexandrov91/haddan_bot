@@ -61,6 +61,7 @@ def stop_farm():
 def start_glade_farm_thread():
     manager.stop_event()
     glade_farm_start_buttton.configure(foreground="green")
+    manager.send_alarm_message()
     manager.cycle_thread = threading.Thread(target=tk_glade_farm, daemon=True)
     manager.cycle_thread.start()
 

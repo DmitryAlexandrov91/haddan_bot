@@ -7,9 +7,9 @@ from typing import Optional
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        HADDAN_MAIN_URL, POETRY_SPIRIT_RIGHT_ANSWERS,
-                       TELEGRAM_CHAT_ID, Floor, Slot, SlotsPage, Room)
+                       TELEGRAM_CHAT_ID, Room, Slot, SlotsPage)
 from maze_utils import (find_path_via_boxes_with_directions,
-                        find_path_with_directions, get_floor_map,
+                        find_path_with_directions,
                         get_sity_portal_room_number,
                         get_upper_portal_room_number)
 from selenium import webdriver
@@ -1191,6 +1191,7 @@ class HaddanDriverManager(DriverManager):
                             )
                         continue
 
+                self.check_room_for_drop()
                 message = f'Путь до комнаты {to_the_room} пройден!'
                 self.send_status_message(
                     text=message

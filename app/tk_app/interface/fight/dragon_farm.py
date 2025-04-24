@@ -18,6 +18,8 @@ def start_dragon_farm():
         text='Начинаем фарм дракона'
     )
     dragon_farm_start_button.configure(foreground='green')
+    manager.send_alarm_message()
+
     manager.start_event()
 
     try:

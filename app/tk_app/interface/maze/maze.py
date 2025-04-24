@@ -2,6 +2,8 @@
 import threading
 import tkinter as tk
 
+from bot_classes import DriverManager
+from constants import Floor
 from maze_utils import get_floor_map
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -13,8 +15,6 @@ from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
                                     send_message_checkbox_value, tg_id_field)
 from tk_app.interface.fight.quick_slots import get_round_spells
 
-from bot_classes import DriverManager
-from constants import Floor
 from .validators import send_message_and_stop_cycle
 
 
@@ -22,6 +22,7 @@ def start_maze_passing():
     """Точка входа в цикл farm."""
     manager.start_event()
     maze_passing_start_button.configure(foreground="green")
+    manager.send_alarm_message()
 
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
@@ -31,6 +32,7 @@ def start_maze_passing():
     first_floor = first_floor_checkbox_value.get()
     second_floor = second_floor_checkbox_value.get()
     third_floor = third_floor_checkbox_value.get()
+    via_drop = via_drop_checkbox_value.get()
 
     if not first_floor and not second_floor and not third_floor:
         send_message_and_stop_cycle(
@@ -41,6 +43,12 @@ def start_maze_passing():
     if third_floor and not to_the_room:
         send_message_and_stop_cycle(
             message='Выберите целевую комнату!',
+            manager=manager
+        )
+
+    if not to_the_room and not via_drop:
+        send_message_and_stop_cycle(
+            message='Куда идем и по какому пути?',
             manager=manager
         )
 
@@ -77,7 +85,7 @@ def start_maze_passing():
 
         manager.maze_passing(
                 labirint_map=labirint_map,
-                via_drop=via_drop_checkbox_value.get(),
+                via_drop=via_drop,
                 to_the_room=int(to_the_room) if to_the_room else None,
                 slots=main_slots_page.get(),
                 spell=main_spell_slot.get(),
@@ -119,6 +127,7 @@ def stop_maze_passing():
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем прохождение лабиринта')
+        manager.send_alarm_message('Дождитесь завершения цикла')
     else:
         manager.send_status_message('Бот готов к работе')
     maze_passing_start_button.configure(foreground='black')
