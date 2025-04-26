@@ -119,7 +119,7 @@ alarm_label = tk.Label(
     fg='red')
 alarm_label.grid(
     row=13,
-    column=3, columnspan=3
+    column=3, columnspan=4
 )
 
 info_label = tk.Label(
@@ -129,7 +129,7 @@ info_label = tk.Label(
     fg='green')
 info_label.grid(
     row=12,
-    column=3, columnspan=3
+    column=3, columnspan=4
 )
 
 status_label = tk.Label(
@@ -139,5 +139,5 @@ status_label = tk.Label(
     fg='black')
 status_label.grid(
     row=11,
-    column=3, columnspan=3
+    column=3, columnspan=4
 )

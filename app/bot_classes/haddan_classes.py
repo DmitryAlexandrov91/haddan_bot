@@ -446,28 +446,30 @@ class HaddanDriverManager(DriverManager):
         if not self.event.is_set():
             exit()
 
-        self.driver.switch_to.default_content()
-        health = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'span[id="m_hpc"]'
-                )
-        if health:
-            hp = int(health[0].text)
-            if hp < min_hp:
-                if self.bot and message_to_tg and telegram_id:
-                    self.bot.send_message(
-                        chat_id=telegram_id,
-                        text='Здоровье упало меньше минимума!'
+        if min_hp:
+
+            self.driver.switch_to.default_content()
+            health = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'span[id="m_hpc"]'
                     )
-                else:
-                    print('Мало хп, спим 30 секунд!')
-                self.sleep_while_event_is_true(time_to_sleep=30)
-                # sleep(30)
-                self.check_health(
-                    min_hp=min_hp,
-                    message_to_tg=message_to_tg,
-                    telegram_id=telegram_id
-                )
+            if health:
+                hp = int(health[0].text)
+                if hp < min_hp:
+                    if self.bot and message_to_tg and telegram_id:
+                        self.bot.send_message(
+                            chat_id=telegram_id,
+                            text='Здоровье упало меньше минимума!'
+                        )
+                    else:
+                        print('Мало хп, спим 30 секунд!')
+                    self.sleep_while_event_is_true(time_to_sleep=30)
+                    # sleep(30)
+                    self.check_health(
+                        min_hp=min_hp,
+                        message_to_tg=message_to_tg,
+                        telegram_id=telegram_id
+                    )
 
     def check_error_on_page(self):
         error = self.driver.find_elements(
@@ -681,8 +683,8 @@ class HaddanDriverManager(DriverManager):
                         )
 
                     if up_down_move:
-                        self.crossing_to_the_south()
-                        self.crossing_to_the_north()
+                        if not self.crossing_to_the_south():
+                            self.crossing_to_the_north()
 
                         if self.check_for_fight():
                             self.fight(
@@ -1057,6 +1059,15 @@ class HaddanDriverManager(DriverManager):
                             f'из комнаты {my_room}'
                         )
 
+                    if third_floor:
+                        to_the_room = LICH_ROOM
+                        message = (
+                            'Двигаемся напрямую к '
+                            'личу '
+                            f'в комнату {to_the_room} '
+                            f'из комнаты {my_room}'
+                        )
+
                     self.send_info_message(
                         text=message
                     )
@@ -1157,7 +1168,6 @@ class HaddanDriverManager(DriverManager):
 
                         if path[0] == 'запад':
                             if self.crossing_to_the_west():
-                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1170,7 +1180,6 @@ class HaddanDriverManager(DriverManager):
 
                         if path[0] == 'юг':
                             if self.crossing_to_the_south():
-                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1182,7 +1191,6 @@ class HaddanDriverManager(DriverManager):
                                     )
                         if path[0] == 'север':
                             if self.crossing_to_the_north():
-                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1195,7 +1203,6 @@ class HaddanDriverManager(DriverManager):
 
                         if path[0] == 'восток':
                             if self.crossing_to_the_east():
-                                # sleep(1)
                                 last_turn = path.pop(0)
                                 attempt = 0
                                 continue
@@ -1234,7 +1241,19 @@ class HaddanDriverManager(DriverManager):
                             )
                         continue
 
-                self.check_room_for_drop()
+                self.default_maze_actions(
+                            message_to_tg=message_to_tg,
+                            telegram_id=telegram_id,
+                            slots=slots,
+                            spell=spell,
+                            mind_spirit_play=mind_spirit_play,
+                            min_hp=min_hp,
+                            spell_book=spell_book,
+                            cheerfulness=cheerfulness,
+                            cheerfulness_min=cheerfulness_min,
+                            cheerfulness_slot=cheerfulness_slot,
+                            cheerfulness_spell=cheerfulness_spell
+                        )
                 message = f'Путь до комнаты {to_the_room} пройден!'
                 self.send_status_message(
                     text=message
@@ -1275,11 +1294,12 @@ class HaddanDriverManager(DriverManager):
             cheerfulness_spell: Slot = Slot._1):
         """Стандартный набор действий в лабиринте."""
         if cheerfulness:
-            self.check_cheerfulnes_level(
-                cheerfulnes_min=cheerfulness_min,
-                cheerfulnes_slot=cheerfulness_slot,
-                cheerfulnes_spell=cheerfulness_spell
-            )
+            if not self.check_for_fight():
+                self.check_cheerfulnes_level(
+                    cheerfulnes_min=cheerfulness_min,
+                    cheerfulnes_slot=cheerfulness_slot,
+                    cheerfulnes_spell=cheerfulness_spell
+                )
 
         self.try_to_switch_to_central_frame()
         sleep(0.5)
