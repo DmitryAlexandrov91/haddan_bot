@@ -2,6 +2,8 @@ import logging
 import platform
 import threading
 import tkinter as tk
+import re
+from typing import Optional
 
 from configs import configure_logging
 from constants import CHROME_PATH
@@ -76,6 +78,27 @@ class DriverManager:
 
         return options
 
+    @property
+    def cycle_is_running(self):
+        """Цикл запущен."""
+        return self.event.is_set()
+
+    @staticmethod
+    def get_element_content(element: WebElement) -> str:
+        """Возвращает содержимое элемента в виде строки."""
+        return element.get_attribute('outerHTML')
+
+    @staticmethod
+    def get_attr_from_element(element: WebElement, attr: str) -> Optional[str]:
+        """Вытаскивает регуляркой значение атрибута из элемента."""
+
+        text = element.get_attribute('outerHTML')
+        pattern = rf'{attr}="([^"]+)"'
+        match = re.search(pattern, text)
+        if match:
+            title_text = match.group(1)
+            return title_text
+
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""
         self.close_driver()
@@ -121,14 +144,6 @@ class DriverManager:
         """Функция для проверки наличия активного драйвера."""
         return self.driver
 
-    def print_element_content(self, element: WebElement):
-        """Выводит в терминал html код элемента"""
-        print(element.get_attribute('outerHTML'))
-
-    def get_element_content(self, element: WebElement) -> str:
-        """Возвращает сожержимое элемента."""
-        return element.get_attribute('outerHTML')
-
     def save_url_content(self):
         """Сохраняет контент страницы.
 
@@ -143,7 +158,7 @@ class DriverManager:
         self.event.set()
 
     def stop_event(self):
-        """Устанавливает флаг циклов в положение False."""
+        """Устанавливает флаг в положение False."""
         self.event.clear()
 
     def wait_while_element_will_be_clickable(self, element: WebElement):

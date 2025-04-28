@@ -20,7 +20,7 @@ from selenium.webdriver.common.keys import Keys  # noqa
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
-from utils import (get_attr_from_string, get_dragon_time_wait,
+from utils import (get_dragon_time_wait,
                    get_intimidation_and_next_room, price_counter,
                    time_extractor)
 
@@ -75,8 +75,8 @@ class HaddanDriverManager(DriverManager):
         )
 
         if spell:
-            return get_attr_from_string(
-                self.get_element_content(spell[0]),
+            return self.get_attr_from_element(
+                spell[0],
                 'title'
             )
 
@@ -93,8 +93,8 @@ class HaddanDriverManager(DriverManager):
             By.ID, f'lSlot{spell_number}'
         )
         if spell_to_cast:
-            return get_attr_from_string(
-                self.get_element_content(spell_to_cast[0]),
+            return self.get_attr_from_element(
+                spell_to_cast[0],
                 'title'
             )
 
@@ -133,14 +133,20 @@ class HaddanDriverManager(DriverManager):
     def get_round_number(self) -> str:
         """Возвращает номер раунда.
 
-        В формате "Раунд 1" и т.д.
+        В формате 'Раунд 1', 'Раунд 2' и т.д.
         """
         rounds = self.driver.find_elements(
             By.CSS_SELECTOR, '#divlog p'
         )
         if rounds:
-            amount = len(rounds)
-            return f'Раунд {amount + 1}'
+            last_round = rounds[0].find_elements(
+                By.CLASS_NAME, 'sys_time'
+            )
+            if last_round:
+                round = last_round[0].text.rstrip().split()
+                round[-1] = int(round[-1]) + 1
+                return f'{round[0]} {round[1]}'
+
         else:
             return 'Раунд 1'
     # ***************************************************************
@@ -201,10 +207,6 @@ class HaddanDriverManager(DriverManager):
                         )
                     try:
                         if element:
-                            # self.send_alarm_message(
-                            #     'Элемент нашёлся!'
-                            # )
-                            # element.click()
                             element.send_keys(Keys.TAB)
                     except Exception:
                         pass
@@ -412,7 +414,7 @@ class HaddanDriverManager(DriverManager):
             message_to_tg: bool,
             telegram_id: int = None):
         """Проверяет наличие капчи на странице."""
-        if not self.event.is_set():
+        if not self.cycle_is_running:
             exit()
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
@@ -424,10 +426,11 @@ class HaddanDriverManager(DriverManager):
                     chat_id=telegram_id,
                     text='Обнаружена капча!'
                 )
+                self.sleep_while_event_is_true(time_to_sleep=30)
             else:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
-            self.sleep_while_event_is_true(time_to_sleep=30)
+                self.sleep_while_event_is_true(time_to_sleep=10)
             self.check_kaptcha(
                 message_to_tg=message_to_tg,
                 telegram_id=telegram_id)
@@ -443,7 +446,7 @@ class HaddanDriverManager(DriverManager):
         :message_to_tg: флаг отправки сообщений в ТГ.
         :telegram_id: телеграм id куда отправлять сообщение.
         """
-        if not self.event.is_set():
+        if not self.cycle_is_running:
             exit()
 
         if min_hp:
@@ -491,8 +494,18 @@ class HaddanDriverManager(DriverManager):
             'img[title="На север"]')
         if not north:
             north = self.driver.find_elements(
-                By.ID, 'roommarker0'
-            )
+                By.CSS_SELECTOR,
+                'img[title="К берегу"]')
+
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К спуску"]')
+
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К Спуску"]')
 
         if north:
             north[0].click()
@@ -510,8 +523,19 @@ class HaddanDriverManager(DriverManager):
             'img[title="На юг"]')
         if not south:
             south = self.driver.find_elements(
-                By.ID, 'roommarker1'
-            )
+                By.CSS_SELECTOR,
+                'img[title="К побережью"]')
+
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К спуску"]')
+
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К Берегу"]')
+
         if south:
             south[0].click()
             return True
@@ -550,7 +574,7 @@ class HaddanDriverManager(DriverManager):
             telegram_id: int = None,
             spell_book: dict = None):
         """Фарм поляны."""
-        while self.event.is_set() is True:
+        while self.cycle_is_running:
 
             try:
 
@@ -648,7 +672,7 @@ class HaddanDriverManager(DriverManager):
             cheerfulness_spell: Slot = Slot._1
             ):
         """Фарм с проведением боя."""
-        while self.event.is_set() is True:
+        while self.cycle_is_running:
 
             try:
                 if cheerfulness:
@@ -683,8 +707,8 @@ class HaddanDriverManager(DriverManager):
                         )
 
                     if up_down_move:
-                        if not self.crossing_to_the_south():
-                            self.crossing_to_the_north()
+                        if not self.crossing_to_the_north():
+                            self.crossing_to_the_south()
 
                         if self.check_for_fight():
                             self.fight(
@@ -693,8 +717,8 @@ class HaddanDriverManager(DriverManager):
                                 default_spell=spell)
 
                     if left_right_move:
-                        self.crossing_to_the_west()
-                        self.crossing_to_the_east()
+                        if not self.crossing_to_the_west():
+                            self.crossing_to_the_east()
 
                         if self.check_for_fight():
                             self.fight(
@@ -719,11 +743,12 @@ class HaddanDriverManager(DriverManager):
                                 chat_id=telegram_id,
                                 text='Обнаружен дух ума!'
                             )
+                            self.sleep_while_event_is_true(30)
                         else:
                             self.driver.execute_script(
                                 'window.alert("Обнаружен дух ума!");'
                             )
-                        self.sleep_while_event_is_true(30)
+                            self.sleep_while_event_is_true(15)
                         # sleep(30)
 
                 self.check_health(
@@ -748,7 +773,7 @@ class HaddanDriverManager(DriverManager):
             telegram_id: int = None):
         """"Фарм пыльных драконов."""
 
-        while self.event.is_set() is True:
+        while self.cycle_is_running:
 
             try:
 
@@ -950,7 +975,7 @@ class HaddanDriverManager(DriverManager):
         :time_to_sleep: кол-во секунд для ожидания.
         """
         counter = time_to_sleep
-        while self.event.is_set() is True and counter > 0:
+        while self.cycle_is_running and counter > 0:
             sleep(1)
             counter -= 1
             self.send_status_message(
@@ -980,7 +1005,7 @@ class HaddanDriverManager(DriverManager):
             ):
         """Прохождение лабиринта."""
 
-        while self.event.is_set() is True:
+        while self.cycle_is_running:
 
             try:
 
@@ -1133,7 +1158,7 @@ class HaddanDriverManager(DriverManager):
 
                 attempt = 0  # Счётчик попыток.
 
-                while path and self.event.is_set() is True:
+                while path and self.cycle_is_running:
 
                     try:
                         message = (f'Осталось комнат: {len(path)}')
@@ -1378,6 +1403,7 @@ class HaddanDriverManager(DriverManager):
 
             if drop:
                 drop[0].click()
+                sleep(1)
                 self.send_info_message(message)
                 self.check_room_for_drop()
             else:
