@@ -832,7 +832,7 @@ class HaddanDriverManager(DriverManager):
                                 if 'Вам надо подождать до' in title:
                                     time_to_wait = get_dragon_time_wait(title)
                                     self.send_info_message(
-                                        f'Ждём КД {time_to_wait} секунд(ы).'
+                                        'Дракон отдыхает'
                                     )
                                     self.sleep_while_event_is_true(
                                         time_to_wait)
