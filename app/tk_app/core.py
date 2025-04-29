@@ -11,7 +11,7 @@ from .utils import keys
 
 app = tk.Tk()
 
-app.title("Haddan bot v1.2 <stable>")
+app.title("Haddan bot v1.3 <stable>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 
@@ -44,7 +44,9 @@ def start_app():
     tg_id_field.insert(  # noqa
         0, TELEGRAM_CHAT_ID
     ) if TELEGRAM_CHAT_ID else None
-    # min_hp_field.insert(0, MIN_HP_VALUE)  # noqa
+    min_hp_field.insert(  # noqa
+        0, MIN_HP_VALUE
+    ) if MIN_HP_VALUE else 0
     # username_field.insert(0, USER_CHAR)  # noqa
     # password_field.insert(0, USER_PASSWORD)  # noqa
     # tg_id_field.insert(0, USER_CHAR_ID)  # noqa

@@ -50,11 +50,19 @@ USER_CHAR = 'фантазёрка'
 USER_PASSWORD = 'пароль игрока'
 USER_CHAR_ID = 'тг id игрока'
 
-# Остальное.
+# Настройки программы.
 PAUSE_DURATION_SECONDS = 50
 TIME_FORMAT = '%d.%m.%Y %H:%M:%S'
-MIN_HP_VALUE = 10000
+MIN_HP_VALUE = os.getenv('MIN_HP_VALUE', 0)
 LICH_ROOM = 76
+MIND_SPIRIT_PLAY = os.getenv('MIND_SPIRIT_PLAY', True)
+CHEERFULNESS = os.getenv('CHEERFULNESS', False)
+DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', 2)
+DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', 1)
+DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
+    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', 1
+)
+DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', 1)
 
 # Цена ресурсов поляны
 FIELD_PRICES = {

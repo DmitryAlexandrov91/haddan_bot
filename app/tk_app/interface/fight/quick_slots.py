@@ -1,6 +1,7 @@
 import tkinter as tk
 
-from constants import SLOT_VALUES, Slot, SlotsPage
+from constants import (DEFAULT_SLOT, DEFAULT_SLOTS_PAGE, SLOT_VALUES, Slot,
+                       SlotsPage)
 from tk_app.core import app
 
 
@@ -29,10 +30,10 @@ quick_slots_open_btn.grid(
 
 #  Кнопки основного заклинания ----------------------------------------
 main_slots_page = tk.StringVar(app)
-main_slots_page.set(SlotsPage._1)
+main_slots_page.set(DEFAULT_SLOTS_PAGE)
 
 main_spell_slot = tk.StringVar(app)
-main_spell_slot.set(Slot._1)
+main_spell_slot.set(DEFAULT_SLOT)
 
 main_slot_label = tk.OptionMenu(
     app, main_slots_page, *SLOT_VALUES
@@ -57,10 +58,10 @@ for element in range(4):
 
 #  Р1 У1
 r1y1_slot = tk.StringVar(app)
-r1y1_slot.set(SlotsPage._1)
+r1y1_slot.set(DEFAULT_SLOTS_PAGE)
 
 r1y1_spell = tk.StringVar(app)
-r1y1_spell.set(Slot._1)
+r1y1_spell.set(DEFAULT_SLOT)
 
 r1y1_slot_choise = tk.OptionMenu(
     app, r1y1_slot, *SLOT_VALUES,
@@ -74,10 +75,10 @@ r1y1_spell_choise.grid(row=0, column=9)
 
 #  Р1 У2
 r1y2_slot = tk.StringVar(app)
-r1y2_slot.set(SlotsPage._1)
+r1y2_slot.set(DEFAULT_SLOTS_PAGE)
 
 r1y2_spell = tk.StringVar(app)
-r1y2_spell.set(Slot._1)
+r1y2_spell.set(DEFAULT_SLOT)
 
 r1y2_slot_choise = tk.OptionMenu(
     app, r1y2_slot, *SLOT_VALUES,
@@ -91,10 +92,10 @@ r1y2_spell_choise.grid(row=1, column=9)
 
 #  Р1 У3
 r1y3_slot = tk.StringVar(app)
-r1y3_slot.set(SlotsPage._1)
+r1y3_slot.set(DEFAULT_SLOTS_PAGE)
 
 r1y3_spell = tk.StringVar(app)
-r1y3_spell.set(Slot._1)
+r1y3_spell.set(DEFAULT_SLOT)
 
 r1y3_slot_choise = tk.OptionMenu(
     app, r1y3_slot, *SLOT_VALUES,
@@ -109,10 +110,10 @@ r1y3_spell_choise.grid(row=2, column=9)
 
 #  Р1 У4
 r1y4_slot = tk.StringVar(app)
-r1y4_slot.set(SlotsPage._1)
+r1y4_slot.set(DEFAULT_SLOTS_PAGE)
 
 r1y4_spell = tk.StringVar(app)
-r1y4_spell.set(Slot._1)
+r1y4_spell.set(DEFAULT_SLOT)
 
 r1y4_slot_choise = tk.OptionMenu(
     app, r1y4_slot, *SLOT_VALUES,
@@ -137,10 +138,10 @@ for element in range(4):
 #  Р2 У1
 
 r2y1_slot = tk.StringVar(app)
-r2y1_slot.set(SlotsPage._1)
+r2y1_slot.set(DEFAULT_SLOTS_PAGE)
 
 r2y1_spell = tk.StringVar(app)
-r2y1_spell.set(Slot._1)
+r2y1_spell.set(DEFAULT_SLOT)
 
 r2y1_slot_choise = tk.OptionMenu(
     app, r2y1_slot, *SLOT_VALUES,
@@ -154,10 +155,10 @@ r2y1_spell_choise.grid(row=0, column=12)
 
 #  Р2 У2
 r2y2_slot = tk.StringVar(app)
-r2y2_slot.set(SlotsPage._1)
+r2y2_slot.set(DEFAULT_SLOTS_PAGE)
 
 r2y2_spell = tk.StringVar(app)
-r2y2_spell.set(Slot._1)
+r2y2_spell.set(DEFAULT_SLOT)
 
 r2y2_slot_choise = tk.OptionMenu(
     app, r2y2_slot, *SLOT_VALUES,
@@ -171,10 +172,10 @@ r2y2_spell_choise.grid(row=1, column=12)
 
 # #  Р2 У3
 r2y3_slot = tk.StringVar(app)
-r2y3_slot.set(SlotsPage._1)
+r2y3_slot.set(DEFAULT_SLOTS_PAGE)
 
 r2y3_spell = tk.StringVar(app)
-r2y3_spell.set(Slot._1)
+r2y3_spell.set(DEFAULT_SLOT)
 
 r2y3_slot_choise = tk.OptionMenu(
     app, r2y3_slot, *SLOT_VALUES,
@@ -189,10 +190,10 @@ r2y3_spell_choise.grid(row=2, column=12)
 # #  Р2 У4
 
 r2y4_slot = tk.StringVar(app)
-r2y4_slot.set(SlotsPage._1)
+r2y4_slot.set(DEFAULT_SLOTS_PAGE)
 
 r2y4_spell = tk.StringVar(app)
-r2y4_spell.set(Slot._1)
+r2y4_spell.set(DEFAULT_SLOT)
 
 r2y4_slot_choise = tk.OptionMenu(
     app, r2y4_slot, *SLOT_VALUES
@@ -215,10 +216,10 @@ for element in range(4):
 
 #  Р3 У1
 r3y1_slot = tk.StringVar(app)
-r3y1_slot.set(SlotsPage._1)
+r3y1_slot.set(DEFAULT_SLOTS_PAGE)
 
 r3y1_spell = tk.StringVar(app)
-r3y1_spell.set(Slot._1)
+r3y1_spell.set(DEFAULT_SLOT)
 
 r3y1_slot_choise = tk.OptionMenu(
     app, r3y1_slot, *SLOT_VALUES,
@@ -232,10 +233,10 @@ r3y1_spell_choise.grid(row=5, column=9)
 
 #  Р3 У2
 r3y2_slot = tk.StringVar(app)
-r3y2_slot.set(SlotsPage._1)
+r3y2_slot.set(DEFAULT_SLOTS_PAGE)
 
 r3y2_spell = tk.StringVar(app)
-r3y2_spell.set(Slot._1)
+r3y2_spell.set(DEFAULT_SLOT)
 
 r3y2_slot_choise = tk.OptionMenu(
     app, r3y2_slot, *SLOT_VALUES,
@@ -249,10 +250,10 @@ r3y2_spell_choise.grid(row=6, column=9)
 
 #  Р3 У3
 r3y3_slot = tk.StringVar(app)
-r3y3_slot.set(SlotsPage._1)
+r3y3_slot.set(DEFAULT_SLOTS_PAGE)
 
 r3y3_spell = tk.StringVar(app)
-r3y3_spell.set(Slot._1)
+r3y3_spell.set(DEFAULT_SLOT)
 
 r3y3_slot_choise = tk.OptionMenu(
     app, r3y3_slot, *SLOT_VALUES,
@@ -266,10 +267,10 @@ r3y3_spell_choise.grid(row=7, column=9)
 
 #  Р3 У4
 r3y4_slot = tk.StringVar(app)
-r3y4_slot.set(SlotsPage._1)
+r3y4_slot.set(DEFAULT_SLOTS_PAGE)
 
 r3y4_spell = tk.StringVar(app)
-r3y4_spell.set(Slot._1)
+r3y4_spell.set(DEFAULT_SLOT)
 
 r3y4_slot_choise = tk.OptionMenu(
     app, r3y4_slot, *SLOT_VALUES,
@@ -293,10 +294,10 @@ for element in range(4):
 
 #  Р4 У1
 r4y1_slot = tk.StringVar(app)
-r4y1_slot.set(SlotsPage._1)
+r4y1_slot.set(DEFAULT_SLOTS_PAGE)
 
 r4y1_spell = tk.StringVar(app)
-r4y1_spell.set(Slot._1)
+r4y1_spell.set(DEFAULT_SLOT)
 
 r4y1_slot_choise = tk.OptionMenu(
     app, r4y1_slot, *SLOT_VALUES,
@@ -310,10 +311,10 @@ r4y1_spell_choise.grid(row=5, column=12)
 
 #  Р4 У2
 r4y2_slot = tk.StringVar(app)
-r4y2_slot.set(SlotsPage._1)
+r4y2_slot.set(DEFAULT_SLOTS_PAGE)
 
 r4y2_spell = tk.StringVar(app)
-r4y2_spell.set(Slot._1)
+r4y2_spell.set(DEFAULT_SLOT)
 
 r4y2_slot_choise = tk.OptionMenu(
     app, r4y2_slot, *SLOT_VALUES,
@@ -327,10 +328,10 @@ r4y2_spell_choise.grid(row=6, column=12)
 
 #  Р4 У3
 r4y3_slot = tk.StringVar(app)
-r4y3_slot.set(SlotsPage._1)
+r4y3_slot.set(DEFAULT_SLOTS_PAGE)
 
 r4y3_spell = tk.StringVar(app)
-r4y3_spell.set(Slot._1)
+r4y3_spell.set(DEFAULT_SLOT)
 
 r4y3_slot_choise = tk.OptionMenu(
     app, r4y3_slot, *SLOT_VALUES,
@@ -344,10 +345,10 @@ r4y3_spell_choise.grid(row=7, column=12)
 
 #  Р4 У4
 r4y4_slot = tk.StringVar(app)
-r4y4_slot.set(SlotsPage._1)
+r4y4_slot.set(DEFAULT_SLOTS_PAGE)
 
 r4y4_spell = tk.StringVar(app)
-r4y4_spell.set(Slot._1)
+r4y4_spell.set(DEFAULT_SLOT)
 
 r4y4_slot_choise = tk.OptionMenu(
     app, r4y4_slot, *SLOT_VALUES,
@@ -370,10 +371,10 @@ for element in range(4):
 
 #  Р5 У1
 r5y1_slot = tk.StringVar(app)
-r5y1_slot.set(SlotsPage._1)
+r5y1_slot.set(DEFAULT_SLOTS_PAGE)
 
 r5y1_spell = tk.StringVar(app)
-r5y1_spell.set(Slot._1)
+r5y1_spell.set(DEFAULT_SLOT)
 
 r5y1_slot_choise = tk.OptionMenu(
     app, r5y1_slot, *SLOT_VALUES,
@@ -387,10 +388,10 @@ r5y1_spell_choise.grid(row=10, column=9)
 
 #  Р5 У2
 r5y2_slot = tk.StringVar(app)
-r5y2_slot.set(SlotsPage._1)
+r5y2_slot.set(DEFAULT_SLOTS_PAGE)
 
 r5y2_spell = tk.StringVar(app)
-r5y2_spell.set(Slot._1)
+r5y2_spell.set(DEFAULT_SLOT)
 
 r5y2_slot_choise = tk.OptionMenu(
     app, r5y2_slot, *SLOT_VALUES,
@@ -404,10 +405,10 @@ r5y2_spell_choise.grid(row=11, column=9)
 
 #  Р5 У3
 r5y3_slot = tk.StringVar(app)
-r5y3_slot.set(SlotsPage._1)
+r5y3_slot.set(DEFAULT_SLOTS_PAGE)
 
 r5y3_spell = tk.StringVar(app)
-r5y3_spell.set(Slot._1)
+r5y3_spell.set(DEFAULT_SLOT)
 
 r5y3_slot_choise = tk.OptionMenu(
     app, r5y3_slot, *SLOT_VALUES,
@@ -421,10 +422,10 @@ r5y3_spell_choise.grid(row=12, column=9)
 
 #  Р5 У4
 r5y4_slot = tk.StringVar(app)
-r5y4_slot.set(SlotsPage._1)
+r5y4_slot.set(DEFAULT_SLOTS_PAGE)
 
 r5y4_spell = tk.StringVar(app)
-r5y4_spell.set(Slot._1)
+r5y4_spell.set(DEFAULT_SLOT)
 
 r5y4_slot_choise = tk.OptionMenu(
     app, r5y4_slot, *SLOT_VALUES,
@@ -447,10 +448,10 @@ for element in range(4):
 
 #  Р6 У1
 r6y1_slot = tk.StringVar(app)
-r6y1_slot.set(SlotsPage._1)
+r6y1_slot.set(DEFAULT_SLOTS_PAGE)
 
 r6y1_spell = tk.StringVar(app)
-r6y1_spell.set(Slot._1)
+r6y1_spell.set(DEFAULT_SLOT)
 
 r6y1_slot_choise = tk.OptionMenu(
     app, r6y1_slot, *SLOT_VALUES,
@@ -464,10 +465,10 @@ r6y1_spell_choise.grid(row=10, column=12)
 
 #  Р6 У2
 r6y2_slot = tk.StringVar(app)
-r6y2_slot.set(SlotsPage._1)
+r6y2_slot.set(DEFAULT_SLOTS_PAGE)
 
 r6y2_spell = tk.StringVar(app)
-r6y2_spell.set(Slot._1)
+r6y2_spell.set(DEFAULT_SLOT)
 
 r6y2_slot_choise = tk.OptionMenu(
     app, r6y2_slot, *SLOT_VALUES,
@@ -481,10 +482,10 @@ r6y2_spell_choise.grid(row=11, column=12)
 
 #  Р6 У3
 r6y3_slot = tk.StringVar(app)
-r6y3_slot.set(SlotsPage._1)
+r6y3_slot.set(DEFAULT_SLOTS_PAGE)
 
 r6y3_spell = tk.StringVar(app)
-r6y3_spell.set(Slot._1)
+r6y3_spell.set(DEFAULT_SLOT)
 
 r6y3_slot_choise = tk.OptionMenu(
     app, r6y3_slot, *SLOT_VALUES,
@@ -498,10 +499,10 @@ r6y3_spell_choise.grid(row=12, column=12)
 
 #  Р6 У4
 r6y4_slot = tk.StringVar(app)
-r6y4_slot.set(SlotsPage._1)
+r6y4_slot.set(DEFAULT_SLOTS_PAGE)
 
 r6y4_spell = tk.StringVar(app)
-r6y4_spell.set(Slot._1)
+r6y4_spell.set(DEFAULT_SLOT)
 
 r6y4_slot_choise = tk.OptionMenu(
     app, r6y4_slot, *SLOT_VALUES,

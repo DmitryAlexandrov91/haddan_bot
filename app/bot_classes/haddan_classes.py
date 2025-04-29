@@ -5,12 +5,11 @@ from time import sleep
 from typing import Optional
 
 from configs import configure_logging
-from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
-                       HADDAN_URL, POETRY_SPIRIT_RIGHT_ANSWERS,
-                       TELEGRAM_CHAT_ID, Room, Slot, SlotsPage, LICH_ROOM)
+from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS, HADDAN_URL,
+                       LICH_ROOM, POETRY_SPIRIT_RIGHT_ANSWERS,
+                       TELEGRAM_CHAT_ID, Room, Slot, SlotsPage)
 from maze_utils import (find_path_via_boxes_with_directions,
-                        find_path_with_directions,
-                        get_sity_portal_room_number,
+                        find_path_with_directions, get_sity_portal_room_number,
                         get_upper_portal_room_number)
 from selenium import webdriver
 from selenium.common.exceptions import (StaleElementReferenceException,
@@ -20,9 +19,8 @@ from selenium.webdriver.common.keys import Keys  # noqa
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from telebot import TeleBot
-from utils import (get_dragon_time_wait,
-                   get_intimidation_and_next_room, price_counter,
-                   time_extractor)
+from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
+                   price_counter, time_extractor)
 
 from .driver_manager import DriverManager
 

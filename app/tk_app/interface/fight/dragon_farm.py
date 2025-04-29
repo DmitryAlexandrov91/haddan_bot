@@ -27,6 +27,7 @@ def start_dragon_farm():
     manager.send_alarm_message()
 
     manager.start_event()
+    tg_id = tg_id_field.get().strip()
 
     try:
         manager.dragon_farm(
@@ -34,7 +35,7 @@ def start_dragon_farm():
             default_spell=main_spell_slot.get(),
             spell_book=get_round_spells(),
             message_to_tg=send_message_checkbox_value.get(),
-            telegram_id=int(tg_id_field.get().strip())
+            telegram_id=int(tg_id) if tg_id else None
         )
 
     except InvalidSessionIdException:

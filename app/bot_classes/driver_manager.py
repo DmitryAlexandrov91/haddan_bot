@@ -1,8 +1,8 @@
 import logging
 import platform
+import re
 import threading
 import tkinter as tk
-import re
 from typing import Optional
 
 from configs import configure_logging
