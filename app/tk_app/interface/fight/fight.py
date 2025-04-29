@@ -3,7 +3,7 @@ import threading
 import tkinter as tk
 from time import sleep
 
-from constants import SLOT_VALUES
+from constants import CHEERFULNESS, MIND_SPIRIT_PLAY, SLOT_VALUES, DEFAULT_CHEERFULNESS_SLOTS_PAGE, DEFAULT_CHEERFULNESS_SLOT
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -37,8 +37,6 @@ def start_farm():
     left_right_move = left_right_checkbox_value.get()
     mind_spirit_play = mind_spirit_checkbox_value.get()
     send_message_to_tg = send_message_checkbox_value.get()
-    user_telegram_id = int(telegram_id) if telegram_id else None
-    minimum_hp = int(min_hp) if min_hp else 0
 
     try:
 
@@ -49,8 +47,8 @@ def start_farm():
             left_right_move=left_right_move,
             mind_spirit_play=mind_spirit_play,
             message_to_tg=send_message_to_tg,
-            telegram_id=user_telegram_id,
-            min_hp=minimum_hp,
+            telegram_id=int(telegram_id) if telegram_id else None,
+            min_hp=int(min_hp) if min_hp else 0,
             spell_book=get_round_spells(),
             cheerfulness=cheerfulness_drink_checkbox_value.get(),
             cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
@@ -139,8 +137,12 @@ fight_stop_btn.grid(
 #  Чек боксы  ---------------------------------------------------------
 left_right_checkbox_value = tk.BooleanVar(value=False)
 up_down_checkbox_value = tk.BooleanVar(value=False)
-mind_spirit_checkbox_value = tk.BooleanVar(value=True)
-cheerfulness_drink_checkbox_value = tk.BooleanVar(value=False)
+mind_spirit_checkbox_value = tk.BooleanVar(
+    value=MIND_SPIRIT_PLAY
+)
+cheerfulness_drink_checkbox_value = tk.BooleanVar(
+    value=CHEERFULNESS
+)
 
 
 up_down_move_check_button = tk.Checkbutton(
@@ -223,10 +225,13 @@ cheerfulness_drink_field.grid(
 cheerfulness_drink_field.insert(0, 95)
 
 cheerfulness_slot = tk.StringVar(app)
-cheerfulness_slot.set(1)
+cheerfulness_slot.set(
+    DEFAULT_CHEERFULNESS_SLOTS_PAGE)
 
 cheerfulness_spell = tk.StringVar(app)
-cheerfulness_spell.set(1)
+cheerfulness_spell.set(
+    DEFAULT_CHEERFULNESS_SLOT
+)
 
 cheerfulness_slot_label = tk.OptionMenu(
     app, cheerfulness_slot, *SLOT_VALUES
