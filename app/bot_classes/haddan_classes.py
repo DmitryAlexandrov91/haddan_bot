@@ -6,7 +6,7 @@ from typing import Optional
 
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
-                       HADDAN_MAIN_URL, POETRY_SPIRIT_RIGHT_ANSWERS,
+                       HADDAN_URL, POETRY_SPIRIT_RIGHT_ANSWERS,
                        TELEGRAM_CHAT_ID, Room, Slot, SlotsPage, LICH_ROOM)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions,
@@ -1445,7 +1445,7 @@ class HaddanUser:
         self.char: str = char
         self.password: str = password
         self.bot: TeleBot = bot
-        self.login_url: str = HADDAN_MAIN_URL
+        self.login_url: str = HADDAN_URL
 
     def login_to_game(self):
         """Заходит в игру под заданным именем char."""

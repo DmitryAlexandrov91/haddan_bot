@@ -87,7 +87,7 @@ def start_maze_passing():
                 telegram_id=int(
                     user_telegram_id
                 ) if user_telegram_id else None,
-                min_hp=int(minimum_hp) if minimum_hp else None,
+                min_hp=int(minimum_hp) if minimum_hp else 0,
                 spell_book=get_round_spells(),
                 cheerfulness=cheerfulness_drink_checkbox_value.get(),
                 cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
