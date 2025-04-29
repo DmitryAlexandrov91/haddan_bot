@@ -1,9 +1,10 @@
-# import gc
 import threading
 import tkinter as tk
 from time import sleep
 
-from constants import CHEERFULNESS, MIND_SPIRIT_PLAY, SLOT_VALUES, DEFAULT_CHEERFULNESS_SLOTS_PAGE, DEFAULT_CHEERFULNESS_SLOT
+from constants import (CHEERFULNESS, DEFAULT_CHEERFULNESS_SLOT,
+                       DEFAULT_CHEERFULNESS_SLOTS_PAGE, MIND_SPIRIT_PLAY,
+                       SLOT_VALUES)
 from selenium.common.exceptions import InvalidSessionIdException
 from tk_app.core import app
 from tk_app.driver_manager import manager
