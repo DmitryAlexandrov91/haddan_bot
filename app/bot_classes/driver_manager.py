@@ -23,18 +23,30 @@ class DriverManager:
     :bot: объект класса Telebot библиотеки telebot, опционально.
     """
 
-    def __init__(self, bot=None):
-        self.driver: webdriver.Chrome = None
-        self.cycle_thread: threading = None
+    def __init__(
+            self,
+            bot: Optional[TeleBot] = None,
+            driver: Optional[webdriver.Chrome] = None,
+            cycle_thread: Optional[threading.Thread] = None,
+            event: threading.Event = threading.Event(),
+            errors_count: int = 0,
+            wait_timeout: int = 30,
+            alarm_label: Optional[tk.Label] = None,
+            info_label: Optional[tk.Label] = None,
+            status_label: Optional[tk.Label] = None,
+            start_button: Optional[tk.Label] = None,
+    ):
         self.options = self._get_default_options()
-        self.bot: TeleBot = bot
-        self.event: threading.Event = threading.Event()
-        self.errors_count: int = 0
-        self.wait_timeout: int = 30
-        self.alarm_label: tk.Label = None
-        self.info_label: tk.Label = None
-        self.status_label: tk.Label = None
-        self.start_button: tk.Button = None
+        self.driver = driver
+        self.cycle_thread = cycle_thread
+        self.bot = bot
+        self.event = event
+        self.errors_count = errors_count
+        self.wait_timeout = wait_timeout
+        self.alarm_label = alarm_label
+        self.info_label = info_label
+        self.status_label = status_label
+        self.start_button = start_button
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
@@ -84,7 +96,7 @@ class DriverManager:
         return self.event.is_set()
 
     @staticmethod
-    def get_element_content(element: WebElement) -> str:
+    def get_element_content(element: WebElement) -> Optional[str]:
         """Возвращает содержимое элемента в виде строки."""
         return element.get_attribute('outerHTML')
 
@@ -93,11 +105,14 @@ class DriverManager:
         """Вытаскивает регуляркой значение атрибута из элемента."""
 
         text = element.get_attribute('outerHTML')
+        if not text:
+            return None
         pattern = rf'{attr}="([^"]+)"'
         match = re.search(pattern, text)
         if match:
             title_text = match.group(1)
             return title_text
+        return None
 
     def start_driver(self):
         """Создаёт объект класса webdriver учитывая self.options."""

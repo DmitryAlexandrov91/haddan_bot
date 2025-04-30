@@ -34,10 +34,15 @@ class HaddanUser:
 
     """
 
-    def __init__(self, char, driver, password):
-        self.driver: webdriver.Chrome = driver
-        self.char: str = char
-        self.password: str = password
+    def __init__(
+            self,
+            char: str,
+            driver: webdriver.Chrome,
+            password: str
+    ):
+        self.driver = driver
+        self.char = char
+        self.password = password
         self.login_url: str = HADDAN_URL
 
     def login_to_game(self):
@@ -65,7 +70,7 @@ class HaddanDriverManager(DriverManager):
     Для игры haddan.ru.
     """
 
-    def __init__(self, user: HaddanUser, bot=None) -> None:
+    def __init__(self, user: HaddanUser = None, bot=None) -> None:
         super().__init__(bot=bot)
         self.user = user
 
