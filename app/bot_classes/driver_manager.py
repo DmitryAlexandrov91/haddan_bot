@@ -13,7 +13,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webdriver import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from telebot import TeleBot
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -25,7 +24,7 @@ class DriverManager:
 
     def __init__(
             self,
-            bot: Optional[TeleBot] = None,
+            bot=None,
             driver: Optional[webdriver.Chrome] = None,
             cycle_thread: Optional[threading.Thread] = None,
             event: threading.Event = threading.Event(),
@@ -155,7 +154,7 @@ class DriverManager:
                 self.driver = None
                 self.thread = None
 
-    def get_active_driver(self) -> webdriver.Chrome:
+    def get_active_driver(self) -> Optional[webdriver.Chrome]:
         """Функция для проверки наличия активного драйвера."""
         return self.driver
 
@@ -176,7 +175,8 @@ class DriverManager:
         """Устанавливает флаг в положение False."""
         self.event.clear()
 
-    def wait_while_element_will_be_clickable(self, element: WebElement):
+    def wait_while_element_will_be_clickable(
+            self, element: WebElement) -> None:
         """Ждёт пока элемент станет кликабельным."""
         WebDriverWait(self.driver, 5).until(
             EC.element_to_be_clickable(element))
