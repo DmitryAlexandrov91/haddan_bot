@@ -26,11 +26,11 @@ def start_game(manager=manager):
 
         if char and password:
             manager.start_driver()
-            User = HaddanUser(
+            manager.user = HaddanUser(
                 char=char,
                 password=password,
                 driver=manager.driver)
-            User.login_to_game()
+            manager.user.login_to_game()
             login_to_game.configure(foreground='green')
             manager.clean_label_messages()
             manager.send_status_message('Бот готов к работе')

@@ -1,15 +1,15 @@
 import threading
 import tkinter as tk
-from time import sleep
 
-from selenium.common.exceptions import InvalidSessionIdException
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoSuchWindowException)
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
+from urllib3.exceptions import MaxRetryError
 
-from .quick_slots import (get_dragon_preset, get_round_spells, main_slots_page,
-                          main_spell_slot)
+from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 
 #  Функции фарма драконов.
@@ -38,15 +38,18 @@ def start_dragon_farm():
             telegram_id=int(tg_id) if tg_id else None
         )
 
-    except InvalidSessionIdException:
-        print('Драйвер не обнаружен, перезагрузка.')
+    except (
+        InvalidSessionIdException,
+        MaxRetryError,
+        NoSuchWindowException
+    ):
+        manager.send_alarm_message(
+            'Драйвер не обнаружен, перезагрузка.'
+        )
         stop_dragon_farm()
-        sleep(5)
         stop_bot()
-        sleep(5)
         start_login_thread()
-        sleep(5)
-        get_dragon_preset()
+        manager.thread.join()
         start_dragon_thread()
 
     finally:

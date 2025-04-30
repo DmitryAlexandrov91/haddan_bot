@@ -1,16 +1,17 @@
 """Управление фармом поляны"""
 import threading
 import tkinter as tk
-from time import sleep
 
 from constants import LABIRINT_MAP_URL
-from selenium.common.exceptions import InvalidSessionIdException
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoSuchWindowException)
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.fight import (get_round_spells, main_slots_page,
                                     main_spell_slot)
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
+from urllib3.exceptions import MaxRetryError
 
 from .glade_prices import GLADE_PRICES
 
@@ -41,14 +42,18 @@ def tk_glade_farm():
                 spell=main_spell_slot.get(),
                 spell_book=get_round_spells()
             )
-    except InvalidSessionIdException:
-        print('Драйвер не обнаружен, перезагрузка.')
+    except (
+        InvalidSessionIdException,
+        MaxRetryError,
+        NoSuchWindowException
+    ):
+        manager.send_alarm_message(
+            'Драйвер не обнаружен, перезагрузка.'
+        )
         stop_farm()
-        sleep(5)
         stop_bot()
-        sleep(5)
         start_login_thread()
-        sleep(5)
+        manager.thread.join()
         start_glade_farm_thread()
 
     finally:
@@ -72,7 +77,9 @@ def stop_farm():
 
 
 def start_glade_farm_thread():
-    if not manager.cycle_thread or not manager.cycle_thread.is_alive():
+    if not manager.cycle_thread or not manager.cycle_thread.is_alive() or (
+        not manager.cycle_is_running
+    ):
         manager.stop_event()
         manager.cycle_thread = threading.Thread(
             target=tk_glade_farm, daemon=True)

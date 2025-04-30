@@ -5,6 +5,8 @@ import tkinter as tk
 from bot_classes import DriverManager
 from constants import Floor
 from maze_utils import get_floor_map
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoSuchWindowException)
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
@@ -14,6 +16,8 @@ from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
                                     min_hp_field, mind_spirit_checkbox_value,
                                     send_message_checkbox_value, tg_id_field)
 from tk_app.interface.fight.quick_slots import get_round_spells
+from tk_app.interface.login import start_login_thread, stop_bot
+from urllib3.exceptions import MaxRetryError
 
 from .validators import send_message_and_stop_cycle
 
@@ -97,6 +101,20 @@ def start_maze_passing():
                 second_floor=second_floor_checkbox_value.get(),
                 third_floor=third_floor_checkbox_value.get()
             )
+
+    except (
+        InvalidSessionIdException,
+        MaxRetryError,
+        NoSuchWindowException
+    ):
+        manager.send_alarm_message(
+            'Драйвер не обнаружен, перезагрузка.'
+        )
+        stop_maze_passing()
+        stop_bot()
+        start_login_thread()
+        manager.thread.join()
+        start_maze_passing_thread()
 
     except Exception as e:
         manager.send_alarm_message(

@@ -1,15 +1,16 @@
 import threading
 import tkinter as tk
-from time import sleep
 
 from constants import (CHEERFULNESS, DEFAULT_CHEERFULNESS_SLOT,
                        DEFAULT_CHEERFULNESS_SLOTS_PAGE, MIND_SPIRIT_PLAY,
                        SLOT_VALUES)
-from selenium.common.exceptions import InvalidSessionIdException
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoSuchWindowException)
 from tk_app.core import app
 from tk_app.driver_manager import manager
 from tk_app.interface.login import (send_message_checkbox_value,
                                     start_login_thread, stop_bot, tg_id_field)
+from urllib3.exceptions import MaxRetryError
 
 from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
@@ -57,14 +58,19 @@ def start_farm():
             cheerfulness_spell=cheerfulness_spell.get()
         )
 
-    except InvalidSessionIdException:
-        print('Драйвер не обнаружен, перезагрузка.')
+    except (
+        InvalidSessionIdException,
+        MaxRetryError,
+        NoSuchWindowException
+    ):
+
+        manager.send_alarm_message(
+            'Драйвер не обнаружен, перезагрузка.'
+        )
         stop_farm()
-        sleep(5)
         stop_bot()
-        sleep(5)
         start_login_thread()
-        sleep(5)
+        manager.thread.join()
         start_thread()
 
     finally:
@@ -88,7 +94,9 @@ def stop_farm():
 
 
 def start_thread():
-    if not manager.cycle_thread or not manager.cycle_thread.is_alive():
+    if not manager.cycle_thread or not manager.cycle_thread.is_alive() or (
+        not manager.cycle_is_running
+    ):
         manager.stop_event()
         manager.cycle_thread = threading.Thread(
             target=start_farm, daemon=True
