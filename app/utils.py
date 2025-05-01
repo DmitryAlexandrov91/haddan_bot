@@ -144,7 +144,3 @@ def get_dragon_time_wait(text: str):
     seconds_to_wait = int(delta.total_seconds())
 
     return seconds_to_wait
-
-
-def get_bool_param_drom_env(variable: str) -> bool:
-    pass

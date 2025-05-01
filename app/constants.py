@@ -8,6 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def get_bool_param_from_env(variable: str | bool) -> bool:
+    if isinstance(variable, bool):
+        return variable
+    else:
+        if variable.lower() == 'false':
+            return False
+        return True
+
+
 # Константы для директорий/путей.
 BASE_DIR = os.getcwd()
 DOWNLOADS_DIR_NAME = os.path.join(BASE_DIR, 'temp')
@@ -55,8 +64,10 @@ PAUSE_DURATION_SECONDS = 50
 TIME_FORMAT = '%d.%m.%Y %H:%M:%S'
 MIN_HP_VALUE = os.getenv('MIN_HP_VALUE', 0)
 LICH_ROOM = 76
-MIND_SPIRIT_PLAY = os.getenv('MIND_SPIRIT_PLAY', True)
-CHEERFULNESS = os.getenv('CHEERFULNESS', False)
+MIND_SPIRIT_PLAY = get_bool_param_from_env(
+    os.getenv('MIND_SPIRIT_PLAY', True))
+CHEERFULNESS = get_bool_param_from_env(
+    os.getenv('CHEERFULNESS', False))
 DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', 2)
 DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', 1)
 DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
