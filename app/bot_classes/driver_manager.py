@@ -5,6 +5,7 @@ import threading
 import tkinter as tk
 from typing import Optional
 
+from aiogram import Bot
 from configs import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
@@ -24,7 +25,7 @@ class DriverManager:
 
     def __init__(
             self,
-            bot=None,
+            bot: Optional[Bot] = None,
             driver: Optional[webdriver.Chrome] = None,
             cycle_thread: Optional[threading.Thread] = None,
             event: threading.Event = threading.Event(),

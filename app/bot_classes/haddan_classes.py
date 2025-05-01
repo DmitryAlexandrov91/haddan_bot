@@ -1,9 +1,12 @@
+import asyncio
 import logging
 import random
 import re
+import threading
 from time import sleep
 from typing import Optional
 
+from aiogram import Bot
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS, HADDAN_URL,
                        LICH_ROOM, POETRY_SPIRIT_RIGHT_ANSWERS,
@@ -70,9 +73,27 @@ class HaddanDriverManager(DriverManager):
     Для игры haddan.ru.
     """
 
-    def __init__(self, user: HaddanUser = None, bot=None) -> None:
+    def __init__(self, user: HaddanUser = None, bot: Bot = None) -> None:
         super().__init__(bot=bot)
         self.user = user
+        self.loop = asyncio.new_event_loop()
+        threading.Thread(
+            target=self.start_loop,
+            daemon=True
+        ).start()
+
+    def start_loop(self):
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+
+    async def send_msg(self, text):
+        await self.bot.send_message(TELEGRAM_CHAT_ID, text)
+
+    def sync_send(self, text):
+        asyncio.run_coroutine_threadsafe(
+            self.send_msg(text),
+            self.loop
+        )
 
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
@@ -120,6 +141,7 @@ class HaddanDriverManager(DriverManager):
                 spell[0],
                 'title'
             )
+        return None
 
     def get_spell_to_cast(
             self,
@@ -138,6 +160,7 @@ class HaddanDriverManager(DriverManager):
                 spell_to_cast[0],
                 'title'
             )
+        return None
 
     def open_slot_and_choise_spell(
             self,
@@ -462,8 +485,7 @@ class HaddanDriverManager(DriverManager):
                 )
         if kaptcha:
             if self.bot and message_to_tg and telegram_id:
-                self.bot.send_message(
-                    chat_id=telegram_id,
+                self.sync_send(
                     text='Обнаружена капча!'
                 )
                 self.sleep_while_event_is_true(time_to_sleep=30)
@@ -500,10 +522,10 @@ class HaddanDriverManager(DriverManager):
                 hp = int(health[0].text)
                 if hp < min_hp:
                     if self.bot and message_to_tg and telegram_id:
-                        self.bot.send_message(
-                            chat_id=telegram_id,
+                        self.sync_send(
                             text='Здоровье упало меньше минимума!'
                         )
+
                     else:
                         print('Мало хп, спим 30 секунд!')
                     self.sleep_while_event_is_true(time_to_sleep=30)
@@ -779,10 +801,10 @@ class HaddanDriverManager(DriverManager):
 
                     if mind_spirit:
                         if self.bot and message_to_tg and telegram_id:
-                            self.bot.send_message(
-                                chat_id=telegram_id,
-                                text='Обнаружен дух ума!'
+                            self.sync_send(
+                                'Обнаружен дух ума!'
                             )
+
                             self.sleep_while_event_is_true(30)
                         else:
                             self.driver.execute_script(
@@ -1343,6 +1365,7 @@ class HaddanDriverManager(DriverManager):
                     my_room[0].text
                 ).group(1)
             )
+        return None
 
     def default_maze_actions(
             self,
@@ -1395,10 +1418,13 @@ class HaddanDriverManager(DriverManager):
 
             if mind_spirit:
                 if self.bot and message_to_tg and telegram_id:
-                    self.bot.send_message(
-                        chat_id=telegram_id,
+                    self.sync_send(
                         text='Обнаружен дух ума!'
                     )
+                    # self.bot.send_message(
+                    #     chat_id=telegram_id,
+                    #     text='Обнаружен дух ума!'
+                    # )
                 else:
                     self.driver.execute_script(
                         'window.alert("Обнаружен дух ума!");'

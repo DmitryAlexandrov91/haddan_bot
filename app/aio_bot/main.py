@@ -2,9 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher, types
-
 from constants import TELEGRAM_BOT_TOKEN
-
 
 if TELEGRAM_BOT_TOKEN:
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
