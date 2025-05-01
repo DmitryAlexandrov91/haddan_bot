@@ -136,7 +136,7 @@ fight_stop_btn = tk.Button(
     width=9,
     bg='#FFF4DC',
     command=stop_farm
-    )
+)
 fight_stop_btn.grid(
     row=2, column=6
 )
@@ -231,7 +231,7 @@ cheerfulness_drink_field = tk.Entry(
 cheerfulness_drink_field.grid(
     row=7, column=4
 )
-cheerfulness_drink_field.insert(0, 95)
+cheerfulness_drink_field.insert(0, '95')
 
 cheerfulness_slot = tk.StringVar(app)
 cheerfulness_slot.set(

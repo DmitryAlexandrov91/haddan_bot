@@ -179,23 +179,26 @@ class DriverManager:
     def wait_while_element_will_be_clickable(
             self, element: WebElement) -> None:
         """Ждёт пока элемент станет кликабельным."""
-        WebDriverWait(self.driver, 5).until(
-            EC.element_to_be_clickable(element))
+        if self.driver:
+            WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable(element))
 
     def scroll_to_element(self, element: WebElement):
         """Прокручивает до нужного жлемента."""
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView();",
-            element
-        )
+        if self.driver:
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView();",
+                element
+            )
 
     def click_to_element_with_actionchains(self, element: WebElement):
         """Щёлкает по элементу методом click класса ActionChains.
 
         Максимальная эмуляция реального нажатия мышкой*
         """
-        ActionChains(self.driver).move_to_element(
-                element).click().perform()
+        if self.driver:
+            ActionChains(self.driver).move_to_element(
+                    element).click().perform()
 
     def send_alarm_message(
             self,

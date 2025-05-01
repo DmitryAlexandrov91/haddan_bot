@@ -112,14 +112,14 @@ def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
     return intimidation, next_room
 
 
-def get_attr_from_string(text: str, attr: str) -> str:
+def get_attr_from_string(text: str, attr: str) -> str | None:
     """Вытаскивает регуляркой значение атрибута из текста."""
-
     pattern = rf'{attr}="([^"]+)"'
     match = re.search(pattern, text)
     if match:
         title_text = match.group(1)
         return title_text
+    return None
 
 
 def get_dragon_time_wait(text: str):
@@ -144,3 +144,7 @@ def get_dragon_time_wait(text: str):
     seconds_to_wait = int(delta.total_seconds())
 
     return seconds_to_wait
+
+
+def get_bool_param_drom_env(variable: str) -> bool:
+    pass
