@@ -25,6 +25,7 @@ from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
                    price_counter, time_extractor)
 
 from .driver_manager import DriverManager
+from selenium.common.exceptions import InvalidSessionIdException
 
 
 class HaddanUser:
@@ -73,7 +74,10 @@ class HaddanDriverManager(DriverManager):
     Для игры haddan.ru.
     """
 
-    def __init__(self, user: HaddanUser = None, bot: Bot = None) -> None:
+    def __init__(
+            self,
+            user: HaddanUser | None = None,
+            bot: Bot | None = None):
         super().__init__(bot=bot)
         self.user = user
         self.loop = asyncio.new_event_loop()
@@ -131,6 +135,9 @@ class HaddanDriverManager(DriverManager):
         """Возвращает название заклинания, которое используется в бою."""
         self.try_to_switch_to_central_frame()
 
+        if not self.driver:
+            raise InvalidSessionIdException
+
         spell = self.driver.find_elements(
             By.CSS_SELECTOR,
             'a[href="javascript:fight_goAndShowSlots(true)"]'
@@ -148,6 +155,9 @@ class HaddanDriverManager(DriverManager):
             spell_number: str,
             slot_number: str) -> Optional[str]:
         """Возвращает название заклинания, которое нужно использовать."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         self.driver.switch_to.default_content()
         self.driver.execute_script(
                 f'slotsShow({int(slot_number) - 1})'
@@ -167,6 +177,9 @@ class HaddanDriverManager(DriverManager):
             slots_page: SlotsPage,
             slot: Slot):
         """Открывает меню быстрых слотов и выбирает знужный закл."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         if not self.check_come_back():
             active_spell = self.get_active_spell()
             # print(f'Активный закл - {active_spell}')
@@ -177,7 +190,7 @@ class HaddanDriverManager(DriverManager):
             # print(f'Нужно кастануть - {spell_to_cast}')
             if spell_to_cast != active_spell and not self.check_come_back():
                 self.driver.execute_script(
-                    f'slotsShow({int(slots_page) -1 })'
+                    f'slotsShow({int(slots_page) - 1})'
                 )
                 self.driver.execute_script(
                     f'return qs_onClickSlot(event,{int(slot) - 1})'
@@ -185,6 +198,9 @@ class HaddanDriverManager(DriverManager):
 
     def get_hit_number(self) -> Optional[str]:
         """Возвращает номер удара в бою."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         try:
             hit_number = self.driver.find_element(
                 By.CSS_SELECTOR,
@@ -194,11 +210,14 @@ class HaddanDriverManager(DriverManager):
         except Exception:
             return None
 
-    def get_round_number(self) -> str:
+    def get_round_number(self) -> str | None:
         """Возвращает номер раунда.
 
         В формате 'Раунд 1', 'Раунд 2' и т.д.
         """
+        if not self.driver:
+            raise InvalidSessionIdException
+
         rounds = self.driver.find_elements(
             By.CSS_SELECTOR, '#divlog p'
         )
@@ -208,7 +227,7 @@ class HaddanDriverManager(DriverManager):
             )
             if last_round:
                 round = last_round[0].text.rstrip().split()
-                round[-1] = int(round[-1]) + 1
+                round[-1] = str(int(round[-1]) + 1)
                 return f'{round[0]} {round[1]}'
 
         return 'Раунд 1'
@@ -216,10 +235,13 @@ class HaddanDriverManager(DriverManager):
 
     def fight(
             self,
-            spell_book: dict,
+            spell_book: dict | None,
             default_slot: SlotsPage = SlotsPage._1,
             default_spell: Slot = Slot._1):
         """Проводит бой."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         round = self.get_round_number()
         kick = self.get_hit_number()
 
@@ -234,9 +256,16 @@ class HaddanDriverManager(DriverManager):
                 text='Проводим бой'
             )
             try:
-                self.open_slot_and_choise_spell(
-                    slots_page=spell_book[round][kick]['slot'],
-                    slot=spell_book[round][kick]['spell'])
+                if spell_book:
+                    self.open_slot_and_choise_spell(
+                        slots_page=spell_book[round][kick]['slot'],
+                        slot=spell_book[round][kick]['spell'])
+
+                else:
+                    self.open_slot_and_choise_spell(
+                        slots_page=default_slot,
+                        slot=default_spell)
+
             except Exception:
                 self.open_slot_and_choise_spell(
                     slots_page=default_slot,
@@ -475,8 +504,11 @@ class HaddanDriverManager(DriverManager):
     def check_kaptcha(
             self,
             message_to_tg: bool,
-            telegram_id: int = None):
+            telegram_id: int | None = None):
         """Проверяет наличие капчи на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         if not self.cycle_is_running:
             exit()
         kaptcha = self.driver.find_elements(
@@ -499,15 +531,18 @@ class HaddanDriverManager(DriverManager):
 
     def check_health(
             self,
-            min_hp: int,
+            min_hp: int | None,
             message_to_tg: bool,
-            telegram_id: int):
+            telegram_id: int | None):
         """"Проверка ХП.
 
         :min_hp: минимальное кол-во ХП.
         :message_to_tg: флаг отправки сообщений в ТГ.
         :telegram_id: телеграм id куда отправлять сообщение.
         """
+        if not self.driver:
+            raise InvalidSessionIdException
+
         if not self.cycle_is_running:
             exit()
 
@@ -574,11 +609,14 @@ class HaddanDriverManager(DriverManager):
             return True
         return False
 
-    def crossing_to_the_south(self) -> bool:
+    def crossing_to_the_south(self) -> bool | None:
         """Переходит на юг.
 
         Если переход произошёл возвращает True
         """
+        if not self.driver:
+            raise InvalidSessionIdException
+
         self.try_to_switch_to_central_frame()
         south = self.driver.find_elements(
             By.CSS_SELECTOR,
@@ -633,9 +671,12 @@ class HaddanDriverManager(DriverManager):
             slots: SlotsPage = SlotsPage._1,
             spell: Slot = Slot._1,
             message_to_tg: bool = False,
-            telegram_id: int = None,
-            spell_book: dict = None):
+            telegram_id: int | None = None,
+            spell_book: dict | None = None):
         """Фарм поляны."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         while self.cycle_is_running:
 
             try:
@@ -725,15 +766,18 @@ class HaddanDriverManager(DriverManager):
             left_right_move: bool = False,
             mind_spirit_play: bool = True,
             message_to_tg: bool = True,
-            min_hp: int = None,
-            telegram_id: int = None,
-            spell_book: dict = None,
+            min_hp: int | None = None,
+            telegram_id: int | None = None,
+            spell_book: dict | None = None,
             cheerfulness: bool = False,
-            cheerfulness_min: int = None,
+            cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
             cheerfulness_spell: Slot = Slot._1
             ):
         """Фарм с проведением боя."""
+        if not self.driver:
+            return None
+
         while self.cycle_is_running:
 
             try:
@@ -830,10 +874,12 @@ class HaddanDriverManager(DriverManager):
             self,
             default_slot: SlotsPage = SlotsPage._1,
             default_spell: Slot = Slot._5,
-            spell_book: dict = None,
+            spell_book: dict | None = None,
             message_to_tg: bool = False,
-            telegram_id: int = None):
+            telegram_id: int | None = None):
         """"Фарм пыльных драконов."""
+        if not self.driver:
+            raise InvalidSessionIdException
 
         while self.cycle_is_running:
 
@@ -940,6 +986,8 @@ class HaddanDriverManager(DriverManager):
             f'\nВозникло исключение {str(exception)}\n',
             stack_info=False
         )
+        if not self.driver:
+            raise InvalidSessionIdException
         try:
 
             self.driver.switch_to.default_content()
@@ -971,6 +1019,10 @@ class HaddanDriverManager(DriverManager):
     def check_for_fight(self) -> bool:
         """Если идёт бой, возвращает True."""
         self.try_to_switch_to_central_frame()
+
+        if not self.driver:
+            raise InvalidSessionIdException
+
         hits = self.driver.find_elements(
             By.CSS_SELECTOR,
             'a[href="javascript:submitMove()"]'
@@ -979,6 +1031,9 @@ class HaddanDriverManager(DriverManager):
 
     def check_come_back(self) -> bool:
         """Если бой закончен, возвращает True."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         return bool(come_back)
@@ -993,7 +1048,7 @@ class HaddanDriverManager(DriverManager):
 
     def check_cheerfulnes_level(
             self,
-            cheerfulnes_min: int,
+            cheerfulnes_min: int | None,
             cheerfulnes_slot: SlotsPage = SlotsPage._0,
             cheerfulnes_spell: Slot = Slot._1):
         """Проверяет уровень бодрости.
@@ -1003,6 +1058,8 @@ class HaddanDriverManager(DriverManager):
         :cheerfulnes_slot: страница слотов с бодрой.
         :cheerfulnes_spell: номер слота с бодрой.
         """
+        if not self.driver:
+            raise InvalidSessionIdException
 
         if self.check_for_fight() is False:
             self.driver.switch_to.default_content()
@@ -1049,16 +1106,16 @@ class HaddanDriverManager(DriverManager):
             self,
             labirint_map: list[list[Room]],
             via_drop: bool = True,
-            to_the_room: int = None,
+            to_the_room: int | None = None,
             message_to_tg: bool = False,
-            telegram_id: int = None,
+            telegram_id: int | None = None,
             slots: SlotsPage = SlotsPage._1,
             spell: Slot = Slot._1,
             mind_spirit_play: bool = True,
-            min_hp: int = None,
-            spell_book: dict = None,
+            min_hp: int | None = None,
+            spell_book: dict | None = None,
             cheerfulness: bool = False,
-            cheerfulness_min: int = None,
+            cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
             cheerfulness_spell: Slot = Slot._1,
             first_floor: bool = False,
@@ -1066,6 +1123,8 @@ class HaddanDriverManager(DriverManager):
             third_floor: bool = False
             ):
         """Прохождение лабиринта."""
+        if not self.driver:
+            raise InvalidSessionIdException
 
         while self.cycle_is_running:
 
@@ -1086,6 +1145,9 @@ class HaddanDriverManager(DriverManager):
                 )
 
                 my_room = self.get_room_number()
+
+                if not my_room:
+                    continue
 
                 #  Если указана комната и не стоит выбор через весь дроп.
                 if to_the_room and not via_drop:
@@ -1159,6 +1221,11 @@ class HaddanDriverManager(DriverManager):
                         text=message
                     )
 
+                    if not to_the_room:
+                        to_the_room = get_sity_portal_room_number(
+                            labirint_map=labirint_map
+                        )
+
                     path = find_path_via_boxes_with_directions(
                         labirint_map=labirint_map,
                         start_room=my_room,
@@ -1201,6 +1268,10 @@ class HaddanDriverManager(DriverManager):
                     self.send_info_message(
                         text=message
                     )
+                    if not to_the_room:
+                        to_the_room = get_sity_portal_room_number(
+                            labirint_map=labirint_map
+                        )
 
                     path = find_path_with_directions(
                         labirint_map=labirint_map,
@@ -1352,35 +1423,44 @@ class HaddanDriverManager(DriverManager):
             except Exception as e:
                 self.actions_after_exception(e)
 
-    def get_room_number(self) -> Optional[int]:
+    def get_room_number(self) -> int | None:
         """Возвращает номер комнаты в лабе, в которой находится персонаж."""
         self.try_to_switch_to_central_frame()
+
+        if not self.driver:
+            raise InvalidSessionIdException
+
         my_room = self.driver.find_elements(
                 By.CLASS_NAME, 'LOCATION_NAME'
             )
         if my_room:
-            return int(
-                re.search(
-                    r'№(\d+)',
-                    my_room[0].text
-                ).group(1)
-            )
+            text = my_room[0].text
+            pattern = r'№(\d+)'
+
+            result = re.search(pattern, text)
+
+            if result:
+                return int(result.group(1))
+
         return None
 
     def default_maze_actions(
             self,
             message_to_tg: bool = False,
-            telegram_id: int = None,
+            telegram_id: int | None = None,
             slots: SlotsPage = SlotsPage._1,
             spell: Slot = Slot._1,
             mind_spirit_play: bool = True,
-            min_hp: int = None,
-            spell_book: dict = None,
+            min_hp: int | None = None,
+            spell_book: dict | None = None,
             cheerfulness: bool = False,
-            cheerfulness_min: int = None,
+            cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
             cheerfulness_spell: Slot = Slot._1):
         """Стандартный набор действий в лабиринте."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         if cheerfulness:
             if not self.check_for_fight():
                 self.check_cheerfulnes_level(

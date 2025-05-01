@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -68,12 +68,12 @@ MIND_SPIRIT_PLAY = get_bool_param_from_env(
     os.getenv('MIND_SPIRIT_PLAY', True))
 CHEERFULNESS = get_bool_param_from_env(
     os.getenv('CHEERFULNESS', False))
-DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', 2)
-DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', 1)
+DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', '2')
+DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', '1')
 DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
-    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', 1
+    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1'
 )
-DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', 1)
+DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', '1')
 
 # Цена ресурсов поляны
 FIELD_PRICES = {
@@ -110,7 +110,7 @@ GAMBLE_SPIRIT_RIGHT_ANSWERS = (
 SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7')
 
 
-class SlotsPage(Enum):
+class SlotsPage(StrEnum):
     _0 = '1'
     _1 = '2'
     _2 = '3'
@@ -123,7 +123,7 @@ class SlotsPage(Enum):
         return self.value
 
 
-class Slot(Enum):
+class Slot(StrEnum):
     _1 = '1'
     _2 = '2'
     _3 = '3'
@@ -136,13 +136,13 @@ class Slot(Enum):
         return self.value
 
 
-class Floor(Enum):
+class Floor(StrEnum):
     FIRST_FLOOR = '1'
     SECOND_FLOOR = '2'
     THIRD_FLOOR = '3'
 
 
-class TkAlarmColors(Enum):
+class TkAlarmColors(StrEnum):
     APP = '#FFF4DC'
     RED = '#FF0000'
     GREEN = 'green'
