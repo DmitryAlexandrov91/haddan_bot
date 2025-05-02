@@ -10,7 +10,7 @@ class AsyncManager:
         self.farm_task = None
 
     def _start_loop_thread(self):
-        """Запускаем event loop в отдельном потоке"""
+        """Запускает event loop в отдельном потоке"""
         def run_loop():
             asyncio.set_event_loop(self.loop)
             self.loop.run_forever()

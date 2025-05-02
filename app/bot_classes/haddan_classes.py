@@ -15,7 +15,8 @@ from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_sity_portal_room_number,
                         get_upper_portal_room_number)
 from selenium import webdriver
-from selenium.common.exceptions import (StaleElementReferenceException,
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        StaleElementReferenceException,
                                         UnexpectedAlertPresentException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -25,7 +26,7 @@ from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
                    price_counter, time_extractor)
 
 from .driver_manager import DriverManager
-from selenium.common.exceptions import InvalidSessionIdException
+from .services import make_transition
 
 
 class HaddanUser:
@@ -85,6 +86,11 @@ class HaddanDriverManager(DriverManager):
             target=self.start_loop,
             daemon=True
         ).start()
+        self.passed_forest_rooms: set = set()
+        self.passed_maze_rooms: set = set()
+        self.maze_first_floor_map: list[list[Room]] | None = None
+        self.maze_second_floor_map: list[list[Room]] | None = None
+        self.maze_third_floor_map: list[list[Room]] | None = None
 
     def start_loop(self):
         asyncio.set_event_loop(self.loop)
@@ -605,7 +611,8 @@ class HaddanDriverManager(DriverManager):
                 'img[title="К Спуску"]')
 
         if north:
-            north[0].click()
+            self.click_to_element_with_actionchains(north[0])
+            # north[0].click()
             return True
         return False
 
@@ -637,7 +644,8 @@ class HaddanDriverManager(DriverManager):
                 'img[title="К Берегу"]')
 
         if south:
-            south[0].click()
+            self.click_to_element_with_actionchains(south[0])
+            # south[0].click()
             return True
         return False
 
@@ -648,7 +656,8 @@ class HaddanDriverManager(DriverManager):
             By.CSS_SELECTOR,
             'img[title="На запад"]')
         if west:
-            west[0].click()
+            self.click_to_element_with_actionchains(west[0])
+            # west[0].click()
             return True
         return False
 
@@ -659,7 +668,8 @@ class HaddanDriverManager(DriverManager):
             By.CSS_SELECTOR,
             'img[title="На восток"]')
         if east:
-            east[0].click()
+            self.click_to_element_with_actionchains(east[0])
+            # east[0].click()
             return True
         return False
     #  **************************************************************
@@ -1144,9 +1154,11 @@ class HaddanDriverManager(DriverManager):
                     cheerfulness_spell=cheerfulness_spell
                 )
 
+                self.try_to_switch_to_central_frame()
+
                 my_room = self.get_room_number()
 
-                if not my_room:
+                if my_room is None:
                     continue
 
                 #  Если указана комната и не стоит выбор через весь дроп.
@@ -1182,7 +1194,8 @@ class HaddanDriverManager(DriverManager):
                     path = find_path_via_boxes_with_directions(
                         labirint_map=labirint_map,
                         start_room=my_room,
-                        target_room=to_the_room
+                        target_room=to_the_room,
+                        passed_rooms=self.passed_maze_rooms
                     )
 
                 # Если не указана комната и стоит выбор через весь дроп.
@@ -1229,7 +1242,8 @@ class HaddanDriverManager(DriverManager):
                     path = find_path_via_boxes_with_directions(
                         labirint_map=labirint_map,
                         start_room=my_room,
-                        target_room=to_the_room
+                        target_room=to_the_room,
+                        passed_rooms=self.passed_maze_rooms
                     )
 
                 #  Если не указана комната и не стоит выбор через весь дроп.
@@ -1303,6 +1317,9 @@ class HaddanDriverManager(DriverManager):
                         self.try_to_switch_to_central_frame()
                         sleep(1)
 
+                        passed_room = self.get_room_number()
+                        self.passed_maze_rooms.add(passed_room)
+
                         WebDriverWait(self.driver, 30).until_not(
                                 EC.presence_of_element_located((
                                     By.XPATH,
@@ -1373,7 +1390,6 @@ class HaddanDriverManager(DriverManager):
 
                     except Exception:
                         self.driver._switch_to.default_content()
-                        # sleep(1)
                         self.default_maze_actions(
                             message_to_tg=message_to_tg,
                             telegram_id=telegram_id,
@@ -1558,19 +1574,105 @@ class HaddanDriverManager(DriverManager):
         except StaleElementReferenceException:
             self.check_room_for_drop()
 
+    def check_room_for_stash_and_herd(self):
+        """Проверяет комнату в лесу на наличие тайника."""
+        self.try_to_switch_to_central_frame()
+        sleep(0.5)
+
+        drop = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[alt="Тайник"]'
+        )
+        if not drop:
+            drop = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[alt="Табун"]'
+            )
+        if drop:
+            self.click_to_element_with_actionchains(drop[0])
+            # drop[0].click()
+            sleep(0.5)
+
     def return_back_to_previous_room(
             self,
             last_turn):
         """"Действие возврата в предыдущую комнату."""
 
-        if last_turn == 'запад':
-            self.crossing_to_the_east()
+        match last_turn:
+            case 'запад': self.crossing_to_the_east()
+            case 'восток': self.crossing_to_the_west()
+            case 'север': self.crossing_to_the_south()
+            case 'юг': self.crossing_to_the_north()
+            case _: pass
 
-        if last_turn == 'восток':
-            self.crossing_to_the_west()
+    def forest_passing(
+            self,
+            message_to_tg: bool = False,
+            telegram_id: int | None = None,
+            slots: SlotsPage = SlotsPage._1,
+            spell: Slot = Slot._1,
+            spell_book: dict | None = None,
+            cheerfulness: bool = False,
+            cheerfulness_min: int | None = None,
+            cheerfulness_slot: SlotsPage = SlotsPage._0,
+            cheerfulness_spell: Slot = Slot._1):
+        if not self.driver:
+            raise InvalidSessionIdException
 
-        if last_turn == 'север':
-            self.crossing_to_the_south()
+        # passed_rooms: set = set()
+        print(self.passed_forest_rooms)
 
-        if last_turn == 'юг':
-            self.crossing_to_the_north()
+        while self.cycle_is_running:
+
+            try:
+
+                if cheerfulness:
+
+                    self.check_cheerfulnes_level(
+                        cheerfulnes_min=cheerfulness_min,
+                        cheerfulnes_slot=cheerfulness_slot,
+                        cheerfulnes_spell=cheerfulness_spell
+                    )
+
+                self.check_room_for_stash_and_herd()
+
+                self.check_kaptcha(
+                    message_to_tg=message_to_tg,
+                    telegram_id=telegram_id
+                )
+                # self.check_error_on_page()
+
+                self.try_to_come_back_from_fight()
+
+                if self.check_for_fight():
+                    self.fight(
+                        spell_book=spell_book,
+                        default_slot=slots,
+                        default_spell=spell)
+
+                else:
+                    WebDriverWait(self.driver, 30).until_not(
+                            EC.presence_of_element_located((
+                                By.XPATH,
+                                "//*[contains(text(),'Вы можете попасть')]"
+                                ))
+                        )
+
+                    room_number = self.get_room_number()
+
+                    if room_number is None:
+                        continue
+
+                    make_transition(
+                        room_number=room_number,
+                        right=self.crossing_to_the_east,
+                        left=self.crossing_to_the_west,
+                        up=self.crossing_to_the_north,
+                        down=self.crossing_to_the_south,
+                        passed_rooms=self.passed_forest_rooms
+                    )
+                    # sleep(1)
+                    self.check_room_for_stash_and_herd()
+
+            except Exception as e:
+                self.actions_after_exception(e)

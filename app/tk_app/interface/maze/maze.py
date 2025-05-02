@@ -1,4 +1,5 @@
 """Фарм в лабиринте."""
+import copy
 import threading
 import tkinter as tk
 
@@ -55,19 +56,31 @@ def start_maze_passing():
         )
 
     if first_floor:
-        labirint_map = get_floor_map(
-            floor=Floor.FIRST_FLOOR,
-            manager=temp_manager)
+        if not manager.maze_first_floor_map:
+            labirint_map = get_floor_map(
+                floor=Floor.FIRST_FLOOR,
+                manager=temp_manager)
+            manager.maze_first_floor_map = copy.deepcopy(labirint_map)
+        else:
+            labirint_map = manager.maze_first_floor_map
     if second_floor:
-        labirint_map = get_floor_map(
-            floor=Floor.SECOND_FLOOR,
-            manager=temp_manager
-            )
+        if not manager.maze_second_floor_map:
+            labirint_map = get_floor_map(
+                floor=Floor.SECOND_FLOOR,
+                manager=temp_manager
+                )
+            manager.maze_second_floor_map = copy.deepcopy(labirint_map)
+        else:
+            labirint_map = manager.maze_second_floor_map
     if third_floor:
-        labirint_map = get_floor_map(
-            floor=Floor.THIRD_FLOOR,
-            manager=temp_manager
-            )
+        if not manager.maze_third_floor_map:
+            labirint_map = get_floor_map(
+                floor=Floor.THIRD_FLOOR,
+                manager=temp_manager
+                )
+            manager.maze_third_floor_map = copy.deepcopy(labirint_map)
+        else:
+            labirint_map = manager.maze_third_floor_map
 
     if not labirint_map:
         send_message_and_stop_cycle(

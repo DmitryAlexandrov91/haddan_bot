@@ -147,6 +147,14 @@ def open_map():
     manager.driver.switch_to.window(windows[0])
 
 
+def delete_all_maps():
+    manager.passed_forest_rooms.clear()
+    manager.passed_maze_rooms.clear()
+    manager.maze_first_floor_map.clear()
+    manager.maze_second_floor_map.clear()
+    manager.maze_third_floor_map.clear()
+
+
 labirint_map = tk.Button(
     app,
     text='карта лабиринта',
@@ -158,4 +166,16 @@ labirint_map.grid(
     row=10,
     column=1,
 )
+
+clear_all_maps = tk.Button(
+    app,
+    text='очистить карты',
+    width=15,
+    bg='#FFF4DC',
+    command=delete_all_maps
+)
+clear_all_maps.grid(
+    row=10, column=4, sticky='w'
+)
+
 #  --------------------------------------------------------------------

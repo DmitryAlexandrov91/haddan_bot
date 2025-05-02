@@ -201,7 +201,8 @@ def find_path_with_directions(
 def find_path_via_boxes_with_directions(
     labirint_map: List[List[Room]],
     start_room: int,
-    target_room: int
+    target_room: int,
+    passed_rooms: set
 ) -> Optional[List[str]]:
     """
     Возвращает направления для пути:
@@ -212,7 +213,7 @@ def find_path_via_boxes_with_directions(
         (i, j)
         for i, row in enumerate(labirint_map)
         for j, room in enumerate(row)
-        if room.box_outer
+        if room.box_outer and room.number not in passed_rooms
     ]
 
     start_pos = find_room_position(labirint_map, start_room)

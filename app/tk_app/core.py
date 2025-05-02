@@ -10,7 +10,7 @@ from .utils import keys
 
 app = tk.Tk()
 
-app.title("Haddan bot v1.3 <stable>")
+app.title("Haddan bot v1.4 <beta>")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 
@@ -24,6 +24,7 @@ app.iconphoto(True, photo)
 
 from tk_app.interface.dev_code import *  # noqa
 from tk_app.interface.fight import *  # noqa
+from tk_app.interface.forest_passing import *  # noqa
 from tk_app.interface.glade_farm import *  # noqa
 from tk_app.interface.login import *  # noqa
 from tk_app.interface.maze import *  # noqa

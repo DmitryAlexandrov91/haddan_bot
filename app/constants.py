@@ -160,4 +160,20 @@ class Room:
     east: bool = False
 
 
+@dataclass
+class ForestRoom:
+    number: int
+    north: bool = False
+    south: bool = False
+    west: bool = False
+    east: bool = False
+
+
+FOREST_MAP = [
+    ForestRoom(number=1, east=True),
+    ForestRoom(number=2, east=True),
+    
+]
+
+
 DEFAULT_TK_STATUS = 'Бот готов к работе'

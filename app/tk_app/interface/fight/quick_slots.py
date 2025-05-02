@@ -6,20 +6,12 @@ from tk_app.core import app
 
 
 def open_slots():
-    # current_size = (app.winfo_width(), app.winfo_height())
-
-    # max_size = 773, 500
-
-    # if current_size <= max_size:
-    #     app.maxsize(current_size[0] + 300, current_size[1])
-    # else:
-    #     app.maxsize(max_size[0], max_size[1])
-    pass
+    sync_with_main_spell()
 
 
 quick_slots_open_btn = tk.Button(
     app,
-    text='удары ->',
+    text='sync ->',
     width=9,
     bg='#FFF4DC',
     command=open_slots
@@ -697,9 +689,9 @@ sync_button = tk.Button(
     bg='#FFF4DC',
     command=sync_with_main_spell
 )
-sync_button.grid(
-    row=4, column=10
-)
+# sync_button.grid(
+#     row=4, column=10
+# )
 
 
 def get_dragon_preset():
