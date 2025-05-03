@@ -17,7 +17,9 @@ from maze_utils import (find_path_via_boxes_with_directions,
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidSessionIdException,
                                         StaleElementReferenceException,
-                                        UnexpectedAlertPresentException)
+                                        UnexpectedAlertPresentException,
+                                        TimeoutException,
+                                        NoAlertPresentException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -104,6 +106,14 @@ class HaddanDriverManager(DriverManager):
             self.send_msg(text),
             self.loop
         )
+
+    def is_alert_present(self):
+        """Метод определния наличия уведомления на странице."""
+        try:
+            self.driver.switch_to.alert
+            return True
+        except NoAlertPresentException:
+            return False
 
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
@@ -355,11 +365,17 @@ class HaddanDriverManager(DriverManager):
                         if next_room >= intimidation:
                             right_choise = self.driver.find_elements(
                                 By.PARTIAL_LINK_TEXT, 'Довольно')
-                            right_choise[0].click()
+                            # right_choise[0].click()
+                            self.click_to_element_with_actionchains(
+                                right_choise[0]
+                            )
                         else:
                             right_choise = self.driver.find_elements(
                                 By.PARTIAL_LINK_TEXT, 'Дальше!')
-                            right_choise[0].click()
+                            # right_choise[0].click()
+                            self.click_to_element_with_actionchains(
+                                right_choise[0]
+                            )
 
                         spirit_answers = self.driver.find_elements(
                             By.CLASS_NAME,
@@ -507,6 +523,83 @@ class HaddanDriverManager(DriverManager):
         """Отправляет фотку в телеграм."""
         self.bot.send_photo(TELEGRAM_CHAT_ID, open(photo, 'rb'))
 
+    def wait_until_kaptcha_on_page(self, time: int) -> None:
+        """Ждёт до time секунд пор пока каптча на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                EC.presence_of_element_located((
+                    By.CSS_SELECTOR,
+                    'img[src="/inner/img/bc.php"]'
+                    ))
+            )
+
+        except TimeoutException:
+            self.wait_until_kaptcha_on_page(time=time)
+
+    def wait_until_mind_spirit_on_page(self, time: int) -> None:
+        """Ждёт до time секунд пока дух ума на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                    EC.presence_of_element_located((
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850577"]'
+                        ))
+                )
+
+        except TimeoutException:
+            self.wait_until_mind_spirit_on_page(time=time)
+
+    def wait_until_transition_timeout(self, time: int) -> None:
+        """Ждёт до time секунд перехода в другую локацию."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                EC.presence_of_element_located((
+                    By.XPATH,
+                    "//*[contains(text(),'Вы можете попасть')]"
+                    ))
+            )
+
+        except TimeoutException:
+            self.wait_until_transition_timeout(time=time)
+
+    def wait_until_alert_present(self, time: int) -> None:
+        """Ждёт по time секунд пока на странице есть уведомление."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until(
+                lambda driver: not self.is_alert_present()
+            )
+
+        except TimeoutException:
+            self.wait_until_alert_present(time=time)
+
     def check_kaptcha(
             self,
             message_to_tg: bool,
@@ -521,16 +614,23 @@ class HaddanDriverManager(DriverManager):
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]'
                 )
+
         if kaptcha:
+            self.send_info_message(
+                    'Обнаружена капча'
+                )
+
             if self.bot and message_to_tg and telegram_id:
                 self.sync_send(
                     text='Обнаружена капча!'
                 )
-                self.sleep_while_event_is_true(time_to_sleep=30)
+                self.wait_until_kaptcha_on_page(5)
             else:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
-                self.sleep_while_event_is_true(time_to_sleep=10)
+                self.wait_until_alert_present(30)
+                self.wait_until_kaptcha_on_page(5)
+
             self.check_kaptcha(
                 message_to_tg=message_to_tg,
                 telegram_id=telegram_id)
@@ -570,7 +670,6 @@ class HaddanDriverManager(DriverManager):
                     else:
                         print('Мало хп, спим 30 секунд!')
                     self.sleep_while_event_is_true(time_to_sleep=30)
-                    # sleep(30)
                     self.check_health(
                         min_hp=min_hp,
                         message_to_tg=message_to_tg,
@@ -649,7 +748,11 @@ class HaddanDriverManager(DriverManager):
                 'img[title="К Мостику"]')
 
         if south:
+            # try:
             self.click_to_element_with_actionchains(south[0])
+            # except TimeoutException:
+            #     self.driver.refresh()
+            #     self.crossing_to_the_south()
             # south[0].click()
             return True
         return False
@@ -766,9 +869,10 @@ class HaddanDriverManager(DriverManager):
                 self.driver.switch_to.default_content()
 
             except UnexpectedAlertPresentException:
-                self.sleep_while_event_is_true(15)
+                # self.sleep_while_event_is_true(15)
                 # sleep(15)
-                print('Получено уведомление, ждём!')
+                self.send_status_message('Получено уведомление, ждём.')
+                self.wait_until_kaptcha_on_page(30)
 
             except Exception as e:
                 self.actions_after_exception(exception=e)
@@ -820,12 +924,7 @@ class HaddanDriverManager(DriverManager):
                         default_spell=spell)
 
                 else:
-                    WebDriverWait(self.driver, 30).until_not(
-                            EC.presence_of_element_located((
-                                By.XPATH,
-                                "//*[contains(text(),'Вы можете попасть')]"
-                                ))
-                        )
+                    self.wait_until_transition_timeout(5)
 
                     if up_down_move:
                         if not self.crossing_to_the_north():
@@ -854,33 +953,16 @@ class HaddanDriverManager(DriverManager):
                     self.play_with_mind_spirit()
 
                 else:
-                    mind_spirit = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'img[id="roomnpc1850577"]')
-
-                    if mind_spirit:
-                        if self.bot and message_to_tg and telegram_id:
-                            self.sync_send(
-                                'Обнаружен дух ума!'
-                            )
-
-                            self.sleep_while_event_is_true(30)
-                        else:
-                            self.driver.execute_script(
-                                'window.alert("Обнаружен дух ума!");'
-                            )
-                            self.sleep_while_event_is_true(15)
-                        # sleep(30)
+                    self.actions_with_mind_spirit(
+                        message_to_tg=message_to_tg,
+                        telegram_id=telegram_id
+                    )
 
                 self.check_health(
                     min_hp=min_hp,
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id
                 )
-
-            except UnexpectedAlertPresentException:
-                print('Получено уведомление, ждём!')
-                self.sleep_while_event_is_true(15)
 
             except Exception as e:
                 self.actions_after_exception(exception=e)
@@ -987,10 +1069,6 @@ class HaddanDriverManager(DriverManager):
                 self.driver.switch_to.default_content()
                 sleep(1)
 
-            except UnexpectedAlertPresentException:
-                print('Получено уведомление, ждём!')
-                self.sleep_while_event_is_true(15)
-
             except Exception as e:
                 self.actions_after_exception(e)
 
@@ -1029,7 +1107,10 @@ class HaddanDriverManager(DriverManager):
             right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, answer)
             if right_choise:
-                right_choise[0].click()
+                self.click_to_element_with_actionchains(
+                    right_choise[0]
+                )
+                # right_choise[0].click()
 
     def check_for_fight(self) -> bool:
         """Если идёт бой, возвращает True."""
@@ -1308,8 +1389,6 @@ class HaddanDriverManager(DriverManager):
                         self.start_button.configure(fg='black')
                     continue
 
-                attempt = 0  # Счётчик попыток.
-
                 while path and self.cycle_is_running:
 
                     try:
@@ -1325,12 +1404,7 @@ class HaddanDriverManager(DriverManager):
                         passed_room = self.get_room_number()
                         self.passed_maze_rooms.add(passed_room)
 
-                        WebDriverWait(self.driver, 30).until_not(
-                                EC.presence_of_element_located((
-                                    By.XPATH,
-                                    "//*[contains(text(),'Вы можете попасть')]"
-                                    ))
-                            )
+                        self.wait_until_transition_timeout(5)
 
                         self.default_maze_actions(
                             message_to_tg=message_to_tg,
@@ -1349,49 +1423,38 @@ class HaddanDriverManager(DriverManager):
                         if path[0] == 'запад':
                             if self.crossing_to_the_west():
                                 last_turn = path.pop(0)
-                                attempt = 0
                                 continue
                             else:
-                                attempt += 1
-                                if attempt > 10:
-                                    self.return_back_to_previous_room(
-                                        last_turn=last_turn
-                                    )
+                                self.return_back_to_previous_room(
+                                    last_turn=last_turn
+                                )
 
                         if path[0] == 'юг':
                             if self.crossing_to_the_south():
                                 last_turn = path.pop(0)
-                                attempt = 0
                                 continue
                             else:
-                                attempt += 1
-                                if attempt > 10:
-                                    self.return_back_to_previous_room(
-                                        last_turn=last_turn
-                                    )
+                                self.return_back_to_previous_room(
+                                    last_turn=last_turn
+                                )
+
                         if path[0] == 'север':
                             if self.crossing_to_the_north():
                                 last_turn = path.pop(0)
-                                attempt = 0
                                 continue
                             else:
-                                attempt += 1
-                                if attempt > 10:
-                                    self.return_back_to_previous_room(
-                                        last_turn=last_turn
-                                    )
+                                self.return_back_to_previous_room(
+                                    last_turn=last_turn
+                                )
 
                         if path[0] == 'восток':
                             if self.crossing_to_the_east():
                                 last_turn = path.pop(0)
-                                attempt = 0
                                 continue
                             else:
-                                attempt += 1
-                                if attempt > 10:
-                                    self.return_back_to_previous_room(
-                                        last_turn=last_turn
-                                    )
+                                self.return_back_to_previous_room(
+                                    last_turn=last_turn
+                                )
 
                     except Exception:
                         self.driver._switch_to.default_content()
@@ -1513,27 +1576,10 @@ class HaddanDriverManager(DriverManager):
             self.play_with_mind_spirit()
 
         else:
-            mind_spirit = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[id="roomnpc1850577"]')
-
-            if mind_spirit:
-                if self.bot and message_to_tg and telegram_id:
-                    self.sync_send(
-                        text='Обнаружен дух ума!'
-                    )
-                    # self.bot.send_message(
-                    #     chat_id=telegram_id,
-                    #     text='Обнаружен дух ума!'
-                    # )
-                else:
-                    self.driver.execute_script(
-                        'window.alert("Обнаружен дух ума!");'
-                    )
-                self.send_info_message(
-                    'Пойманы духом ума'
-                )
-                self.sleep_while_event_is_true(30)
+            self.actions_with_mind_spirit(
+                message_to_tg=message_to_tg,
+                telegram_id=telegram_id
+            )
 
         self.check_room_for_drop()
 
@@ -1573,8 +1619,6 @@ class HaddanDriverManager(DriverManager):
                 sleep(1)
                 self.send_info_message(message)
                 self.check_room_for_drop()
-            else:
-                pass
 
         except StaleElementReferenceException:
             self.check_room_for_drop()
@@ -1624,9 +1668,6 @@ class HaddanDriverManager(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        # passed_rooms: set = set()
-        # print(self.passed_forest_rooms)
-
         while self.cycle_is_running:
 
             try:
@@ -1645,7 +1686,6 @@ class HaddanDriverManager(DriverManager):
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id
                 )
-                # self.check_error_on_page()
 
                 self.try_to_come_back_from_fight()
 
@@ -1656,12 +1696,8 @@ class HaddanDriverManager(DriverManager):
                         default_spell=spell)
 
                 else:
-                    WebDriverWait(self.driver, 30).until_not(
-                            EC.presence_of_element_located((
-                                By.XPATH,
-                                "//*[contains(text(),'Вы можете попасть')]"
-                                ))
-                        )
+
+                    self.wait_until_transition_timeout(15)
 
                     room_number = self.get_room_number()
 
@@ -1676,8 +1712,38 @@ class HaddanDriverManager(DriverManager):
                         down=self.crossing_to_the_south,
                         passed_rooms=self.passed_forest_rooms
                     )
-                    # sleep(1)
                     self.check_room_for_stash_and_herd()
 
             except Exception as e:
                 self.actions_after_exception(e)
+
+    def actions_with_mind_spirit(
+            self,
+            message_to_tg: bool,
+            telegram_id: int | None
+    ) -> None:
+        """Действия для ручной игры с духом ума."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        mind_spirit = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[id="roomnpc1850577"]')
+
+        if mind_spirit:
+            self.send_info_message(
+                'Пойманы духом ума'
+            )
+
+            if self.bot and message_to_tg and telegram_id:
+                self.sync_send(
+                    text='Обнаружен дух ума!'
+                )
+                self.wait_until_mind_spirit_on_page(5)
+
+            else:
+                self.driver.execute_script(
+                    'window.alert("Обнаружен дух ума!");'
+                )
+                self.wait_until_alert_present(30)
+                self.wait_until_mind_spirit_on_page(5)
