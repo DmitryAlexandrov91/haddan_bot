@@ -643,6 +643,11 @@ class HaddanDriverManager(DriverManager):
                 By.CSS_SELECTOR,
                 'img[title="К Берегу"]')
 
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К Мостику"]')
+
         if south:
             self.click_to_element_with_actionchains(south[0])
             # south[0].click()
@@ -1620,7 +1625,7 @@ class HaddanDriverManager(DriverManager):
             raise InvalidSessionIdException
 
         # passed_rooms: set = set()
-        print(self.passed_forest_rooms)
+        # print(self.passed_forest_rooms)
 
         while self.cycle_is_running:
 
