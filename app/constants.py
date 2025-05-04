@@ -140,6 +140,8 @@ class Floor(StrEnum):
     FIRST_FLOOR = '1'
     SECOND_FLOOR = '2'
     THIRD_FLOOR = '3'
+    BABY_FIRST_FLOOR = '4'
+    BABY_SECOND_FLOOR = '5'
 
 
 class TkAlarmColors(StrEnum):

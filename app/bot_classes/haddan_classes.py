@@ -1366,10 +1366,6 @@ class HaddanDriverManager(DriverManager):
                     self.send_info_message(
                         text=message
                     )
-                    # if not to_the_room:
-                    #     to_the_room = get_sity_portal_room_number(
-                    #         labirint_map=labirint_map
-                    #     )
 
                     if to_the_room is not None:
                         path = find_path_with_directions(
