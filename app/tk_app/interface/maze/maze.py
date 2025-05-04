@@ -61,6 +61,8 @@ def start_maze_passing():
                 floor=Floor.FIRST_FLOOR,
                 manager=temp_manager)
             manager.maze_first_floor_map = copy.deepcopy(labirint_map)
+            if manager.passed_maze_rooms:
+                manager.passed_maze_rooms.clear()
         else:
             labirint_map = manager.maze_first_floor_map
     if second_floor:
@@ -70,6 +72,8 @@ def start_maze_passing():
                 manager=temp_manager
                 )
             manager.maze_second_floor_map = copy.deepcopy(labirint_map)
+            if manager.passed_maze_rooms:
+                manager.passed_maze_rooms.clear()
         else:
             labirint_map = manager.maze_second_floor_map
     if third_floor:
@@ -79,6 +83,8 @@ def start_maze_passing():
                 manager=temp_manager
                 )
             manager.maze_third_floor_map = copy.deepcopy(labirint_map)
+            if manager.passed_maze_rooms:
+                manager.passed_maze_rooms.clear()
         else:
             labirint_map = manager.maze_third_floor_map
 

@@ -1222,6 +1222,8 @@ class HaddanDriverManager(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
+        print(self.passed_maze_rooms)
+
         while self.cycle_is_running:
 
             try:
@@ -1248,7 +1250,7 @@ class HaddanDriverManager(DriverManager):
                     continue
 
                 #  Если указана комната и не стоит выбор через весь дроп.
-                if to_the_room and not via_drop:
+                if to_the_room is not None and not via_drop:
 
                     message = (
                         f'Двигаемся по прямой в комнату {to_the_room} '
@@ -1266,7 +1268,7 @@ class HaddanDriverManager(DriverManager):
                     )
 
                 #  Если указана комната и стоит выбор через весь дроп.
-                if to_the_room and via_drop:
+                if to_the_room is not None and via_drop:
 
                     message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room} '
@@ -1285,7 +1287,7 @@ class HaddanDriverManager(DriverManager):
                     )
 
                 # Если не указана комната и стоит выбор через весь дроп.
-                if not to_the_room and via_drop:
+                if to_the_room is None and via_drop:
 
                     if first_floor:
                         to_the_room = get_upper_portal_room_number(
@@ -1320,20 +1322,16 @@ class HaddanDriverManager(DriverManager):
                         text=message
                     )
 
-                    if not to_the_room:
-                        to_the_room = get_sity_portal_room_number(
-                            labirint_map=labirint_map
+                    if to_the_room is not None:
+                        path = find_path_via_boxes_with_directions(
+                            labirint_map=labirint_map,
+                            start_room=my_room,
+                            target_room=to_the_room,
+                            passed_rooms=self.passed_maze_rooms
                         )
 
-                    path = find_path_via_boxes_with_directions(
-                        labirint_map=labirint_map,
-                        start_room=my_room,
-                        target_room=to_the_room,
-                        passed_rooms=self.passed_maze_rooms
-                    )
-
                 #  Если не указана комната и не стоит выбор через весь дроп.
-                if not to_the_room and not via_drop:
+                if to_the_room is None and not via_drop:
 
                     if first_floor:
                         to_the_room = get_upper_portal_room_number(
@@ -1368,16 +1366,17 @@ class HaddanDriverManager(DriverManager):
                     self.send_info_message(
                         text=message
                     )
-                    if not to_the_room:
-                        to_the_room = get_sity_portal_room_number(
-                            labirint_map=labirint_map
-                        )
+                    # if not to_the_room:
+                    #     to_the_room = get_sity_portal_room_number(
+                    #         labirint_map=labirint_map
+                    #     )
 
-                    path = find_path_with_directions(
-                        labirint_map=labirint_map,
-                        start_room=my_room,
-                        end_room=to_the_room
-                    )
+                    if to_the_room is not None:
+                        path = find_path_with_directions(
+                            labirint_map=labirint_map,
+                            start_room=my_room,
+                            end_room=to_the_room
+                        )
 
                 if not path:
                     self.clean_label_messages()
