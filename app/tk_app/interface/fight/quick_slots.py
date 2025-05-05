@@ -771,7 +771,7 @@ dragon_preset.grid(
 def get_cy_preset():
     """Пресет для кача в ЦУ."""
     main_slot = SlotsPage._1
-    main_spell = Slot._6
+    main_spell = Slot._1
 
     main_slots_page.set(main_slot)
     main_spell_slot.set(main_spell)
@@ -780,15 +780,6 @@ def get_cy_preset():
 
     r1y1_slot.set(SlotsPage._3)
     r1y1_spell.set(Slot._1)
-    r1y2_slot.set(SlotsPage._1)
-    r1y2_spell.set(Slot._1)
-    r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Slot._1)
-
-    r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Slot._1)
-    r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Slot._1)
 
 
 farm_CY_preset = tk.Button(
@@ -845,4 +836,52 @@ farm_coast_preset = tk.Button(
 )
 farm_coast_preset.grid(
     row=9, column=8
+)
+
+
+def get_baby_maze_preset():
+    """Пресет для детского лаба."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._6
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._3)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._3)
+    r1y2_spell.set(Slot._2)
+    r1y3_slot.set(SlotsPage._1)
+    r1y3_spell.set(Slot._1)
+
+    r2y1_slot.set(SlotsPage._3)
+    r2y1_spell.set(Slot._5)
+    r2y2_slot.set(SlotsPage._1)
+    r2y2_spell.set(Slot._1)
+    r2y3_slot.set(SlotsPage._1)
+    r2y3_spell.set(Slot._6)
+
+    r3y1_slot.set(SlotsPage._3)
+    r3y1_spell.set(Slot._5)
+
+    r4y1_slot.set(SlotsPage._3)
+    r4y1_spell.set(Slot._5)
+
+    r5y1_slot.set(SlotsPage._3)
+    r5y1_spell.set(Slot._5)
+
+    r6y1_slot.set(SlotsPage._3)
+    r6y1_spell.set(Slot._5)
+
+
+baby_maze_preset = tk.Button(
+    app,
+    text='ДЛ',
+    bg='#FFF4DC',
+    command=get_baby_maze_preset
+)
+baby_maze_preset.grid(
+    row=9, column=12
 )

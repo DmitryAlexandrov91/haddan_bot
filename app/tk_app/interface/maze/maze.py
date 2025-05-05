@@ -43,6 +43,7 @@ def start_maze_passing():
     second_floor = second_floor_checkbox_value.get()
     third_floor = third_floor_checkbox_value.get()
     via_drop = via_drop_checkbox_value.get()
+    baby_maze = baby_maze_checkbox_value.get()
 
     if not first_floor and not second_floor and not third_floor:
         send_message_and_stop_cycle(
@@ -55,38 +56,73 @@ def start_maze_passing():
             text='Рисуем маршрут по наводке от Макса...',
         )
 
-    if first_floor:
-        if not manager.maze_first_floor_map:
-            labirint_map = get_floor_map(
-                floor=Floor.FIRST_FLOOR,
-                manager=temp_manager)
-            manager.maze_first_floor_map = copy.deepcopy(labirint_map)
-            if manager.passed_maze_rooms:
-                manager.passed_maze_rooms.clear()
-        else:
-            labirint_map = manager.maze_first_floor_map
-    if second_floor:
-        if not manager.maze_second_floor_map:
-            labirint_map = get_floor_map(
-                floor=Floor.SECOND_FLOOR,
-                manager=temp_manager
-                )
-            manager.maze_second_floor_map = copy.deepcopy(labirint_map)
-            if manager.passed_maze_rooms:
-                manager.passed_maze_rooms.clear()
-        else:
-            labirint_map = manager.maze_second_floor_map
-    if third_floor:
-        if not manager.maze_third_floor_map:
-            labirint_map = get_floor_map(
-                floor=Floor.THIRD_FLOOR,
-                manager=temp_manager
-                )
-            manager.maze_third_floor_map = copy.deepcopy(labirint_map)
-            if manager.passed_maze_rooms:
-                manager.passed_maze_rooms.clear()
-        else:
-            labirint_map = manager.maze_third_floor_map
+    if not baby_maze:
+
+        if first_floor:
+            if not manager.maze_first_floor_map:
+                labirint_map = get_floor_map(
+                    floor=Floor.FIRST_FLOOR,
+                    manager=temp_manager)
+                manager.maze_first_floor_map = copy.deepcopy(labirint_map)
+                if manager.passed_maze_rooms:
+                    manager.passed_maze_rooms.clear()
+            else:
+                labirint_map = manager.maze_first_floor_map
+        if second_floor:
+            if not manager.maze_second_floor_map:
+                labirint_map = get_floor_map(
+                    floor=Floor.SECOND_FLOOR,
+                    manager=temp_manager
+                    )
+                manager.maze_second_floor_map = copy.deepcopy(labirint_map)
+                if manager.passed_maze_rooms:
+                    manager.passed_maze_rooms.clear()
+            else:
+                labirint_map = manager.maze_second_floor_map
+        if third_floor:
+            if not manager.maze_third_floor_map:
+                labirint_map = get_floor_map(
+                    floor=Floor.THIRD_FLOOR,
+                    manager=temp_manager
+                    )
+                manager.maze_third_floor_map = copy.deepcopy(labirint_map)
+                if manager.passed_maze_rooms:
+                    manager.passed_maze_rooms.clear()
+            else:
+                labirint_map = manager.maze_third_floor_map
+
+    if baby_maze:
+        if first_floor:
+            if not manager.baby_maze_first_floor_map:
+                labirint_map = get_floor_map(
+                    floor=Floor.BABY_FIRST_FLOOR,
+                    manager=temp_manager)
+                manager.baby_maze_first_floor_map = copy.deepcopy(labirint_map)
+                if manager.passed_maze_rooms:
+                    manager.passed_maze_rooms.clear()
+            else:
+                labirint_map = manager.baby_maze_first_floor_map
+
+        if second_floor:
+            if not manager.baby_maze_second_floor_map:
+                labirint_map = get_floor_map(
+                    floor=Floor.BABY_SECOND_FLOOR,
+                    manager=temp_manager
+                    )
+                manager.baby_maze_second_floor_map = copy.deepcopy(
+                    labirint_map)
+                if manager.passed_maze_rooms:
+                    manager.passed_maze_rooms.clear()
+            else:
+                labirint_map = manager.baby_maze_second_floor_map
+
+        if third_floor:
+            send_message_and_stop_cycle(
+                message=(
+                    'В детском лабе нет третьего этажа!'
+                ),
+                manager=manager
+            )
 
     if not labirint_map:
         send_message_and_stop_cycle(
@@ -225,6 +261,19 @@ via_drop_checkbox_button = tk.Checkbutton(
 via_drop_checkbox_button.grid(
     row=12,
     column=1,
+)
+
+baby_maze_checkbox_value = tk.BooleanVar(value=False)
+
+baby_maze_checkbox_button = tk.Checkbutton(
+    app,
+    text="Детский лаб",
+    variable=baby_maze_checkbox_value,
+    bg='#FFF4DC'
+)
+baby_maze_checkbox_button.grid(
+    row=12,
+    column=2,
 )
 
 

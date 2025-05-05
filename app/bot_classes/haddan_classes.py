@@ -93,6 +93,8 @@ class HaddanDriverManager(DriverManager):
         self.maze_first_floor_map: list[list[Room]] | None = None
         self.maze_second_floor_map: list[list[Room]] | None = None
         self.maze_third_floor_map: list[list[Room]] | None = None
+        self.baby_maze_first_floor_map: list[list[Room]] | None = None
+        self.baby_maze_second_floor_map: list[list[Room]] | None = None
 
     def start_loop(self):
         asyncio.set_event_loop(self.loop)
@@ -1216,7 +1218,8 @@ class HaddanDriverManager(DriverManager):
             cheerfulness_spell: Slot = Slot._1,
             first_floor: bool = False,
             second_floor: bool = False,
-            third_floor: bool = False
+            third_floor: bool = False,
+            baby_maze: bool = False
             ):
         """Прохождение лабиринта."""
         if not self.driver:

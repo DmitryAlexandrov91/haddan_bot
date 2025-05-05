@@ -158,6 +158,9 @@ def delete_all_maps():
     clear_set_if_set(manager.maze_first_floor_map)
     clear_set_if_set(manager.maze_second_floor_map)
     clear_set_if_set(manager.maze_third_floor_map)
+    clear_set_if_set(manager.baby_maze_first_floor_map)
+    clear_set_if_set(manager.baby_maze_second_floor_map)
+    clear_set_if_set(manager.passed_maze_rooms)
 
 
 labirint_map = tk.Button(
