@@ -1720,7 +1720,7 @@ class HaddanDriverManager(DriverManager):
             message_to_tg: bool,
             telegram_id: int | None
     ) -> None:
-        """Действия для ручной игры с духом ума."""
+        """Действия для ручной игре с духом ума."""
         if not self.driver:
             raise InvalidSessionIdException
 
