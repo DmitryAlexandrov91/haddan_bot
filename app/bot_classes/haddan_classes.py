@@ -260,6 +260,9 @@ class HaddanDriverManager(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
+        if not self.cycle_is_running:
+            exit()
+
         round = self.get_round_number()
         kick = self.get_hit_number()
 

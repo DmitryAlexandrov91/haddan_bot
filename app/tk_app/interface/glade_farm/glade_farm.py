@@ -147,21 +147,20 @@ def open_map():
     manager.driver.switch_to.window(windows[0])
 
 
-def clear_set_if_set(array: set | list):
+def clear_arr_if_arr(array: set | list):
+    """Очищает set или list."""
     if array is not None:
         array.clear()
 
 
 def delete_all_maps():
-    clear_set_if_set(manager.passed_forest_rooms)
-    clear_set_if_set(manager.passed_maze_rooms)
-    clear_set_if_set(manager.maze_first_floor_map)
-    clear_set_if_set(manager.maze_second_floor_map)
-    clear_set_if_set(manager.maze_third_floor_map)
-    clear_set_if_set(manager.baby_maze_first_floor_map)
-    clear_set_if_set(manager.baby_maze_second_floor_map)
-    clear_set_if_set(manager.passed_maze_rooms)
-    clear_set_if_set(manager.passed_forest_rooms)
+    clear_arr_if_arr(manager.passed_forest_rooms)
+    clear_arr_if_arr(manager.passed_maze_rooms)
+    clear_arr_if_arr(manager.maze_first_floor_map)
+    clear_arr_if_arr(manager.maze_second_floor_map)
+    clear_arr_if_arr(manager.maze_third_floor_map)
+    clear_arr_if_arr(manager.baby_maze_first_floor_map)
+    clear_arr_if_arr(manager.baby_maze_second_floor_map)
 
 
 labirint_map = tk.Button(

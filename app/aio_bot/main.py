@@ -6,9 +6,10 @@ from aiogram.utils import markdown
 from constants import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 from aiogram.filters import CommandStart, Command
+from aiogram.enums import ParseMode
 
-if TELEGRAM_BOT_TOKEN:
-    bot = Bot(token=TELEGRAM_BOT_TOKEN)
+# if TELEGRAM_BOT_TOKEN:
+#     bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
 dp = Dispatcher()
 
@@ -18,7 +19,7 @@ async def handle_start(message: types.Message):
     if message.from_user:
         await message.answer(
             text=(
-                f'Здравстуйте, {message.from_user.full_name}! '
+                f'Здравствуйте, {message.from_user.full_name}! '
                 f'Ваш телеграм ID - {message.from_user.id}'
             )
         )
@@ -45,15 +46,15 @@ async def echo_answer(message: types.Message):
     # await message.answer(
     #     text='Wait a sec...',
     # )
-    await message.answer(
-        text=message.text,
-        entities=message.entities  # entites содержит в себе список форматирования
-    )
+    # await message.answer(
+    #     text=message.text,
+    #     entities=message.entities  # entites содержит в себе список форматирования
+    # )
     # if message.text:
     #     await message.reply(text=message.text)
     # как отправить сообщение разным шрифтом
     # ручками
-    # text = 'Пример сообщения с жирным словом'
+    # text = 'Пример сообщения с *жирным* словом\\!'
     # entity_bold = types.MessageEntity(
     #     type='bold',
     #     offset=len('Пример сообщения с '),
@@ -64,6 +65,18 @@ async def echo_answer(message: types.Message):
     #     text=text, entities=entities
     # )
     # при помощи markdown
+    text = markdown.text(
+        "Какой\\-то текст\\.",
+        markdown.text(
+            "Пример сообщения с",
+            markdown.bold("жирным"),
+            "текстом",
+        ),
+        sep='\n',
+    )
+    await message.answer(
+        text=text, parse_mode=ParseMode.MARKDOWN_V2
+    )
 
 
 async def main():
@@ -72,10 +85,9 @@ async def main():
 
 
 if __name__ == '__main__':
-    # if TELEGRAM_BOT_TOKEN:
-    #     aldbot = AioBotManager(
-    #         token=TELEGRAM_BOT_TOKEN,
-    #         admin_chat_id=TELEGRAM_CHAT_ID
-    #     )
+    if TELEGRAM_BOT_TOKEN:
+        bot = Bot(
+            token=TELEGRAM_BOT_TOKEN
+        )
     asyncio.run(main())
     # # aldbot.sync_start()
