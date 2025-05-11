@@ -6,6 +6,8 @@ from aiogram import Bot, Dispatcher, types, Router, F
 
 from aiogram.filters import CommandStart
 
+from constants import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+
 
 class AioBotManager:
     """Класс создания бота со встроенным обработчиком событий."""
@@ -21,14 +23,17 @@ class AioBotManager:
         if admin_chat_id:
             self.admin_id = admin_chat_id
 
-        @self.router.message(CommandStart())
+        @self.dp.message(CommandStart())
         async def handle_start(message: types.Message):
             if message.from_user:
                 await message.answer(
-                    text=f'Привет, {message.from_user.full_name}'
+                    text=(
+                        f'Здравствуйте, {message.from_user.full_name}! '
+                        f'Ваш телеграм ID - {message.from_user.id}'
+                    )
                 )
 
-        @self.router.message(F.text)
+        @self.dp.message(F.text)
         async def echo_answer(message: types.Message):
             await self.bot.send_message(
                 chat_id=message.chat.id,
@@ -68,11 +73,9 @@ class AioBotManager:
 
 
 if __name__ == '__main__':
-    pass
-    # if TELEGRAM_BOT_TOKEN:
-    #     aldbot = AioBotManager(
-    #         token=TELEGRAM_BOT_TOKEN,
-    #         admin_chat_id=TELEGRAM_CHAT_ID
-    #     )
-    # asyncio.run(aldbot.start_bot())
-    # # aldbot.sync_start()
+    if TELEGRAM_BOT_TOKEN:
+        aldbot = AioBotManager(
+            token=TELEGRAM_BOT_TOKEN,
+            admin_chat_id=TELEGRAM_CHAT_ID
+        )
+    asyncio.run(aldbot.start_bot())

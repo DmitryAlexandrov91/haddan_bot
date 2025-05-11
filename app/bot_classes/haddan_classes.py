@@ -1260,7 +1260,6 @@ class HaddanDriverManager(DriverManager):
 
                     message = (
                         f'Двигаемся по прямой в комнату {to_the_room} '
-                        f'из комнаты {my_room}'
                     )
                     print(message)
                     self.send_info_message(
@@ -1278,7 +1277,6 @@ class HaddanDriverManager(DriverManager):
 
                     message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room} '
-                        f'из комнаты {my_room}'
                     )
                     print(message)
                     self.send_info_message(
@@ -1296,15 +1294,25 @@ class HaddanDriverManager(DriverManager):
                 if to_the_room is None and via_drop:
 
                     if first_floor:
-                        to_the_room = get_upper_portal_room_number(
-                            labirint_map=labirint_map
-                        )
-                        message = (
-                            'Двигаемся через весь дроп к '
-                            'порталу на второй этаж '
-                            f'в комнату {to_the_room} '
-                            f'из комнаты {my_room}'
-                        )
+                        if not baby_maze:
+                            to_the_room = get_upper_portal_room_number(
+                                labirint_map=labirint_map
+                            )
+                            message = (
+                                'Двигаемся через весь дроп к '
+                                'порталу на второй этаж '
+                                f'в комнату {to_the_room} '
+                            )
+                        else:
+                            to_the_room = get_sity_portal_room_number(
+                                labirint_map=labirint_map
+                            )
+                            message = (
+                                'Двигаемся через весь дроп к '
+                                'порталу в город '
+                                f'в комнату {to_the_room} '
+                            )
+
                     if second_floor:
                         to_the_room = get_sity_portal_room_number(
                             labirint_map=labirint_map
@@ -1312,7 +1320,6 @@ class HaddanDriverManager(DriverManager):
                         message = (
                             'Двигаемся через весь дроп к порталу в город '
                             f'в комнату {to_the_room} '
-                            f'из комнаты {my_room}'
                         )
 
                     if third_floor:
@@ -1321,7 +1328,6 @@ class HaddanDriverManager(DriverManager):
                             'Двигаемся напрямую к '
                             'личу '
                             f'в комнату {to_the_room} '
-                            f'из комнаты {my_room}'
                         )
 
                     self.send_info_message(
@@ -1347,7 +1353,6 @@ class HaddanDriverManager(DriverManager):
                             'Двигаемся напрямую к '
                             'порталу на второй этаж '
                             f'в комнату {to_the_room} '
-                            f'из комнаты {my_room}'
                         )
                     if second_floor:
                         to_the_room = get_upper_portal_room_number(
@@ -1357,7 +1362,6 @@ class HaddanDriverManager(DriverManager):
                             'Двигаемся напрямую к '
                             'порталу на третий этаж '
                             f'в комнату {to_the_room} '
-                            f'из комнаты {my_room}'
                         )
 
                     if third_floor:
@@ -1366,7 +1370,6 @@ class HaddanDriverManager(DriverManager):
                             'Двигаемся напрямую к '
                             'личу '
                             f'в комнату {to_the_room} '
-                            f'из комнаты {my_room}'
                         )
 
                     self.send_info_message(

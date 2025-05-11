@@ -154,7 +154,8 @@ def start_maze_passing():
                 cheerfulness_spell=cheerfulness_spell.get(),
                 first_floor=first_floor_checkbox_value.get(),
                 second_floor=second_floor_checkbox_value.get(),
-                third_floor=third_floor_checkbox_value.get()
+                third_floor=third_floor_checkbox_value.get(),
+                baby_maze=baby_maze_checkbox_value.get()
             )
 
     except (
