@@ -2,10 +2,8 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher, types, Router, F
-
+from aiogram import Bot, Dispatcher, F, Router, types
 from aiogram.filters import CommandStart
-
 from constants import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 

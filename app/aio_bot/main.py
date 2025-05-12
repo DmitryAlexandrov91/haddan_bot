@@ -1,12 +1,11 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher, types, Router, F
+from aiogram import Bot, Dispatcher, F, Router, types
+from aiogram.enums import ParseMode
+from aiogram.filters import Command, CommandStart
 from aiogram.utils import markdown
 from constants import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
-
-from aiogram.filters import CommandStart, Command
-from aiogram.enums import ParseMode
 
 # if TELEGRAM_BOT_TOKEN:
 #     bot = Bot(token=TELEGRAM_BOT_TOKEN)

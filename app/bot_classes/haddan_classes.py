@@ -6,7 +6,7 @@ import threading
 from time import sleep
 from typing import Optional
 
-from aiogram import Bot
+from aiogram import Bot, Dispatcher, F, Router, types
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS, HADDAN_URL,
                        LICH_ROOM, POETRY_SPIRIT_RIGHT_ANSWERS,
@@ -16,10 +16,10 @@ from maze_utils import (find_path_via_boxes_with_directions,
                         get_upper_portal_room_number)
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoAlertPresentException,
                                         StaleElementReferenceException,
-                                        UnexpectedAlertPresentException,
                                         TimeoutException,
-                                        NoAlertPresentException)
+                                        UnexpectedAlertPresentException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -84,6 +84,13 @@ class HaddanDriverManager(DriverManager):
         super().__init__(bot=bot)
         self.user = user
         self.loop = asyncio.new_event_loop()
+
+        if self.bot:
+            self.router = Router()
+            self._register_handlers()
+            self.dp = Dispatcher()
+            self.dp.include_router(self.router)
+
         threading.Thread(
             target=self.start_loop,
             daemon=True
@@ -96,16 +103,66 @@ class HaddanDriverManager(DriverManager):
         self.baby_maze_first_floor_map: list[list[Room]] | None = None
         self.baby_maze_second_floor_map: list[list[Room]] | None = None
 
+    def _register_handlers(self):
+        """Регистрация обработчиков сообщений."""
+        @self.router.message(F.text)
+        async def kaptcha_handler(message: types.Message):
+            """Обработчик ответа на каптчу."""
+            if not self.driver:
+                raise InvalidSessionIdException
+            text = message.text
+            if text:
+                if len(text) <= 3 and text.isdigit():
+                    self.try_to_switch_to_central_frame()
+                    kaptcha_runes = self.driver.find_elements(
+                        By.CLASS_NAME,
+                        'captcha_rune'
+                    )
+                    if kaptcha_runes:
+                        for number in text:
+                            kaptcha_runes[int(number)].click()
+                            sleep(0.5)
+                    self.try_to_switch_to_central_frame()
+                    buttons = self.driver.find_elements(
+                                    By.TAG_NAME, 'button')
+                    if buttons:
+                        buttons[1].click()
+                        self.sync_send(
+                            text='Ответ принят.'
+                        )
+
     def start_loop(self):
+        """Запускает поток с aiogram ботом."""
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
 
     async def send_msg(self, text):
         await self.bot.send_message(TELEGRAM_CHAT_ID, text)
 
+    async def send_kaptcha(self):
+        try:
+
+            await self.bot.send_photo(
+                chat_id=TELEGRAM_CHAT_ID,
+                photo=types.FSInputFile('kaptcha.png'))
+            await self.bot.send_photo(
+                chat_id=TELEGRAM_CHAT_ID,
+                photo=types.FSInputFile('runes.png'))
+
+        except Exception:
+            self.sync_send(
+                text='С отправкой капчи какой-то косяк!'
+            )
+
     def sync_send(self, text):
         asyncio.run_coroutine_threadsafe(
             self.send_msg(text),
+            self.loop
+        )
+
+    def sync_send_kaptcha(self):
+        asyncio.run_coroutine_threadsafe(
+            self.send_kaptcha(),
             self.loop
         )
 
@@ -548,6 +605,23 @@ class HaddanDriverManager(DriverManager):
         except TimeoutException:
             self.wait_until_kaptcha_on_page(time=time)
 
+    def wait_until_kaptcha_after_tg_message(self, time: int) -> None:
+        """Ждёт пока каптча на странице после отправки фото капчи в тг."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                EC.presence_of_element_located((
+                    By.CSS_SELECTOR,
+                    'img[src="/inner/img/bc.php"]'
+                    ))
+            )
+
+        except TimeoutException:
+            pass
+
     def wait_until_mind_spirit_on_page(self, time: int) -> None:
         """Ждёт до time секунд пока дух ума на странице."""
         if not self.driver:
@@ -626,10 +700,15 @@ class HaddanDriverManager(DriverManager):
                 )
 
             if self.bot and message_to_tg and telegram_id:
-                self.sync_send(
-                    text='Обнаружена капча!'
+                kaptcha[0].screenshot('kaptcha.png')
+                self.sync_send_kaptcha()
+                asyncio.run_coroutine_threadsafe(
+                    self.dp.start_polling(
+                        self.bot,
+                    ),
+                    self.loop
                 )
-                self.wait_until_kaptcha_on_page(5)
+                self.wait_until_kaptcha_after_tg_message(30)
             else:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
@@ -639,6 +718,15 @@ class HaddanDriverManager(DriverManager):
             self.check_kaptcha(
                 message_to_tg=message_to_tg,
                 telegram_id=telegram_id)
+
+        else:
+            try:
+                asyncio.run_coroutine_threadsafe(
+                    self.dp.stop_polling(),
+                    self.loop
+                )
+            except Exception:
+                pass
 
     def check_health(
             self,
