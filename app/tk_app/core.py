@@ -10,7 +10,7 @@ from .utils import keys
 
 app = tk.Tk()
 
-app.title("Haddan bot v1.4 <beta>")
+app.title("Haddan bot v1.5")
 app.bind("<Control-KeyPress>", keys)
 app.resizable(False, False)
 
@@ -50,4 +50,5 @@ def start_app():
     manager.status_label = status_label  # noqa
     manager.info_label = info_label  # noqa
     manager.start_button = maze_passing_start_button  # noqa
+    manager.forest_button = forest_farm_start_button  # noqa
     app.mainloop()

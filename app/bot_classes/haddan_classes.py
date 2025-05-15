@@ -20,6 +20,8 @@ from selenium.common.exceptions import (InvalidSessionIdException,
                                         StaleElementReferenceException,
                                         TimeoutException,
                                         UnexpectedAlertPresentException)
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -63,7 +65,7 @@ class HaddanUser:
         password_field.send_keys(self.password)
         submit_button = self.driver.find_element(
             By.CSS_SELECTOR,
-            '[href="javascript:enterHaddan()"]')
+            '[href="javascript:void(enterHaddan())"]')
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(
                 submit_button)
@@ -128,6 +130,7 @@ class HaddanDriverManager(DriverManager):
                     if buttons:
                         buttons[1].click()
                         self.sync_send(
+                            telegram_id=message.chat.id,
                             text='Ответ принят.'
                         )
 
@@ -136,33 +139,40 @@ class HaddanDriverManager(DriverManager):
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
 
-    async def send_msg(self, text):
-        await self.bot.send_message(TELEGRAM_CHAT_ID, text)
+    async def send_msg(self, text, telegram_id):
+        await self.bot.send_message(
+            chat_id=telegram_id,
+            text=text
+        )
 
-    async def send_kaptcha(self):
+    async def send_kaptcha(self, telegram_id):
         try:
 
             await self.bot.send_photo(
-                chat_id=TELEGRAM_CHAT_ID,
+                chat_id=telegram_id,
                 photo=types.FSInputFile('kaptcha.png'))
             await self.bot.send_photo(
-                chat_id=TELEGRAM_CHAT_ID,
+                chat_id=telegram_id,
                 photo=types.FSInputFile('runes.png'))
 
         except Exception:
             self.sync_send(
+                telegram_id=telegram_id,
                 text='С отправкой капчи какой-то косяк!'
             )
 
-    def sync_send(self, text):
+    def sync_send(self, text, telegram_id):
         asyncio.run_coroutine_threadsafe(
-            self.send_msg(text),
+            self.send_msg(
+                text=text,
+                telegram_id=telegram_id
+            ),
             self.loop
         )
 
-    def sync_send_kaptcha(self):
+    def sync_send_kaptcha(self, telegram_id):
         asyncio.run_coroutine_threadsafe(
-            self.send_kaptcha(),
+            self.send_kaptcha(telegram_id=telegram_id),
             self.loop
         )
 
@@ -279,7 +289,7 @@ class HaddanDriverManager(DriverManager):
         try:
             hit_number = self.driver.find_element(
                 By.CSS_SELECTOR,
-                'a[href="javascript:submitMove()"]'
+                'a[href="javascript:void(submitMove())"]'
             )
             return hit_number.text
         except Exception:
@@ -700,8 +710,10 @@ class HaddanDriverManager(DriverManager):
                 )
 
             if self.bot and message_to_tg and telegram_id:
+
+                ActionChains(self.driver).move_to_element(kaptcha[0]).perform()
                 kaptcha[0].screenshot('kaptcha.png')
-                self.sync_send_kaptcha()
+                self.sync_send_kaptcha(telegram_id=telegram_id)
                 asyncio.run_coroutine_threadsafe(
                     self.dp.start_polling(
                         self.bot,
@@ -757,6 +769,7 @@ class HaddanDriverManager(DriverManager):
                 if hp < min_hp:
                     if self.bot and message_to_tg and telegram_id:
                         self.sync_send(
+                            telegram_id=telegram_id,
                             text='Здоровье упало меньше минимума!'
                         )
 
@@ -1214,7 +1227,7 @@ class HaddanDriverManager(DriverManager):
 
         hits = self.driver.find_elements(
             By.CSS_SELECTOR,
-            'a[href="javascript:submitMove()"]'
+            'img[onclick="touchFight();"]'
         )
         return bool(hits)
 
@@ -1233,7 +1246,8 @@ class HaddanDriverManager(DriverManager):
         come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Вернуться')
         if come_back:
-            come_back[0].click()
+            self.click_to_element_with_actionchains(come_back[0])
+            # come_back[0].click()
 
     def check_cheerfulnes_level(
             self,
@@ -1788,6 +1802,7 @@ class HaddanDriverManager(DriverManager):
                         default_spell=spell)
 
                 else:
+                    self.check_room_for_stash_and_herd()
 
                     self.wait_until_transition_timeout(15)
 
@@ -1795,6 +1810,26 @@ class HaddanDriverManager(DriverManager):
 
                     if room_number is None:
                         continue
+
+                    if room_number == 89:
+
+                        back_from_forest = self.driver.find_elements(
+                            By.CSS_SELECTOR,
+                            'a[href="/room/room.php?id=19529728"]'
+                        )
+                        if back_from_forest:
+                            self.click_to_element_with_actionchains(
+                                back_from_forest[0]
+                            )
+                        Alert(self.driver).accept()
+                        self.stop_event()
+
+                        if self.forest_button:
+                            self.forest_button.configure(fg='black')
+
+                        self.send_info_message('Лес пройден')
+
+                        break
 
                     make_transition(
                         room_number=room_number,
@@ -1829,6 +1864,7 @@ class HaddanDriverManager(DriverManager):
 
             if self.bot and message_to_tg and telegram_id:
                 self.sync_send(
+                    telegram_id=telegram_id,
                     text='Обнаружен дух ума!'
                 )
                 self.wait_until_mind_spirit_on_page(5)

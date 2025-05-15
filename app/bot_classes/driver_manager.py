@@ -34,7 +34,8 @@ class DriverManager:
             alarm_label: Optional[tk.Label] = None,
             info_label: Optional[tk.Label] = None,
             status_label: Optional[tk.Label] = None,
-            start_button: Optional[tk.Label] = None,
+            start_button: Optional[tk.Button] = None,
+            forest_button: Optional[tk.Button] = None
     ):
         self.options = self._get_default_options()
         self.driver = driver
@@ -47,6 +48,7 @@ class DriverManager:
         self.info_label = info_label
         self.status_label = status_label
         self.start_button = start_button
+        self.forest_button = forest_button
 
     def _get_default_options(self):
         options = webdriver.ChromeOptions()
