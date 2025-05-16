@@ -54,9 +54,9 @@ class HaddanUser:
         self.password = password
         self.login_url: str = HADDAN_URL
 
-    def login_to_game(self):
+    def login_to_game(self, domen: str):
         """Заходит в игру под заданным именем char."""
-        self.driver.get(self.login_url)
+        self.driver.get(domen)
         username_field = self.driver.find_element(
             By.NAME, 'username')
         username_field.send_keys(self.char)

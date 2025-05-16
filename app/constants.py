@@ -39,12 +39,19 @@ DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
 LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
 
 # константы адресов.
-HADDAN_URL = os.getenv('HADDAN_URL', 'https://haddan.ru/')
+HADDAN_URL = 'https://haddan.ru/'
 HADDAN_RESERVE_URL = 'https://www.online-igra.ru/'
 MEDITATION_URL = 'https://haddan.ru/room/func/temple.php'
 KAPCHA_URL = 'https://haddan.ru/inner/img/gc.php'
 SHOP_URL = 'http://ordenpegasa.ru/shop/'
 LABIRINT_MAP_URL = 'https://haddan.novikovproject.ru/maze?level='
+
+
+DOMENS = {
+    'haddan': 'https://haddan.ru/',
+    'online-igra': 'https://www.online-igra.ru/',
+    'new.haddan': 'https://new.haddan.ru/',
+}
 
 
 # Переменные окружения.

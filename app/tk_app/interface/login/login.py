@@ -8,6 +8,8 @@ from configs import configure_logging
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
+from constants import DOMENS
+
 
 def start_login_thread():
     manager.thread = threading.Thread(target=start_game)
@@ -24,13 +26,17 @@ def start_game(manager=manager):
             text=f'Заходим в игру персонажем {char}'
         )
 
+        domen = DOMENS[domen_url.get()]
+
         if char and password:
             manager.start_driver()
             manager.user = HaddanUser(
                 char=char,
                 password=password,
                 driver=manager.driver)
-            manager.user.login_to_game()
+            manager.user.login_to_game(
+                domen=domen
+            )
             login_to_game.configure(foreground='green')
             manager.clean_label_messages()
             manager.send_status_message('Бот готов к работе')
@@ -50,17 +56,30 @@ def stop_bot(manager=manager):
 
 
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')
-username_label.grid(row=0, column=0)
+username_label.grid(row=0, column=0, sticky='e')
 
 username_field = tk.Entry(app, width=25)
 username_field.grid(row=0, column=1)
 
 
 password_label = tk.Label(app, text='пароль', bg='#FFF4DC')
-password_label.grid(row=1, column=0)
+password_label.grid(row=1, column=0, sticky='e')
 
 password_field = tk.Entry(app, width=25)
 password_field.grid(row=1, column=1)
+
+domen_url = tk.StringVar(app)
+domen_url.set(list(DOMENS.keys())[1])
+
+domen_url_label = tk.OptionMenu(
+    app, domen_url, *list(DOMENS.keys())
+)
+domen_url_label.grid(row=0, column=0, sticky='w')
+domen_url_label.configure(
+    bg='#FFF4DC',
+    activebackground='#FFF4DC'
+)
+
 
 bot_stop_buttton = tk.Button(
     app,
