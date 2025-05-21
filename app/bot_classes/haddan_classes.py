@@ -6,6 +6,7 @@ import threading
 from time import sleep
 from typing import Optional
 
+import requests
 from aiogram import Bot, Dispatcher, F, Router, types
 from configs import configure_logging
 from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS, HADDAN_URL,
@@ -20,7 +21,6 @@ from selenium.common.exceptions import (InvalidSessionIdException,
                                         StaleElementReferenceException,
                                         TimeoutException,
                                         UnexpectedAlertPresentException)
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -86,6 +86,7 @@ class HaddanDriverManager(DriverManager):
         super().__init__(bot=bot)
         self.user = user
         self.loop = asyncio.new_event_loop()
+        self.polling_started = asyncio.Event()
 
         if self.bot:
             self.router = Router()
@@ -104,6 +105,7 @@ class HaddanDriverManager(DriverManager):
         self.maze_third_floor_map: list[list[Room]] | None = None
         self.baby_maze_first_floor_map: list[list[Room]] | None = None
         self.baby_maze_second_floor_map: list[list[Room]] | None = None
+        self.previous_hash = None
 
     def _register_handlers(self):
         """Регистрация обработчиков сообщений."""
@@ -689,6 +691,20 @@ class HaddanDriverManager(DriverManager):
         except TimeoutException:
             self.wait_until_alert_present(time=time)
 
+    def upload_file(self, file_path):
+        """
+        Функция для загрузки файла через Selenium.
+        :param driver: экземпляр webdriver
+        :param file_path: полный путь к файлу на локальной машине
+        """
+
+        element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, 'img[src="/inner/img/bc.php"]'))
+        )
+
+        element.send_keys(file_path)
+
     def check_kaptcha(
             self,
             message_to_tg: bool,
@@ -711,16 +727,29 @@ class HaddanDriverManager(DriverManager):
 
             if self.bot and message_to_tg and telegram_id:
 
-                ActionChains(self.driver).move_to_element(kaptcha[0]).perform()
-                kaptcha[0].screenshot('kaptcha.png')
+                cookies = {
+                    cookie['name']: cookie[
+                        'value'] for cookie in self.driver.get_cookies()}
+
+                src = kaptcha[0].get_attribute('src')
+
+                response = requests.get(src, cookies=cookies)
+                with open('kaptcha.png', 'wb') as f:
+                    f.write(response.content)
+
                 self.sync_send_kaptcha(telegram_id=telegram_id)
-                asyncio.run_coroutine_threadsafe(
-                    self.dp.start_polling(
-                        self.bot,
-                    ),
-                    self.loop
-                )
+
+                if not self.polling_started.is_set():
+                    self.polling_started.set()
+                    asyncio.run_coroutine_threadsafe(
+                        self.dp.start_polling(
+                            self.bot,
+                        ),
+                        self.loop
+                    )
+
                 self.wait_until_kaptcha_after_tg_message(30)
+
             else:
                 self.driver.execute_script(
                     'window.alert("Обнаружена капча!");')
@@ -732,13 +761,15 @@ class HaddanDriverManager(DriverManager):
                 telegram_id=telegram_id)
 
         else:
-            try:
-                asyncio.run_coroutine_threadsafe(
-                    self.dp.stop_polling(),
-                    self.loop
-                )
-            except Exception:
-                pass
+            if self.polling_started.is_set():
+                try:
+                    self.polling_started.clear()
+                    asyncio.run_coroutine_threadsafe(
+                        self.dp.stop_polling(),
+                        self.loop
+                    )
+                except Exception:
+                    pass
 
     def check_health(
             self,
@@ -997,8 +1028,7 @@ class HaddanDriverManager(DriverManager):
             cheerfulness: bool = False,
             cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1
-            ):
+            cheerfulness_spell: Slot = Slot._1):
         """Фарм с проведением боя."""
         if not self.driver:
             return None

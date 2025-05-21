@@ -5,10 +5,9 @@ import tkinter as tk
 
 from bot_classes import HaddanUser
 from configs import configure_logging
+from constants import DOMENS
 from tk_app.core import app
 from tk_app.driver_manager import manager
-
-from constants import DOMENS
 
 
 def start_login_thread():
@@ -69,7 +68,7 @@ password_field = tk.Entry(app, width=25)
 password_field.grid(row=1, column=1)
 
 domen_url = tk.StringVar(app)
-domen_url.set(list(DOMENS.keys())[1])
+domen_url.set(list(DOMENS.keys())[3])
 
 domen_url_label = tk.OptionMenu(
     app, domen_url, *list(DOMENS.keys())

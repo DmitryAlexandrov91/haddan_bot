@@ -51,6 +51,7 @@ DOMENS = {
     'haddan': 'https://haddan.ru/',
     'online-igra': 'https://www.online-igra.ru/',
     'new.haddan': 'https://new.haddan.ru/',
+    'ru.haddan': 'https://ru.haddan.ru/'
 }
 
 
@@ -181,7 +182,6 @@ class ForestRoom:
 FOREST_MAP = [
     ForestRoom(number=1, east=True),
     ForestRoom(number=2, east=True),
-    
 ]
 
 

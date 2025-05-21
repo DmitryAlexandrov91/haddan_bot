@@ -7,7 +7,6 @@ from aiogram.filters import Command, CommandStart
 from aiogram.utils import markdown
 from constants import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
-
 if TELEGRAM_BOT_TOKEN:
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
