@@ -296,3 +296,104 @@ def get_upper_portal_room_number(
         for room in line:
             if room.box_item and 'портал' in room.box_item:
                 return room.number
+
+
+def convert_path_to_room_numbers(
+        labirint_map: List[List[Room]],
+        path_coords: List[Tuple[int, int]]) -> List[int]:
+    """Преобразует путь в координатах в список номеров комнат"""
+    room_numbers = []
+    for coord in path_coords:
+        i, j = coord
+        room = labirint_map[i][j]
+        room_numbers.append(room.number)
+    return room_numbers
+
+
+def find_path_with_room_numbers(
+    labirint_map: List[List[Room]],
+    start_room: int,
+    end_room: int
+) -> Optional[Tuple[List[str], List[int]]]:
+    """Находит путь и возвращает направления и номера комнат"""
+    start_pos = find_room_position(labirint_map, start_room)
+    end_pos = find_room_position(labirint_map, end_room)
+
+    if not start_pos or not end_pos:
+        return None
+
+    path_coords = find_shortest_path(labirint_map, start_pos, end_pos)
+    if not path_coords:
+        return None
+
+    directions = convert_path_to_directions(labirint_map, path_coords)
+    room_numbers = convert_path_to_room_numbers(labirint_map, path_coords)
+
+    return directions, room_numbers
+
+
+def find_path_via_boxes_with_room_numbers(
+    labirint_map: List[List[Room]],
+    start_room: int,
+    target_room: int,
+    passed_rooms: set
+) -> Optional[Tuple[List[str], List[int]]]:
+    """
+    Возвращает направления и номера комнат для пути:
+    1) Через все комнаты с box_outer=True,
+    2) С завершением в target_room.
+    """
+    boxes = [
+        (i, j)
+        for i, row in enumerate(labirint_map)
+        for j, room in enumerate(row)
+        if room.box_outer and room.number not in passed_rooms
+    ]
+
+    start_pos = find_room_position(labirint_map, start_room)
+    target_pos = find_room_position(labirint_map, target_room)
+
+    if not start_pos or not target_pos:
+        return None
+
+    full_path_coords = []
+    current_pos = start_pos
+
+    # Проходим через все коробки
+    remaining_boxes = set(boxes)
+    while remaining_boxes:
+        nearest_box = None
+        shortest_path = None
+
+        for box in remaining_boxes:
+            path = find_shortest_path(labirint_map, current_pos, box)
+            if path and (
+                shortest_path is None or len(path) < len(shortest_path)
+            ):
+                shortest_path = path
+                nearest_box = box
+
+        if not nearest_box:
+            return None
+
+        full_path_coords.extend(shortest_path[1:])  # Исключаем текущую позицию
+        current_pos = nearest_box
+        remaining_boxes.remove(nearest_box)
+
+    # Идём в целевую комнату
+    if current_pos != target_pos:
+        path_to_target = find_shortest_path(
+            labirint_map,
+            current_pos,
+            target_pos
+        )
+        if not path_to_target:
+            return None
+        full_path_coords.extend(path_to_target[1:])
+
+    # Преобразуем координаты в направления и номера комнат
+    full_path_coords = [start_pos] + full_path_coords
+    directions = convert_path_to_directions(labirint_map, full_path_coords)
+    room_numbers = convert_path_to_room_numbers(labirint_map, full_path_coords)
+
+    return directions, room_numbers

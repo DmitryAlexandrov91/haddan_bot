@@ -32,6 +32,8 @@ from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
 from .driver_manager import DriverManager
 from .services import make_transition
 
+from PIL import Image
+
 
 class HaddanUser:
 
@@ -105,7 +107,7 @@ class HaddanDriverManager(DriverManager):
         self.maze_third_floor_map: list[list[Room]] | None = None
         self.baby_maze_first_floor_map: list[list[Room]] | None = None
         self.baby_maze_second_floor_map: list[list[Room]] | None = None
-        self.previous_hash = None
+        self.kapthca_sent = False
 
     def _register_handlers(self):
         """Регистрация обработчиков сообщений."""
@@ -135,6 +137,7 @@ class HaddanDriverManager(DriverManager):
                             telegram_id=message.chat.id,
                             text='Ответ принят.'
                         )
+                        self.kapthca_sent = False
 
     def start_loop(self):
         """Запускает поток с aiogram ботом."""
@@ -149,6 +152,10 @@ class HaddanDriverManager(DriverManager):
 
     async def send_kaptcha(self, telegram_id):
         try:
+
+            img = Image.open('kaptcha.png')
+            resized_img = img.resize((1280, 500))
+            resized_img.save('kaptcha.png')
 
             await self.bot.send_photo(
                 chat_id=telegram_id,
@@ -737,7 +744,13 @@ class HaddanDriverManager(DriverManager):
                 with open('kaptcha.png', 'wb') as f:
                     f.write(response.content)
 
-                self.sync_send_kaptcha(telegram_id=telegram_id)
+                self.sync_send(
+                    text='Обнаружена капча!',
+                    telegram_id=telegram_id)
+
+                if not self.kapthca_sent:
+                    self.sync_send_kaptcha(telegram_id=telegram_id)
+                    self.kapthca_sent = True
 
                 if not self.polling_started.is_set():
                     self.polling_started.set()
