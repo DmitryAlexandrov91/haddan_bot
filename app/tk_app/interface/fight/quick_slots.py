@@ -695,7 +695,7 @@ sync_button = tk.Button(
 
 
 def get_dragon_preset():
-    """Пресет для фарма драконов."""
+    """Пресет для фарма дракона маг ударами."""
     main_slot = SlotsPage._1
     main_spell = Slot._5
 
@@ -765,6 +765,80 @@ dragon_preset = tk.Button(
 )
 dragon_preset.grid(
     row=4, column=8
+)
+
+
+def get_dragon_punch_preset():
+    """Пресет для фарма дракона физ ударами."""
+    main_slot = SlotsPage._k
+    main_spell = Slot._k
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    r1y1_slot.set(SlotsPage._1)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._1)
+    r1y2_spell.set(Slot._2)
+    r1y3_slot.set(SlotsPage._1)
+    r1y3_spell.set(Slot._3)
+    r1y4_slot.set(main_slot)
+    r1y4_spell.set(main_spell)
+
+    r2y1_slot.set(SlotsPage._1)
+    r2y1_spell.set(Slot._4)
+    r2y2_slot.set(SlotsPage._4)
+    r2y2_spell.set(Slot._1)
+    r2y3_slot.set(main_slot)
+    r2y3_spell.set(main_spell)
+    r2y4_slot.set(main_slot)
+    r2y4_spell.set(main_spell)
+
+    r3y1_slot.set(main_slot)
+    r3y1_spell.set(main_spell)
+    r3y2_slot.set(main_slot)
+    r3y2_spell.set(main_spell)
+    r3y3_slot.set(main_slot)
+    r3y3_spell.set(main_spell)
+    r3y4_slot.set(main_slot)
+    r3y4_spell.set(main_spell)
+
+    r4y1_slot.set(main_slot)
+    r4y1_spell.set(main_spell)
+    r4y2_slot.set(main_slot)
+    r4y2_spell.set(main_spell)
+    r4y3_slot.set(main_slot)
+    r4y3_spell.set(main_spell)
+    r4y4_slot.set(main_slot)
+    r4y4_spell.set(main_spell)
+
+    r5y1_slot.set(main_slot)
+    r5y1_spell.set(main_spell)
+    r5y2_slot.set(main_slot)
+    r5y2_spell.set(main_spell)
+    r5y3_slot.set(main_slot)
+    r5y3_spell.set(main_spell)
+    r5y4_slot.set(main_slot)
+    r5y4_spell.set(main_spell)
+
+    r6y1_slot.set(SlotsPage._1)
+    r6y1_spell.set(Slot._1)
+    r6y2_slot.set(SlotsPage._1)
+    r6y2_spell.set(Slot._2)
+    r6y3_slot.set(SlotsPage._1)
+    r6y3_spell.set(Slot._3)
+    r6y4_slot.set(main_slot)
+    r6y4_spell.set(main_spell)
+
+
+dragon_punch_preset = tk.Button(
+    app,
+    text='Дракон ФУ',
+    bg='#FFF4DC',
+    command=get_dragon_punch_preset
+)
+dragon_punch_preset.grid(
+    row=4, column=10
 )
 
 

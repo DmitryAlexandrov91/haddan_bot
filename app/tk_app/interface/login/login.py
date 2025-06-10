@@ -104,7 +104,7 @@ login_to_game.grid(
 )
 
 # Блок с чекбосом телеграм сообщений и телеграм ID.
-send_message_checkbox_value = tk.BooleanVar(value=False)
+send_message_checkbox_value = tk.BooleanVar(value=True)
 
 send_message_check_button = tk.Checkbutton(
     app,

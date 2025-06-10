@@ -276,7 +276,7 @@ class HaddanDriverManager(DriverManager):
 
         if not self.check_come_back():
 
-            if slots_page == 'k' == slot:
+            if slots_page == 'p' == slot:
                 print('Выбран физ удар')
                 self.try_to_switch_to_central_frame()
                 kick = self.driver.find_elements(
