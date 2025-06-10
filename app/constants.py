@@ -115,7 +115,7 @@ GAMBLE_SPIRIT_RIGHT_ANSWERS = (
 
 #  Константы интерфейса Tkinter
 
-SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7')
+SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7', 'k')
 
 
 class SlotsPage(StrEnum):
@@ -126,6 +126,7 @@ class SlotsPage(StrEnum):
     _4 = '5'
     _5 = '6'
     _6 = '7'
+    _k = 'k'
 
     def __str__(self):
         return self.value
@@ -139,6 +140,7 @@ class Slot(StrEnum):
     _5 = '5'
     _6 = '6'
     _7 = '7'
+    _k = 'k'
 
     def __str__(self):
         return self.value

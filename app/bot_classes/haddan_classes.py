@@ -275,20 +275,31 @@ class HaddanDriverManager(DriverManager):
             raise InvalidSessionIdException
 
         if not self.check_come_back():
-            active_spell = self.get_active_spell()
-            # print(f'Активный закл - {active_spell}')
-            spell_to_cast = self.get_spell_to_cast(
-                spell_number=slot,
-                slot_number=slots_page
-            )
-            # print(f'Нужно кастануть - {spell_to_cast}')
-            if spell_to_cast != active_spell and not self.check_come_back():
-                self.driver.execute_script(
-                    f'slotsShow({int(slots_page) - 1})'
+
+            if slots_page == 'k' == slot:
+                print('Выбран физ удар')
+                self.try_to_switch_to_central_frame()
+                kick = self.driver.find_elements(
+                    By.CSS_SELECTOR, 'img[src="/@!images/fight/knife.gif"]'
                 )
-                self.driver.execute_script(
-                    f'return qs_onClickSlot(event,{int(slot) - 1})'
+                if kick:
+                    kick[0].click()
+
+            else:
+                active_spell = self.get_active_spell()
+                # print(f'Активный закл - {active_spell}')
+                spell_to_cast = self.get_spell_to_cast(
+                    spell_number=slot,
+                    slot_number=slots_page
                 )
+                # print(f'Нужно кастануть - {spell_to_cast}')
+                if spell_to_cast != active_spell and not self.check_come_back():
+                    self.driver.execute_script(
+                        f'slotsShow({int(slots_page) - 1})'
+                    )
+                    self.driver.execute_script(
+                        f'return qs_onClickSlot(event,{int(slot) - 1})'
+                    )
 
     def get_hit_number(self) -> Optional[str]:
         """Возвращает номер удара в бою."""
