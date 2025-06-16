@@ -126,7 +126,7 @@ class SlotsPage(StrEnum):
     _4 = '5'
     _5 = '6'
     _6 = '7'
-    _k = 'p'
+    _p = 'p'
 
     def __str__(self):
         return self.value
@@ -140,7 +140,7 @@ class Slot(StrEnum):
     _5 = '5'
     _6 = '6'
     _7 = '7'
-    _k = 'k'
+    _p = 'p'
 
     def __str__(self):
         return self.value

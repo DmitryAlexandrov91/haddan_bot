@@ -770,8 +770,8 @@ dragon_preset.grid(
 
 def get_dragon_punch_preset():
     """Пресет для фарма дракона физ ударами."""
-    main_slot = SlotsPage._k
-    main_spell = Slot._k
+    main_slot = SlotsPage._p
+    main_spell = Slot._p
 
     main_slots_page.set(main_slot)
     main_spell_slot.set(main_spell)
@@ -787,8 +787,8 @@ def get_dragon_punch_preset():
 
     r2y1_slot.set(SlotsPage._1)
     r2y1_spell.set(Slot._4)
-    r2y2_slot.set(SlotsPage._4)
-    r2y2_spell.set(Slot._1)
+    r2y2_slot.set(main_slot)
+    r2y2_spell.set(main_spell)
     r2y3_slot.set(main_slot)
     r2y3_spell.set(main_spell)
     r2y4_slot.set(main_slot)
