@@ -1,0 +1,9 @@
+services:
+  haddan:
+    build: ../app
+    container_name: haddan-cont
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - ../app:/app
+    command: python main.py
