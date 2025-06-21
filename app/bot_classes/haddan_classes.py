@@ -15,6 +15,7 @@ from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS, HADDAN_URL,
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_sity_portal_room_number,
                         get_upper_portal_room_number)
+from PIL import Image
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidSessionIdException,
                                         NoAlertPresentException,
@@ -31,8 +32,6 @@ from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
 
 from .driver_manager import DriverManager
 from .services import make_transition
-
-from PIL import Image
 
 
 class HaddanUser:
@@ -133,7 +132,7 @@ class HaddanDriverManager(DriverManager):
                                     By.TAG_NAME, 'button')
                     if buttons:
                         buttons[1].click()
-                        self.sync_send(
+                        self.sync_send_message(
                             telegram_id=message.chat.id,
                             text='Ответ принят.'
                         )
@@ -165,12 +164,33 @@ class HaddanDriverManager(DriverManager):
                 photo=types.FSInputFile('runes.png'))
 
         except Exception:
-            self.sync_send(
+            self.sync_send_message(
                 telegram_id=telegram_id,
                 text='С отправкой капчи какой-то косяк!'
             )
+    
+    async def start_polling(self):
+        if not self.polling_started.is_set():
+            self.polling_started.set()
 
-    def sync_send(self, text, telegram_id):
+            try:
+                await self.dp.start_polling(
+                    self.bot,
+                    handle_signals=False
+                ),
+            except Exception as e:
+                logging.error(f"Ошибка при старте поллинга {str(e)}.")
+    
+    async def stop_polling(self):
+        if self.polling_started.is_set():
+            try:
+                self.polling_started.clear()
+                await self.dp.stop_polling()
+            except Exception as e:
+                logging.error(f"Ошибка при остановке поллинга {str(e)}")
+    
+
+    def sync_send_message(self, text, telegram_id):
         asyncio.run_coroutine_threadsafe(
             self.send_msg(
                 text=text,
@@ -182,6 +202,18 @@ class HaddanDriverManager(DriverManager):
     def sync_send_kaptcha(self, telegram_id):
         asyncio.run_coroutine_threadsafe(
             self.send_kaptcha(telegram_id=telegram_id),
+            self.loop
+        )
+
+    def sync_start_polling(self):
+        asyncio.run_coroutine_threadsafe(
+            self.start_polling(),
+            self.loop
+        )
+
+    def sync_stop_polling(self):
+        asyncio.run_coroutine_threadsafe(
+            self.stop_polling(),
             self.loop
         )
 
@@ -755,7 +787,7 @@ class HaddanDriverManager(DriverManager):
                 with open('kaptcha.png', 'wb') as f:
                     f.write(response.content)
 
-                self.sync_send(
+                self.sync_send_message(
                     text='Обнаружена капча!',
                     telegram_id=telegram_id)
 
@@ -763,14 +795,7 @@ class HaddanDriverManager(DriverManager):
                     self.sync_send_kaptcha(telegram_id=telegram_id)
                     self.kapthca_sent = True
 
-                if not self.polling_started.is_set():
-                    self.polling_started.set()
-                    asyncio.run_coroutine_threadsafe(
-                        self.dp.start_polling(
-                            self.bot,
-                        ),
-                        self.loop
-                    )
+                self.sync_start_polling()
 
                 self.wait_until_kaptcha_after_tg_message(30)
 
@@ -785,15 +810,7 @@ class HaddanDriverManager(DriverManager):
                 telegram_id=telegram_id)
 
         else:
-            if self.polling_started.is_set():
-                try:
-                    self.polling_started.clear()
-                    asyncio.run_coroutine_threadsafe(
-                        self.dp.stop_polling(),
-                        self.loop
-                    )
-                except Exception:
-                    pass
+            self.sync_stop_polling()
 
     def check_health(
             self,
@@ -823,7 +840,7 @@ class HaddanDriverManager(DriverManager):
                 hp = int(health[0].text)
                 if hp < min_hp:
                     if self.bot and message_to_tg and telegram_id:
-                        self.sync_send(
+                        self.sync_send_message(
                             telegram_id=telegram_id,
                             text='Здоровье упало меньше минимума!'
                         )
@@ -1917,7 +1934,7 @@ class HaddanDriverManager(DriverManager):
             )
 
             if self.bot and message_to_tg and telegram_id:
-                self.sync_send(
+                self.sync_send_message(
                     telegram_id=telegram_id,
                     text='Обнаружен дух ума!'
                 )
