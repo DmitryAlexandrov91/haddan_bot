@@ -168,7 +168,7 @@ class HaddanDriverManager(DriverManager):
                 telegram_id=telegram_id,
                 text='С отправкой капчи какой-то косяк!'
             )
-    
+
     async def start_polling(self):
         if not self.polling_started.is_set():
             self.polling_started.set()
@@ -180,7 +180,7 @@ class HaddanDriverManager(DriverManager):
                 ),
             except Exception as e:
                 logging.error(f"Ошибка при старте поллинга {str(e)}.")
-    
+
     async def stop_polling(self):
         if self.polling_started.is_set():
             try:
@@ -188,7 +188,6 @@ class HaddanDriverManager(DriverManager):
                 await self.dp.stop_polling()
             except Exception as e:
                 logging.error(f"Ошибка при остановке поллинга {str(e)}")
-    
 
     def sync_send_message(self, text, telegram_id):
         asyncio.run_coroutine_threadsafe(
