@@ -45,8 +45,6 @@ MEDITATION_URL = 'https://haddan.ru/room/func/temple.php'
 KAPCHA_URL = 'https://haddan.ru/inner/img/gc.php'
 SHOP_URL = 'http://ordenpegasa.ru/shop/'
 LABIRINT_MAP_URL = 'https://haddan.novikovproject.ru/maze?level='
-
-
 DOMENS = {
     'haddan': 'https://haddan.ru/',
     'online-igra': 'https://www.online-igra.ru/',
@@ -58,9 +56,17 @@ DOMENS = {
 # Переменные окружения.
 FIRST_CHAR = os.getenv('FIRST_CHAR', None)
 SECOND_CHAR = os.getenv('SECOND_CHAR', None)
+THIRD_CHAR = os.getenv('THIRD_CHAR', None)
 PASSWORD = os.getenv('HADDAN_PASSWORD', None)
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', None)
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', None)
+
+CHARS = [
+    FIRST_CHAR,
+    SECOND_CHAR,
+    THIRD_CHAR
+]
+
 
 # Заказные данные
 USER_CHAR = 'фантазёрка'
@@ -188,3 +194,12 @@ FOREST_MAP = [
 
 
 DEFAULT_TK_STATUS = 'Бот готов к работе'
+
+
+CHARS_ACCESS = {
+    'SwordS': '2033-06-28 23:59:59',
+    'Nordman': '2033-06-27 23:59:59',
+    'фантазёрка': '2033-06-27 23:59:59'
+}
+
+DT_FORMAT = '%Y-%m-%d %H:%M:%S'

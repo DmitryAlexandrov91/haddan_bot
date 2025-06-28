@@ -31,9 +31,9 @@ from tk_app.interface.maze import *  # noqa
 
 
 def start_app():
-    username_field.insert(  # noqa
-        0, FIRST_CHAR
-    ) if FIRST_CHAR else None
+    # username.insert(  # noqa
+    #     0, FIRST_CHAR
+    # ) if FIRST_CHAR else None
     password_field.insert(  # noqa
         0, PASSWORD
     ) if PASSWORD else None

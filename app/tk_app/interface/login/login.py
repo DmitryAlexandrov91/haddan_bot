@@ -2,10 +2,11 @@
 import logging
 import threading
 import tkinter as tk
+from datetime import datetime
 
 from bot_classes import HaddanUser
 from configs import configure_logging
-from constants import DOMENS
+from constants import CHARS, CHARS_ACCESS, DOMENS, DT_FORMAT
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
@@ -18,8 +19,20 @@ def start_login_thread():
 def start_game(manager=manager):
 
     try:
-        char = username_field.get().strip()
+        char = username.get().strip()
         password = password_field.get().strip()
+
+        now = datetime.now()
+        char_access = CHARS_ACCESS[char]
+        if datetime.strptime(
+            char_access, DT_FORMAT
+        ) < now:
+            manager.send_alarm_message(
+                text=(
+                    f'Доступ к боту закончился {char_access}, \n'
+                    'Обратитесь к администратору.')
+            )
+            exit()
 
         manager.send_status_message(
             text=f'Заходим в игру персонажем {char}'
@@ -57,8 +70,23 @@ def stop_bot(manager=manager):
 username_label = tk.Label(app, text='имя', bg='#FFF4DC')
 username_label.grid(row=0, column=0, sticky='e')
 
-username_field = tk.Entry(app, width=25)
-username_field.grid(row=0, column=1)
+# username_field = tk.Entry(app, width=25)
+# username_field.grid(row=0, column=1)
+
+username = tk.StringVar(app)
+username.set(CHARS[0])
+
+
+username_l = tk.OptionMenu(
+    app, username, *CHARS
+)
+username_l.configure(
+    bg='#FFF4DC',
+    activebackground='#FFF4DC'
+)
+username_l.grid(
+    row=0, column=1
+)
 
 
 password_label = tk.Label(app, text='пароль', bg='#FFF4DC')
