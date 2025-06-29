@@ -959,3 +959,28 @@ baby_maze_preset = tk.Button(
 baby_maze_preset.grid(
     row=9, column=12
 )
+
+
+def get_forest_nordman():
+    """Пресет для леса физом."""
+    main_slot = SlotsPage._p
+    main_spell = Slot._p
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._2)
+    r1y1_spell.set(Slot._1)
+
+
+nordman_forest_preset = tk.Button(
+    app,
+    text='Лес физ',
+    bg='#FFF4DC',
+    command=get_forest_nordman
+)
+nordman_forest_preset.grid(
+    row=9, column=10
+)

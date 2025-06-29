@@ -34,6 +34,9 @@ from .driver_manager import DriverManager
 from .services import make_transition
 
 
+configure_logging()
+
+
 class HaddanUser:
 
     """Бот класс управления действиями персонажа.
@@ -464,7 +467,7 @@ class HaddanDriverManager(DriverManager):
                 gamble_spirit[0].click()
                 sleep(1)
 
-                print('Играем с духом азарта.')
+                logging.info('Играем с духом азарта.')
                 self.send_info_message(
                     text='Пойманы духом азарта'
                 )
@@ -496,9 +499,14 @@ class HaddanDriverManager(DriverManager):
                             right_choise = self.driver.find_elements(
                                 By.PARTIAL_LINK_TEXT, 'Дальше!')
                             # right_choise[0].click()
-                            self.click_to_element_with_actionchains(
-                                right_choise[0]
-                            )
+                            if not right_choise:
+                                right_choise = self.driver.find_elements(
+                                    By.PARTIAL_LINK_TEXT,
+                                    'Пробуем снова')
+                            if right_choise:
+                                self.click_to_element_with_actionchains(
+                                    right_choise[0]
+                                )
 
                         spirit_answers = self.driver.find_elements(
                             By.CLASS_NAME,
@@ -516,7 +524,7 @@ class HaddanDriverManager(DriverManager):
                     sleep(0.5)
 
         except Exception as e:
-            print(
+            logging.error(
                 'При игре с духом азарта возникла ошибка: ',
                 str(e)
             )
@@ -543,7 +551,7 @@ class HaddanDriverManager(DriverManager):
                 self.send_info_message(
                     text='Пойманы духом поэзии'
                 )
-                print('Играем с духом поэзии.')
+                logging.info('Играем с духом поэзии.')
                 self.try_to_switch_to_dialog()
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
@@ -556,7 +564,7 @@ class HaddanDriverManager(DriverManager):
                     )
                     sleep(0.5)
             except Exception as e:
-                print(
+                logging.error(
                     'При игре с духом поэзии возникла ошибка: ',
                     str(e)
                 )
@@ -580,7 +588,7 @@ class HaddanDriverManager(DriverManager):
                 mind_spirit[0].click()
                 sleep(0.5)
 
-                print('Играем с духом ума')
+                logging.info('Играем с духом ума')
                 self.send_info_message(
                     text='Пойманы духом ума'
                 )
@@ -612,7 +620,7 @@ class HaddanDriverManager(DriverManager):
                     sleep(0.5)
 
             except Exception as e:
-                print(
+                logging.error(
                     'При игре с духом ума возникла ошибка: ',
                     str(e)
                 )
@@ -789,6 +797,7 @@ class HaddanDriverManager(DriverManager):
                 self.sync_send_message(
                     text='Обнаружена капча!',
                     telegram_id=telegram_id)
+                logging.info('Обнаружена капча!')
 
                 if not self.kapthca_sent:
                     self.sync_send_kaptcha(telegram_id=telegram_id)
@@ -838,14 +847,13 @@ class HaddanDriverManager(DriverManager):
             if health:
                 hp = int(health[0].text)
                 if hp < min_hp:
+                    logging.info('Мало хп, спим 30 секунд!')
                     if self.bot and message_to_tg and telegram_id:
                         self.sync_send_message(
                             telegram_id=telegram_id,
                             text='Здоровье упало меньше минимума!'
                         )
 
-                    else:
-                        print('Мало хп, спим 30 секунд!')
                     self.sleep_while_event_is_true(time_to_sleep=30)
                     self.check_health(
                         min_hp=min_hp,
@@ -1250,8 +1258,8 @@ class HaddanDriverManager(DriverManager):
 
     def actions_after_exception(self, exception: Exception):
         """Общее действие обработки исключения."""
-        configure_logging()
-        logging.exception(
+
+        logging.error(
             f'\nВозникло исключение {str(exception)}\n',
             stack_info=False
         )
@@ -1433,7 +1441,7 @@ class HaddanDriverManager(DriverManager):
                     message = (
                         f'Двигаемся по прямой в комнату {to_the_room} '
                     )
-                    print(message)
+                    logging.info(message)
                     self.send_info_message(
                         text=message,
                     )
@@ -1450,7 +1458,7 @@ class HaddanDriverManager(DriverManager):
                     message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room} '
                     )
-                    print(message)
+                    logging.info(message)
                     self.send_info_message(
                         text=message
                     )
