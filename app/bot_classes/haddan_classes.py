@@ -503,6 +503,10 @@ class HaddanDriverManager(DriverManager):
                                 right_choise = self.driver.find_elements(
                                     By.PARTIAL_LINK_TEXT,
                                     'Пробуем снова')
+                            if not right_choise:
+                                right_choise = self.driver.find_elements(
+                                    By.PARTIAL_LINK_TEXT,
+                                    'Телепортироваться')
                             if right_choise:
                                 self.click_to_element_with_actionchains(
                                     right_choise[0]

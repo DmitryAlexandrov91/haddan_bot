@@ -909,7 +909,55 @@ farm_coast_preset = tk.Button(
     command=get_coast_preset
 )
 farm_coast_preset.grid(
-    row=9, column=8
+    row=9, column=7
+)
+
+
+def get_coast_preset_2():
+    """Пресет для фарма побережья с архангелами."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._6
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._2)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._2)
+    r1y2_spell.set(Slot._1)
+    r1y3_slot.set(SlotsPage._2)
+    r1y3_spell.set(Slot._1)
+    r1y4_slot.set(SlotsPage._4)
+    r1y4_spell.set(Slot._3)
+
+    r2y1_slot.set(SlotsPage._3)
+    r2y1_spell.set(Slot._1)
+    r2y2_slot.set(SlotsPage._1)
+    r2y2_spell.set(Slot._1)
+    r2y3_slot.set(SlotsPage._4)
+    r2y3_spell.set(Slot._1)
+
+    r3y1_slot.set(SlotsPage._1)
+    r3y1_spell.set(Slot._2)
+    r3y2_slot.set(SlotsPage._1)
+    r3y2_spell.set(Slot._4)
+
+    r4y1_slot.set(SlotsPage._1)
+    r4y1_spell.set(Slot._3)
+    r4y2_slot.set(SlotsPage._1)
+    r4y2_spell.set(Slot._4)
+
+
+farm_coast_preset_2 = tk.Button(
+    app,
+    text='Берег 2',
+    bg='#FFF4DC',
+    command=get_coast_preset_2
+)
+farm_coast_preset_2.grid(
+        row=9, column=8
 )
 
 
