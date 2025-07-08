@@ -5,13 +5,14 @@ import threading
 import tkinter as tk
 from typing import Optional
 
+import undetected_chromedriver as uc
 from aiogram import Bot
 from configs import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.remote.webdriver import WebElement
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -51,22 +52,50 @@ class DriverManager:
         self.forest_button = forest_button
 
     def _get_default_options(self):
-        options = webdriver.ChromeOptions()
+        # options = webdriver.ChromeOptions()
+        options = uc.ChromeOptions()
 
         #  Работа в полном окне
         options.add_argument('--start-maximized')
+        # options.add_argument("--disable-background-networking")
+        # options.add_argument("--disable-default-apps")
+        # options.add_argument("--disable-sync")  # Отключает синхронизацию аккаунта
+        # options.add_argument("--disable-client-side-phishing-detection")
+        # options.add_argument("--disable-hang-monitor")
+        # options.add_argument("--disable-component-update")  # Отключает автообновление компонентов
+        # options.add_argument("--disable-features=ChromeWhatsNewUI")  # Убирает "Что нового в Chrome"
+        # options.add_argument("--disable-features=OptimizationHints")  # Отключает сбор данных для оптимизации
+        # options.add_argument("--disable-features=Translate")  # Отключает переводчик
+        # options.add_argument("--disable-features=MediaRouter")  # Отключает Cast (Google Chromecast)
+        # options.add_argument("--metrics-recording-only")  # Отключает отправку метрик
+        # options.add_argument("--no-first-run")  # Пропускает первый запуск Chrome
+        # options.add_argument("--disable-background-timer-throttling")  # Убирает ограничения таймеров в фоне
+        # options.add_argument("--disable-backgrounding-occluded-windows")  # Отключает фоновую работу неактивных окон
+        # options.add_argument("--disable-breakpad")  # Отключает систему отчетов об ошибках
+        # options.add_argument("--disable-ipc-flooding-protection")  # Отключает защиту от IPC-флуда
+        # options.add_argument("--disable-renderer-backgrounding")  # Отключает фоновый режим рендерера
+        # options.add_argument("--disable-logging")  # Убирает лишние логи
+        # options.add_argument("--disable-dev-shm-usage")  # Важно для Linux, но можно и в Windows
+
 
         # Анти-детект
         options.add_argument('--disable-blink-features=AutomationControlled')
         options.add_experimental_option(
             'excludeSwitches', ['enable-automation'])
         options.add_experimental_option('useAutomationExtension', False)
+        options.add_argument("--disable-application-cache")
+        options.add_argument("--disk-cache-size=0")
+        options.add_argument("--disable-gcm")
 
         # options.add_argument('--disable-gpu')
 
         #  экспериментально
         # options.add_argument('--single-process')
         # options.add_argument('--disable-features=V8ProxyResolver')
+        options.add_experimental_option(
+            "excludeSwitches",
+            ["enable-logging", "disable-background-networking"]
+        )
 
         #  Только DOM
         options.set_capability("pageLoadStrategy", "eager")
@@ -76,7 +105,7 @@ class DriverManager:
         #  Ускоряет загрузку
         options.add_argument('--disable-plugins-discovery')
         #  Блокируем уведомления(ломает бой)
-        # options.add_argument('--disable-notifications')
+        #  options.add_argument('--disable-notifications')
 
         #  Разрешить старые плагины
         # options.add_argument('--allow-outdated-plugins')

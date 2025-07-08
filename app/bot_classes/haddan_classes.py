@@ -116,7 +116,7 @@ class HaddanDriverManager(DriverManager):
         """Регистрация обработчиков сообщений."""
         @self.router.message(F.text)
         async def kaptcha_handler(message: types.Message):
-            """Обработчик ответа на каптчу."""
+            """Обработчик ответа на капчу."""
             if not self.driver:
                 raise InvalidSessionIdException
             text = message.text
