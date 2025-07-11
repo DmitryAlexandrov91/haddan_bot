@@ -3,6 +3,7 @@ import platform
 import re
 import threading
 import tkinter as tk
+from time import sleep
 from typing import Optional
 
 import undetected_chromedriver as uc
@@ -10,6 +11,8 @@ from aiogram import Bot
 from configs import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoAlertPresentException)
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
@@ -59,24 +62,37 @@ class DriverManager:
         options.add_argument('--start-maximized')
         # options.add_argument("--disable-background-networking")
         # options.add_argument("--disable-default-apps")
-        # options.add_argument("--disable-sync")  # Отключает синхронизацию аккаунта
+        # options.add_argument("--disable-sync")
+        # # Отключает синхронизацию аккаунта
         # options.add_argument("--disable-client-side-phishing-detection")
         # options.add_argument("--disable-hang-monitor")
-        # options.add_argument("--disable-component-update")  # Отключает автообновление компонентов
-        # options.add_argument("--disable-features=ChromeWhatsNewUI")  # Убирает "Что нового в Chrome"
-        # options.add_argument("--disable-features=OptimizationHints")  # Отключает сбор данных для оптимизации
-        # options.add_argument("--disable-features=Translate")  # Отключает переводчик
-        # options.add_argument("--disable-features=MediaRouter")  # Отключает Cast (Google Chromecast)
-        # options.add_argument("--metrics-recording-only")  # Отключает отправку метрик
-        # options.add_argument("--no-first-run")  # Пропускает первый запуск Chrome
-        # options.add_argument("--disable-background-timer-throttling")  # Убирает ограничения таймеров в фоне
-        # options.add_argument("--disable-backgrounding-occluded-windows")  # Отключает фоновую работу неактивных окон
-        # options.add_argument("--disable-breakpad")  # Отключает систему отчетов об ошибках
-        # options.add_argument("--disable-ipc-flooding-protection")  # Отключает защиту от IPC-флуда
-        # options.add_argument("--disable-renderer-backgrounding")  # Отключает фоновый режим рендерера
+        # options.add_argument("--disable-component-update")
+        # # Отключает автообновление компонентов
+        # options.add_argument("--disable-features=ChromeWhatsNewUI")
+        # # Убирает "Что нового в Chrome"
+        # options.add_argument("--disable-features=OptimizationHints")
+        # # Отключает сбор данных для оптимизации
+        # options.add_argument("--disable-features=Translate")
+        # # Отключает переводчик
+        # options.add_argument("--disable-features=MediaRouter")
+        # # Отключает Cast (Google Chromecast)
+        # options.add_argument("--metrics-recording-only")
+        # # Отключает отправку метрик
+        # options.add_argument("--no-first-run")
+        # # Пропускает первый запуск Chrome
+        # options.add_argument("--disable-background-timer-throttling")
+        # # Убирает ограничения таймеров в фоне
+        # options.add_argument("--disable-backgrounding-occluded-windows")
+        # # Отключает фоновую работу неактивных окон
+        # options.add_argument("--disable-breakpad")
+        # # Отключает систему отчетов об ошибках
+        # options.add_argument("--disable-ipc-flooding-protection")
+        # # Отключает защиту от IPC-флуда
+        # options.add_argument("--disable-renderer-backgrounding")
+        # # Отключает фоновый режим рендерера
         # options.add_argument("--disable-logging")  # Убирает лишние логи
-        # options.add_argument("--disable-dev-shm-usage")  # Важно для Linux, но можно и в Windows
-
+        # options.add_argument("--disable-dev-shm-usage")
+        # # Важно для Linux, но можно и в Windows
 
         # Анти-детект
         options.add_argument('--disable-blink-features=AutomationControlled')
@@ -259,4 +275,31 @@ class DriverManager:
         """Очищает все уведомления."""
         self.send_alarm_message()
         self.send_info_message()
+        self.send_status_message()
+
+    def is_alert_present(self):
+        """Метод определния наличия уведомления на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+            self.driver.switch_to.alert
+            return True
+        except NoAlertPresentException:
+            return False
+
+    def sleep_while_event_is_true(
+            self, time_to_sleep: int):
+        """Ждёт указанное количество секунд.
+
+        Пока флаг event == True.
+        :time_to_sleep: кол-во секунд для ожидания.
+        """
+        counter = time_to_sleep
+        while self.cycle_is_running and counter > 0:
+            sleep(1)
+            counter -= 1
+            self.send_status_message(
+                text=f'Ждём секунд: {counter}'
+            )
         self.send_status_message()
