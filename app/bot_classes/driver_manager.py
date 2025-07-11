@@ -3,15 +3,18 @@ import platform
 import re
 import threading
 import tkinter as tk
+from time import sleep
 from typing import Optional
 
 from aiogram import Bot
 from configs import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoAlertPresentException)
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.remote.webdriver import WebElement
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -166,6 +169,9 @@ class DriverManager:
 
         В файле page.html в корне проекта.
         """
+        if not self.driver:
+            raise InvalidSessionIdException
+
         page_source = self.driver.page_source
         with open('page.html', 'w', encoding='utf-8') as file:
             file.write(page_source)
@@ -230,4 +236,31 @@ class DriverManager:
         """Очищает все уведомления."""
         self.send_alarm_message()
         self.send_info_message()
+        self.send_status_message()
+
+    def is_alert_present(self):
+        """Метод определения наличия уведомления на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+            self.driver.switch_to.alert
+            return True
+        except NoAlertPresentException:
+            return False
+
+    def sleep_while_event_is_true(
+            self, time_to_sleep: int):
+        """Ждёт указанное количество секунд.
+
+        Пока флаг event == True.
+        :time_to_sleep: кол-во секунд для ожидания.
+        """
+        counter = time_to_sleep
+        while self.cycle_is_running and counter > 0:
+            sleep(1)
+            counter -= 1
+            self.send_status_message(
+                text=f'Ждём секунд: {counter}'
+            )
         self.send_status_message()

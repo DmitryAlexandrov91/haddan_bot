@@ -20,7 +20,6 @@ from maze_utils import (find_path_via_boxes_with_directions,
 from PIL import Image
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidSessionIdException,
-                                        NoAlertPresentException,
                                         StaleElementReferenceException,
                                         TimeoutException,
                                         UnexpectedAlertPresentException)
@@ -78,184 +77,8 @@ class HaddanUser:
         submit_button.click()
 
 
-class HaddanDriverManager(DriverManager):
-    """Класс для создания и управления объектом Chrome webdriver.
-
-    Для игры haddan.ru.
-    """
-
-    def __init__(
-            self,
-            user: HaddanUser | None = None,
-            bot: Bot | None = None):
-        super().__init__(bot=bot)
-        self.user = user
-        self.loop = asyncio.new_event_loop()
-        self.polling_started = asyncio.Event()
-
-        if self.bot:
-            self.router = Router()
-            self._register_handlers()
-            self.dp = Dispatcher()
-            self.dp.include_router(self.router)
-
-        threading.Thread(
-            target=self.start_loop,
-            daemon=True
-        ).start()
-        self.passed_forest_rooms: set = set()
-        self.passed_maze_rooms: set = set()
-        self.maze_first_floor_map: list[list[Room]] | None = None
-        self.maze_second_floor_map: list[list[Room]] | None = None
-        self.maze_third_floor_map: list[list[Room]] | None = None
-        self.baby_maze_first_floor_map: list[list[Room]] | None = None
-        self.baby_maze_second_floor_map: list[list[Room]] | None = None
-        self.kapthca_sent = False
-
-    def _register_handlers(self):
-        """Регистрация обработчиков сообщений."""
-        @self.router.message(F.text)
-        async def kaptcha_handler(message: types.Message):
-            """Обработчик ответа на каптчу."""
-            if not self.driver:
-                raise InvalidSessionIdException
-            text = message.text
-            if text:
-                if len(text) <= 3 and text.isdigit():
-                    self.try_to_switch_to_central_frame()
-                    kaptcha_runes = self.driver.find_elements(
-                        By.CLASS_NAME,
-                        'captcha_rune'
-                    )
-                    if kaptcha_runes:
-                        for number in text:
-                            kaptcha_runes[int(number)].click()
-                            sleep(0.5)
-                    self.try_to_switch_to_central_frame()
-                    buttons = self.driver.find_elements(
-                                    By.TAG_NAME, 'button')
-                    if buttons:
-                        buttons[1].click()
-                        self.sync_send_message(
-                            telegram_id=message.chat.id,
-                            text='Ответ принят.'
-                        )
-                        self.kapthca_sent = False
-
-                        try:
-                            root_dir = os.getcwd()
-                            source_file = os.path.join(root_dir, "kaptcha.png")
-                            save_dir = "app/ai_kaptcha/kaptcha"
-
-                            timestamp = datetime.now().strftime("%H%M%S")
-
-                            new_filename = f"{text}_{timestamp}.png"
-                            dest_file = os.path.join(save_dir, new_filename)
-
-                            os.makedirs(save_dir, exist_ok=True)
-                            if os.path.exists(source_file):
-                                os.rename(source_file, dest_file)
-                            else:
-                                print(f"⚠️ Файл не найден: {source_file}")
-                        except Exception as e:
-                            print(f"⛔ Ошибка при обработке файла: {e}")
-
-    def start_loop(self):
-        """Запускает поток с aiogram ботом."""
-        asyncio.set_event_loop(self.loop)
-        self.loop.run_forever()
-
-    async def send_msg(self, text, telegram_id):
-        await self.bot.send_message(
-            chat_id=telegram_id,
-            text=text
-        ) if self.bot else None
-
-    async def send_kaptcha(self, telegram_id):
-        if not self.bot:
-            return
-        try:
-
-            img = Image.open('kaptcha.png')
-            resized_img = img.resize((1280, 500))
-            resized_img.save('kaptcha.png')
-
-            await self.bot.send_photo(
-                chat_id=telegram_id,
-                photo=types.FSInputFile('kaptcha.png')
-                )
-            await self.bot.send_photo(
-                chat_id=telegram_id,
-                photo=types.FSInputFile('runes.png'))
-
-        except Exception:
-            self.sync_send_message(
-                telegram_id=telegram_id,
-                text='С отправкой капчи какой-то косяк!'
-            )
-
-    async def start_polling(self):
-        if not self.bot:
-            return
-
-        if not self.polling_started.is_set():
-            self.polling_started.set()
-
-            try:
-
-                await self.dp.start_polling(
-                    self.bot,
-                    handle_signals=False
-                )
-
-            except Exception as e:
-                logging.error(f"Ошибка при старте поллинга {str(e)}.")
-
-    async def stop_polling(self):
-        if self.polling_started.is_set():
-            try:
-                self.polling_started.clear()
-                await self.dp.stop_polling()
-            except Exception as e:
-                logging.error(f"Ошибка при остановке поллинга {str(e)}")
-
-    def sync_send_message(self, text, telegram_id):
-        asyncio.run_coroutine_threadsafe(
-            self.send_msg(
-                text=text,
-                telegram_id=telegram_id
-            ),
-            self.loop
-        )
-
-    def sync_send_kaptcha(self, telegram_id):
-        asyncio.run_coroutine_threadsafe(
-            self.send_kaptcha(telegram_id=telegram_id),
-            self.loop
-        )
-
-    def sync_start_polling(self):
-        asyncio.run_coroutine_threadsafe(
-            self.start_polling(),
-            self.loop
-        )
-
-    def sync_stop_polling(self):
-        asyncio.run_coroutine_threadsafe(
-            self.stop_polling(),
-            self.loop
-        )
-
-    def is_alert_present(self):
-        """Метод определния наличия уведомления на странице."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        try:
-            self.driver.switch_to.alert
-            return True
-        except NoAlertPresentException:
-            return False
+class HaddanCommonDriver(DriverManager):
+    """Класс управления фреймами и общие методы."""
 
     def try_to_switch_to_central_frame(self):
         """Переключается на центральный фрейм окна."""
@@ -290,12 +113,204 @@ class HaddanDriverManager(DriverManager):
 
         frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
         if frames:
-            print([frame.get_attribute('name') for frame in frames])
+            logging.info([frame.get_attribute('name') for frame in frames])
         else:
-            print('iframe на странице не найдены')
-    #  **************************************************************
+            logging.info('iframe на странице не найдены')
 
-    #  Методы ведения боя. ******************************************
+    def get_room_number(self) -> int | None:
+        """Возвращает номер комнаты в лабе, в которой находится персонаж."""
+        self.try_to_switch_to_central_frame()
+
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        my_room = self.driver.find_elements(
+                By.CLASS_NAME, 'LOCATION_NAME'
+            )
+        if my_room:
+            text = my_room[0].text
+            pattern = r'№(\d+)'
+
+            result = re.search(pattern, text)
+
+            if result:
+                return int(result.group(1))
+
+        return None
+
+    def wait_until_kaptcha_on_page(self, time: int) -> None:
+        """Ждёт до time секунд пор пока каптча на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                EC.presence_of_element_located((
+                    By.CSS_SELECTOR,
+                    'img[src="/inner/img/bc.php"]'
+                    ))
+            )
+
+        except TimeoutException:
+            self.wait_until_kaptcha_on_page(time=time)
+
+    def wait_until_kaptcha_after_tg_message(self, time: int) -> None:
+        """Ждёт пока каптча на странице после отправки фото капчи в тг."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                EC.presence_of_element_located((
+                    By.CSS_SELECTOR,
+                    'img[src="/inner/img/bc.php"]'
+                    ))
+            )
+
+        except TimeoutException:
+            pass
+
+    def wait_until_mind_spirit_on_page(self, time: int) -> None:
+        """Ждёт до time секунд пока дух ума на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                    EC.presence_of_element_located((
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc1850577"]'
+                        ))
+                )
+
+        except TimeoutException:
+            self.wait_until_mind_spirit_on_page(time=time)
+
+    def wait_until_transition_timeout(self, time: int) -> None:
+        """Ждёт до time секунд перехода в другую локацию."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until_not(
+                EC.presence_of_element_located((
+                    By.XPATH,
+                    "//*[contains(text(),'Вы можете попасть')]"
+                    ))
+            )
+
+        except TimeoutException:
+            self.wait_until_transition_timeout(time=time)
+
+    def wait_until_alert_present(self, time: int) -> None:
+        """Ждёт по time секунд пока на странице есть уведомление."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+
+            WebDriverWait(self.driver, time).until(
+                lambda driver: not self.is_alert_present()
+            )
+
+        except TimeoutException:
+            self.wait_until_alert_present(time=time)
+
+    def try_to_click_to_glade_fairy(self):
+        """Ищет фею поляны и щёлкает на неё."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        glade_fairy = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc231778"]')
+        if not glade_fairy:
+            glade_fairy = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc17481"]')
+
+        if glade_fairy:
+            self.click_to_element_with_actionchains(glade_fairy[0])
+
+    def actions_after_exception(self, exception: Exception):
+        """Общее действие обработки исключения."""
+
+        logging.error(
+            f'\nВозникло исключение {str(exception)}\n',
+            stack_info=False
+        )
+        if not self.driver:
+            raise InvalidSessionIdException
+        try:
+
+            self.driver.switch_to.default_content()
+            self.errors_count += 1
+            print(f'Текущее количество ошибок - {self.errors_count}')
+            if self.errors_count >= 10:
+                self.driver.refresh()
+                self.errors_count = 0
+                self.sleep_while_event_is_true(5)
+
+        except AttributeError:
+            self.clean_label_messages()
+            self.send_alarm_message(
+                'Сначала войдите в игру!'
+            )
+            self.stop_event()
+
+
+class HaddanFightDriver(HaddanCommonDriver):
+    """Всё что связано с логикой проведения боя."""
+
+    def check_for_fight(self) -> bool:
+        """Если идёт бой, возвращает True."""
+        self.try_to_switch_to_central_frame()
+
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        hits = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[onclick="touchFight();"]'
+        )
+        return bool(hits)
+
+    def try_to_come_back_from_fight(self):
+        """"Если бой закончен, нажимает 'вернуться' """
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        if come_back:
+            self.click_to_element_with_actionchains(come_back[0])
+
+    def check_come_back(self) -> bool:
+        """Если бой закончен, возвращает True."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        return bool(come_back)
+
     def get_active_spell(self) -> Optional[str]:
         """Возвращает название заклинания, которое используется в бою."""
         self.try_to_switch_to_central_frame()
@@ -409,7 +424,6 @@ class HaddanDriverManager(DriverManager):
                 return f'{round[0]} {round[1]}'
 
         return 'Раунд 1'
-    # ***************************************************************
 
     def fight(
             self,
@@ -492,7 +506,26 @@ class HaddanDriverManager(DriverManager):
                     default_slot=default_slot,
                     default_spell=default_spell)
 
-    #  Методы игры с духами. ****************************************
+
+class HaddanSpiritPlay(HaddanFightDriver):
+    """Класс игры с духами."""
+
+    def right_answers_choise(self, right_answers):
+        """Проходит циклом по правильным ответам.
+
+        Если такой ответ есть, нажимает на него.
+        """
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        for answer in right_answers:
+            right_choise = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, answer)
+            if right_choise:
+                self.click_to_element_with_actionchains(
+                    right_choise[0]
+                )
+
     def play_with_gamble_spirit(self):
         """Игра с духом азарта."""
         if not self.driver:
@@ -685,135 +718,177 @@ class HaddanDriverManager(DriverManager):
                 if mind_spirit:
                     self.play_with_mind_spirit()
                 pass
-    #  **************************************************************
 
-    # Фарм поляны. **************************************************
-    def try_to_click_to_glade_fairy(self):
-        """Ищет фею поляны и щёлкает на неё."""
-        if not self.driver:
-            raise InvalidSessionIdException
 
-        glade_fairy = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'img[id="roomnpc231778"]')
-        if not glade_fairy:
-            glade_fairy = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'img[id="roomnpc17481"]')
+class HaddanDriverManager(HaddanSpiritPlay):
+    """Главный класс создания необходимых объектов и циклов событий.
 
-        if glade_fairy:
-            self.click_to_element_with_actionchains(glade_fairy[0])
-    # ***************************************************************
+    Для внедрения aiogram внутри синхронного tkinter
+    И работоспособности основных циклов бота
+    Для игры haddan.ru.
+    """
 
-    def wait_until_kaptcha_on_page(self, time: int) -> None:
-        """Ждёт до time секунд пор пока каптча на странице."""
-        if not self.driver:
-            raise InvalidSessionIdException
+    def __init__(
+            self,
+            user: HaddanUser | None = None,
+            bot: Bot | None = None):
+        super().__init__(bot=bot)
+        self.user = user
+        self.loop = asyncio.new_event_loop()
+        self.polling_started = asyncio.Event()
 
-        if not self.cycle_is_running:
-            exit()
+        if self.bot:
+            self.router = Router()
+            self._register_handlers()
+            self.dp = Dispatcher()
+            self.dp.include_router(self.router)
 
+        threading.Thread(
+            target=self.start_loop,
+            daemon=True
+        ).start()
+        self.passed_forest_rooms: set = set()
+        self.passed_maze_rooms: set = set()
+        self.maze_first_floor_map: list[list[Room]] | None = None
+        self.maze_second_floor_map: list[list[Room]] | None = None
+        self.maze_third_floor_map: list[list[Room]] | None = None
+        self.baby_maze_first_floor_map: list[list[Room]] | None = None
+        self.baby_maze_second_floor_map: list[list[Room]] | None = None
+        self.kapthca_sent = False
+
+    def _register_handlers(self):
+        """Регистрация обработчиков сообщений."""
+        @self.router.message(F.text)
+        async def kaptcha_handler(message: types.Message):
+            """Обработчик ответа на капчу."""
+            if not self.driver:
+                raise InvalidSessionIdException
+            text = message.text
+            if text:
+                if len(text) <= 3 and text.isdigit():
+                    self.try_to_switch_to_central_frame()
+                    kaptcha_runes = self.driver.find_elements(
+                        By.CLASS_NAME,
+                        'captcha_rune'
+                    )
+                    if kaptcha_runes:
+                        for number in text:
+                            kaptcha_runes[int(number)].click()
+                            sleep(0.5)
+                    self.try_to_switch_to_central_frame()
+                    buttons = self.driver.find_elements(
+                                    By.TAG_NAME, 'button')
+                    if buttons:
+                        buttons[1].click()
+                        self.sync_send_message(
+                            telegram_id=message.chat.id,
+                            text='Ответ принят.'
+                        )
+                        self.kapthca_sent = False
+
+                        try:
+                            root_dir = os.getcwd()
+                            source_file = os.path.join(root_dir, "kaptcha.png")
+                            save_dir = "app/ai_kaptcha/kaptcha"
+
+                            timestamp = datetime.now().strftime("%H%M%S")
+
+                            new_filename = f"{text}_{timestamp}.png"
+                            dest_file = os.path.join(save_dir, new_filename)
+
+                            os.makedirs(save_dir, exist_ok=True)
+                            if os.path.exists(source_file):
+                                os.rename(source_file, dest_file)
+                            else:
+                                print(f"⚠️ Файл не найден: {source_file}")
+                        except Exception as e:
+                            print(f"⛔ Ошибка при обработке файла: {e}")
+
+    def start_loop(self):
+        """Запускает поток с aiogram ботом."""
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
+
+    async def send_msg(self, text, telegram_id):
+        await self.bot.send_message(
+            chat_id=telegram_id,
+            text=text
+        ) if self.bot else None
+
+    async def send_kaptcha(self, telegram_id):
+        if not self.bot:
+            return
         try:
 
-            WebDriverWait(self.driver, time).until_not(
-                EC.presence_of_element_located((
-                    By.CSS_SELECTOR,
-                    'img[src="/inner/img/bc.php"]'
-                    ))
+            img = Image.open('kaptcha.png')
+            resized_img = img.resize((1280, 500))
+            resized_img.save('kaptcha.png')
+
+            await self.bot.send_photo(
+                chat_id=telegram_id,
+                photo=types.FSInputFile('kaptcha.png')
+                )
+            await self.bot.send_photo(
+                chat_id=telegram_id,
+                photo=types.FSInputFile('runes.png'))
+
+        except Exception:
+            self.sync_send_message(
+                telegram_id=telegram_id,
+                text='С отправкой капчи какой-то косяк!'
             )
 
-        except TimeoutException:
-            self.wait_until_kaptcha_on_page(time=time)
+    async def start_polling(self):
+        if not self.bot:
+            return
 
-    def wait_until_kaptcha_after_tg_message(self, time: int) -> None:
-        """Ждёт пока каптча на странице после отправки фото капчи в тг."""
-        if not self.driver:
-            raise InvalidSessionIdException
+        if not self.polling_started.is_set():
+            self.polling_started.set()
 
-        try:
+            try:
 
-            WebDriverWait(self.driver, time).until_not(
-                EC.presence_of_element_located((
-                    By.CSS_SELECTOR,
-                    'img[src="/inner/img/bc.php"]'
-                    ))
-            )
-
-        except TimeoutException:
-            pass
-
-    def wait_until_mind_spirit_on_page(self, time: int) -> None:
-        """Ждёт до time секунд пока дух ума на странице."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until_not(
-                    EC.presence_of_element_located((
-                        By.CSS_SELECTOR,
-                        'img[id="roomnpc1850577"]'
-                        ))
+                await self.dp.start_polling(
+                    self.bot,
+                    handle_signals=False
                 )
 
-        except TimeoutException:
-            self.wait_until_mind_spirit_on_page(time=time)
+            except Exception as e:
+                logging.error(f"Ошибка при старте поллинга {str(e)}.")
 
-    def wait_until_transition_timeout(self, time: int) -> None:
-        """Ждёт до time секунд перехода в другую локацию."""
-        if not self.driver:
-            raise InvalidSessionIdException
+    async def stop_polling(self):
+        if self.polling_started.is_set():
+            try:
+                self.polling_started.clear()
+                await self.dp.stop_polling()
+            except Exception as e:
+                logging.error(f"Ошибка при остановке поллинга {str(e)}")
 
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until_not(
-                EC.presence_of_element_located((
-                    By.XPATH,
-                    "//*[contains(text(),'Вы можете попасть')]"
-                    ))
-            )
-
-        except TimeoutException:
-            self.wait_until_transition_timeout(time=time)
-
-    def wait_until_alert_present(self, time: int) -> None:
-        """Ждёт по time секунд пока на странице есть уведомление."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until(
-                lambda driver: not self.is_alert_present()
-            )
-
-        except TimeoutException:
-            self.wait_until_alert_present(time=time)
-
-    def upload_file(self, file_path):
-        """
-        Функция для загрузки файла через Selenium.
-        :param driver: экземпляр webdriver
-        :param file_path: полный путь к файлу на локальной машине
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        element = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(
-                (By.CSS_SELECTOR, 'img[src="/inner/img/bc.php"]'))
+    def sync_send_message(self, text, telegram_id):
+        asyncio.run_coroutine_threadsafe(
+            self.send_msg(
+                text=text,
+                telegram_id=telegram_id
+            ),
+            self.loop
         )
 
-        element.send_keys(file_path)
+    def sync_send_kaptcha(self, telegram_id):
+        asyncio.run_coroutine_threadsafe(
+            self.send_kaptcha(telegram_id=telegram_id),
+            self.loop
+        )
+
+    def sync_start_polling(self):
+        asyncio.run_coroutine_threadsafe(
+            self.start_polling(),
+            self.loop
+        )
+
+    def sync_stop_polling(self):
+        asyncio.run_coroutine_threadsafe(
+            self.stop_polling(),
+            self.loop
+        )
 
     def check_kaptcha(
             self,
@@ -917,21 +992,6 @@ class HaddanDriverManager(DriverManager):
                         telegram_id=telegram_id
                     )
 
-    def check_error_on_page(self) -> None:
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        error = self.driver.find_elements(
-            By.PARTIAL_LINK_TEXT, 'Ошибка')
-        if error:
-            print('Обнаружена ошибка на странице, перезагружаем окно.')
-            self.driver.refresh()
-        come_back = self.driver.find_elements(
-            By.CSS_SELECTOR, 'a[href="javascript:history.back()"]')
-        if come_back:
-            self.click_to_element_with_actionchains(come_back[0])
-
-    # Переходы ******************************************************
     def crossing_to_the_north(self) -> bool:
         """Переходит на север."""
         if not self.driver:
@@ -1033,9 +1093,7 @@ class HaddanDriverManager(DriverManager):
             # east[0].click()
             return True
         return False
-    #  **************************************************************
 
-    # Основные циклы приложения *************************************
     def glade_farm(
             self,
             price_dict: dict = FIELD_PRICES,
@@ -1117,7 +1175,6 @@ class HaddanDriverManager(DriverManager):
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
-                self.check_error_on_page()
 
                 self.driver.switch_to.default_content()
 
@@ -1165,7 +1222,6 @@ class HaddanDriverManager(DriverManager):
 
                 self.check_kaptcha(message_to_tg=message_to_tg,
                                    telegram_id=telegram_id)
-                self.check_error_on_page()
 
                 self.try_to_come_back_from_fight()
 
@@ -1240,7 +1296,6 @@ class HaddanDriverManager(DriverManager):
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id)
-                self.check_error_on_page()
 
                 self.try_to_come_back_from_fight()
 
@@ -1324,83 +1379,6 @@ class HaddanDriverManager(DriverManager):
             except Exception as e:
                 self.actions_after_exception(e)
 
-    def actions_after_exception(self, exception: Exception):
-        """Общее действие обработки исключения."""
-
-        logging.error(
-            f'\nВозникло исключение {str(exception)}\n',
-            stack_info=False
-        )
-        if not self.driver:
-            raise InvalidSessionIdException
-        try:
-
-            self.driver.switch_to.default_content()
-            self.errors_count += 1
-            print(f'Текущее количество ошибок - {self.errors_count}')
-            if self.errors_count >= 10:
-                self.driver.refresh()
-                self.errors_count = 0
-                self.sleep_while_event_is_true(5)
-
-        except AttributeError:
-            self.clean_label_messages()
-            self.send_alarm_message(
-                'Сначала войдите в игру!'
-            )
-            self.stop_event()
-
-    def right_answers_choise(self, right_answers):
-        """Проходит циклом по правильным ответам.
-
-        Если такой ответ есть, нажимает на него.
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        for answer in right_answers:
-            right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, answer)
-            if right_choise:
-                self.click_to_element_with_actionchains(
-                    right_choise[0]
-                )
-                # right_choise[0].click()
-
-    def check_for_fight(self) -> bool:
-        """Если идёт бой, возвращает True."""
-        self.try_to_switch_to_central_frame()
-
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        hits = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[onclick="touchFight();"]'
-        )
-        return bool(hits)
-
-    def check_come_back(self) -> bool:
-        """Если бой закончен, возвращает True."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        return bool(come_back)
-
-    def try_to_come_back_from_fight(self):
-        """"Если бой закончен, нажимает 'вернуться' """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        if come_back:
-            self.click_to_element_with_actionchains(come_back[0])
-            # come_back[0].click()
-
     def check_cheerfulnes_level(
             self,
             cheerfulnes_min: int | None,
@@ -1440,22 +1418,6 @@ class HaddanDriverManager(DriverManager):
                             cheerfulnes = int(cheerfulnes_level[0].text)
                         else:
                             break
-
-    def sleep_while_event_is_true(
-            self, time_to_sleep: int):
-        """Ждёт указанное количество секунд.
-
-        Пока флаг event == True.
-        :time_to_sleep: кол-во секунд для ожидания.
-        """
-        counter = time_to_sleep
-        while self.cycle_is_running and counter > 0:
-            sleep(1)
-            counter -= 1
-            self.send_status_message(
-                text=f'Ждём секунд: {counter}'
-            )
-        self.send_status_message()
 
     def maze_passing(
             self,
@@ -1763,27 +1725,6 @@ class HaddanDriverManager(DriverManager):
             except Exception as e:
                 self.actions_after_exception(e)
 
-    def get_room_number(self) -> int | None:
-        """Возвращает номер комнаты в лабе, в которой находится персонаж."""
-        self.try_to_switch_to_central_frame()
-
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        my_room = self.driver.find_elements(
-                By.CLASS_NAME, 'LOCATION_NAME'
-            )
-        if my_room:
-            text = my_room[0].text
-            pattern = r'№(\d+)'
-
-            result = re.search(pattern, text)
-
-            if result:
-                return int(result.group(1))
-
-        return None
-
     def default_maze_actions(
             self,
             message_to_tg: bool = False,
@@ -1815,7 +1756,6 @@ class HaddanDriverManager(DriverManager):
         self.check_kaptcha(
             message_to_tg=message_to_tg,
             telegram_id=telegram_id)
-        self.check_error_on_page()
 
         self.try_to_come_back_from_fight()
 
