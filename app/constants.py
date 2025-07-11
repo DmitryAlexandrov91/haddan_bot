@@ -190,8 +190,14 @@ CHARS_ACCESS = {
 DT_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-#  Константы для парсинга Selenium
+class NPCImgTags(StrEnum):
+    """Класс констант с img тегами NPC."""
 
-
-class Iframes(StrEnum):
-    """Класс констант с именами фреймов."""
+    gamble_spirit = 'img[id="roomnpc1850578"]'
+    poetry_spirit = 'img[id="roomnpc1850579"]'
+    mind_spirit = 'img[id="roomnpc1850577"]'
+    distans_fairy = 'img[id="roomnpc231778"]'
+    near_fairy = 'img[id="roomnpc17481"]'
+    morning_dragon = 'img[id="roomnpc2460307"]'
+    evening_dragon = 'img[id="roomnpc2337344"]'
+    daily_dragon = 'img[id="roomnpc2460308"]'

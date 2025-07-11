@@ -11,9 +11,9 @@ from typing import Optional
 import requests
 from aiogram import Bot, Dispatcher, F, Router, types
 from configs import configure_logging
-from constants import (FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS, HADDAN_URL,
-                       LICH_ROOM, POETRY_SPIRIT_RIGHT_ANSWERS, Room, Slot,
-                       SlotsPage)
+from constants import (BASE_DIR, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
+                       HADDAN_URL, LICH_ROOM, POETRY_SPIRIT_RIGHT_ANSWERS,
+                       NPCImgTags, Room, Slot, SlotsPage)
 from maze_utils import (find_path_via_boxes_with_directions,
                         find_path_with_directions, get_sity_portal_room_number,
                         get_upper_portal_room_number)
@@ -188,8 +188,9 @@ class HaddanCommonDriver(DriverManager):
             WebDriverWait(self.driver, time).until_not(
                     EC.presence_of_element_located((
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc1850577"]'
-                        ))
+                        NPCImgTags.mind_spirit
+                        )
+                    )
                 )
 
         except TimeoutException:
@@ -239,11 +240,13 @@ class HaddanCommonDriver(DriverManager):
 
         glade_fairy = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc231778"]')
+                        NPCImgTags.distans_fairy
+                    )
         if not glade_fairy:
             glade_fairy = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc17481"]')
+                        NPCImgTags.distans_fairy
+                    )
 
         if glade_fairy:
             self.click_to_element_with_actionchains(glade_fairy[0])
@@ -261,7 +264,7 @@ class HaddanCommonDriver(DriverManager):
 
             self.driver.switch_to.default_content()
             self.errors_count += 1
-            print(f'Текущее количество ошибок - {self.errors_count}')
+            logging.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
                 self.driver.refresh()
                 self.errors_count = 0
@@ -363,7 +366,6 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.check_come_back():
 
             if slots_page == 'p' == slot:
-                print('Выбран физ удар')
                 self.try_to_switch_to_central_frame()
                 kick = self.driver.find_elements(
                     By.CSS_SELECTOR, 'img[src="/@!images/fight/knife.gif"]'
@@ -373,12 +375,10 @@ class HaddanFightDriver(HaddanCommonDriver):
 
             else:
                 active_spell = self.get_active_spell()
-                # print(f'Активный закл - {active_spell}')
                 spell_to_cast = self.get_spell_to_cast(
                     spell_number=slot,
                     slot_number=slots_page
                 )
-                # print(f'Нужно кастануть - {spell_to_cast}')
                 if spell_to_cast != active_spell and (
                     not self.check_come_back()
                 ):
@@ -536,7 +536,8 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
             gamble_spirit = self.driver.find_elements(
                             By.CSS_SELECTOR,
-                            'img[id="roomnpc1850578"]')
+                            NPCImgTags.gamble_spirit
+                        )
 
             if gamble_spirit:
                 gamble_spirit[0].click()
@@ -566,14 +567,12 @@ class HaddanSpiritPlay(HaddanFightDriver):
                         if next_room >= intimidation:
                             right_choise = self.driver.find_elements(
                                 By.PARTIAL_LINK_TEXT, 'Довольно')
-                            # right_choise[0].click()
                             self.click_to_element_with_actionchains(
                                 right_choise[0]
                             )
                         else:
                             right_choise = self.driver.find_elements(
                                 By.PARTIAL_LINK_TEXT, 'Дальше!')
-                            # right_choise[0].click()
                             if not right_choise:
                                 right_choise = self.driver.find_elements(
                                     By.PARTIAL_LINK_TEXT,
@@ -611,7 +610,8 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
             gamble_spirit = self.driver.find_elements(
                             By.CSS_SELECTOR,
-                            'img[id="roomnpc1850578"]')
+                            NPCImgTags.gamble_spirit
+                        )
 
             if gamble_spirit:
                 self.play_with_gamble_spirit()
@@ -624,7 +624,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
         poetry_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc1850579"]')
+                        NPCImgTags.poetry_spirit)
         if poetry_spirit:
             try:
                 poetry_spirit[0].click()
@@ -654,7 +654,8 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
                 poetry_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc1850579"]')
+                        NPCImgTags.poetry_spirit
+                    )
                 if poetry_spirit:
                     self.play_with_poetry_spirit()
                 pass
@@ -666,7 +667,8 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
         mind_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc1850577"]')
+                        NPCImgTags.mind_spirit
+                    )
 
         if mind_spirit:
             try:
@@ -713,7 +715,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
                 mind_spirit = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        'img[id="roomnpc1850577"]'
+                        NPCImgTags.mind_spirit
                     )
                 if mind_spirit:
                     self.play_with_mind_spirit()
@@ -787,8 +789,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         self.kapthca_sent = False
 
                         try:
-                            root_dir = os.getcwd()
-                            source_file = os.path.join(root_dir, "kaptcha.png")
+                            source_file = os.path.join(BASE_DIR, "kaptcha.png")
                             save_dir = "app/ai_kaptcha/kaptcha"
 
                             timestamp = datetime.now().strftime("%H%M%S")
@@ -800,9 +801,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             if os.path.exists(source_file):
                                 os.rename(source_file, dest_file)
                             else:
-                                print(f"⚠️ Файл не найден: {source_file}")
+                                logging.warning(
+                                    f"⚠️ Файл не найден: {source_file}"
+                                )
                         except Exception as e:
-                            print(f"⛔ Ошибка при обработке файла: {e}")
+                            logging.error(f"⛔ Ошибка при обработке файла: {e}")
 
     def start_loop(self):
         """Запускает поток с aiogram ботом."""
@@ -1025,7 +1028,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
     def crossing_to_the_south(self) -> bool | None:
         """Переходит на юг.
 
-        Если переход произошёл возвращает True
+        Если переход произошёл, возвращает True
         """
         if not self.driver:
             raise InvalidSessionIdException
@@ -1055,12 +1058,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 'img[title="К Мостику"]')
 
         if south:
-            # try:
+
             self.click_to_element_with_actionchains(south[0])
-            # except TimeoutException:
-            #     self.driver.refresh()
-            #     self.crossing_to_the_south()
-            # south[0].click()
+
             return True
         return False
 
@@ -1131,10 +1131,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         if wait_tag and 'где-то через' in wait_tag[0].text:
                             time_for_wait = time_extractor(wait_tag[0].text)
 
-                            # print(f'Ждём {time_for_wait} секунд(ы).')
-
                             self.sleep_while_event_is_true(time_for_wait)
-                            # sleep(time_for_wait)
 
                         try:
                             glade_fairy_answers[0].click()
@@ -1307,15 +1304,18 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
                 dragon = self.driver.find_elements(
                             By.CSS_SELECTOR,
-                            'img[id="roomnpc2460308"]')
+                            NPCImgTags.daily_dragon
+                        )
                 if not dragon:
                     dragon = self.driver.find_elements(
                             By.CSS_SELECTOR,
-                            'img[id="roomnpc2337344"]')
+                            NPCImgTags.evening_dragon
+                        )
                 if not dragon:
                     dragon = self.driver.find_elements(
                             By.CSS_SELECTOR,
-                            'img[id="roomnpc2460307"]')
+                            NPCImgTags.morning_dragon
+                        )
                 if dragon:
                     self.click_to_element_with_actionchains(dragon[0])
 
@@ -1951,7 +1951,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
         mind_spirit = self.driver.find_elements(
                     By.CSS_SELECTOR,
-                    'img[id="roomnpc1850577"]')
+                    NPCImgTags.mind_spirit
+                )
 
         if mind_spirit:
             self.send_info_message(
