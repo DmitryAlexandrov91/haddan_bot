@@ -201,3 +201,5 @@ class NPCImgTags(StrEnum):
     morning_dragon = 'img[id="roomnpc2460307"]'
     evening_dragon = 'img[id="roomnpc2337344"]'
     daily_dragon = 'img[id="roomnpc2460308"]'
+    ancient_maze_city_portal_from_second_floor = 'img[id="roomnpc5038398"]'
+    baby_maze_ciy_portal_from_first_floor = 'img[id="roomnpc5038442"]'

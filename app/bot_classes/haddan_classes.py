@@ -1715,10 +1715,39 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             cheerfulness_spell=cheerfulness_spell
                         )
                 message = f'Путь до комнаты {to_the_room} пройден!'
+
+                self.try_to_switch_to_central_frame()
+                city_portal = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        NPCImgTags.baby_maze_ciy_portal_from_first_floor
+                    )
+
+                if not city_portal:
+                    city_portal = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        NPCImgTags.ancient_maze_city_portal_from_second_floor
+                    )
+
+                if not city_portal:
+                    city_portal = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'img[id="roomnpc5038681"]'
+                    )
+
+                if city_portal:
+                    city_portal[0].click()
+                    self.try_to_switch_to_dialog()
+                    come_back = come_back = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Телепортироваться.'
+                        )
+                    if come_back:
+                        come_back[0].click()
+
                 self.send_status_message(
                     text=message
                 )
                 self.stop_event()
+
                 if self.start_button:
                     self.start_button.configure(fg='black')
 
