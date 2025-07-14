@@ -1719,19 +1719,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.try_to_switch_to_central_frame()
                 city_portal = self.driver.find_elements(
                         By.CSS_SELECTOR,
-                        NPCImgTags.baby_maze_ciy_portal_from_first_floor
-                    )
-
-                if not city_portal:
-                    city_portal = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.ancient_maze_city_portal_from_second_floor
-                    )
-
-                if not city_portal:
-                    city_portal = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'img[id="roomnpc5038681"]'
+                        'img[alt="Портал в город"]' 
                     )
 
                 if city_portal:
