@@ -2,8 +2,15 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from constants import (DATETIME_FORMAT, LOG_FILE_PATH, LOG_FORMAT,
-                       MAX_LOG_SIZE, MAX_LOGS_COUNT)
+from pydantic_settings import BaseSettings
+
+from app.constants import (DATETIME_FORMAT, LOG_FILE_PATH, LOG_FORMAT,
+                           MAX_LOG_SIZE, MAX_LOGS_COUNT)
+
+
+class Settings(BaseSettings):
+    BASE_DIR: str = os.getcwd()
+    DB_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/data/db.sqlite3"
 
 
 def configure_logging():
@@ -21,3 +28,7 @@ def configure_logging():
         level=logging.INFO,
         handlers=(rotating_handler, logging.StreamHandler()),
     )
+
+
+settings = Settings()
+database_url = settings.DB_URL
