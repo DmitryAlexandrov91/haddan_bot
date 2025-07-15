@@ -6,6 +6,7 @@ import tkinter as tk
 from time import sleep
 from typing import Optional
 
+import undetected_chromedriver as uc
 from aiogram import Bot
 from configs import configure_logging
 from constants import CHROME_PATH
@@ -54,44 +55,59 @@ class DriverManager:
         self.forest_button = forest_button
 
     def _get_default_options(self):
-        options = webdriver.ChromeOptions()
-
-        #  Работа в полном окне
-        options.add_argument('--start-maximized')
-
-        # Анти-детект
-        options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_experimental_option(
-            'excludeSwitches', ['enable-automation'])
-        options.add_experimental_option('useAutomationExtension', False)
-
-        # options.add_argument('--disable-gpu')
-
-        #  экспериментально
-        # options.add_argument('--single-process')
-        # options.add_argument('--disable-features=V8ProxyResolver')
-
-        #  Только DOM
-        options.set_capability("pageLoadStrategy", "eager")
-
-        #  Отключает расширения
-        options.add_argument('--disable-extensions')
-        #  Ускоряет загрузку
-        options.add_argument('--disable-plugins-discovery')
-        #  Блокируем уведомления(ломает бой)
-        # options.add_argument('--disable-notifications')
-
-        #  Разрешить старые плагины
-        # options.add_argument('--allow-outdated-plugins')
-        #  Автозагрузка плагинов
-        # options.add_argument('--always-authorize-plugins')
 
         if platform.system() == 'Windows':
+            options = uc.ChromeOptions()
             options.binary_location = CHROME_PATH
+            options.add_experimental_option(
+                'excludeSwitches',
+                ['enable-automation']
+            )
+            options.add_argument("--disable-application-cache")
+            options.add_argument("--disk-cache-size=0")
+            options.add_argument("--disable-gcm")
+            options.add_experimental_option(
+                "excludeSwitches",
+                ["enable-logging", "disable-background-networking"]
+            )
+
         else:
+            options = webdriver.ChromeOptions()
             #  только для linux
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
+
+            options.add_experimental_option(
+                'excludeSwitches', ['enable-automation'])
+
+            # options.add_argument('--disable-gpu')
+
+            #  экспериментально
+            # options.add_argument('--single-process')
+            # options.add_argument('--disable-features=V8ProxyResolver')
+
+            #  Блокируем уведомления(ломает бой)
+            # options.add_argument('--disable-notifications')
+
+            #  Разрешить старые плагины
+            # options.add_argument('--allow-outdated-plugins')
+            #  Автозагрузка плагинов
+            # options.add_argument('--always-authorize-plugins')
+
+        #  Общие настройки
+        #  Работа в полном окне
+        options.add_argument('--start-maximized')
+        # Анти-детект
+        options.add_argument(
+            '--disable-blink-features=AutomationControlled'
+        )
+        #  Только DOM
+        options.set_capability("pageLoadStrategy", "eager")
+        options.add_experimental_option('useAutomationExtension', False)
+        #  Ускоряет загрузку
+        options.add_argument('--disable-plugins-discovery')
+        #  Отключает расширения
+        options.add_argument('--disable-extensions')
 
         return options
 
@@ -135,6 +151,7 @@ class DriverManager:
                     service=service,
                     options=self.options
                 )
+
                 self.driver.set_page_load_timeout(self.wait_timeout)
                 self.driver.set_script_timeout(self.wait_timeout)
 
