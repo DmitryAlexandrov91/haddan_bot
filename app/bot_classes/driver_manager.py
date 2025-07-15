@@ -22,10 +22,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class DriverManager:
-    """Класс создания и управления объектом webdriver.Chrome.
-
-    :bot: объект класса Telebot библиотеки telebot, опционально.
-    """
+    """Класс создания и управления объектом webdriver.Chrome."""
 
     def __init__(
             self,

@@ -713,8 +713,8 @@ def get_dragon_preset():
 
     r2y1_slot.set(SlotsPage._1)
     r2y1_spell.set(Slot._4)
-    r2y2_slot.set(SlotsPage._4)
-    r2y2_spell.set(Slot._1)
+    r2y2_slot.set(main_slot)
+    r2y2_spell.set(main_spell)
     r2y3_slot.set(main_slot)
     r2y3_spell.set(main_spell)
     r2y4_slot.set(main_slot)
@@ -882,14 +882,14 @@ def get_coast_preset():
     r1y2_slot.set(SlotsPage._3)
     r1y2_spell.set(Slot._4)
     r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Slot._2)
+    r1y3_spell.set(Slot._1)
 
     r2y1_slot.set(SlotsPage._1)
     r2y1_spell.set(Slot._3)
     r2y2_slot.set(SlotsPage._1)
     r2y2_spell.set(Slot._4)
-    r2y3_slot.set(SlotsPage._4)
-    r2y3_spell.set(Slot._1)
+    r2y3_slot.set(SlotsPage._1)
+    r2y3_spell.set(Slot._2)
 
     r3y1_slot.set(SlotsPage._1)
     r3y1_spell.set(Slot._3)
