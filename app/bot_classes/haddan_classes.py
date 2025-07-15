@@ -30,7 +30,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
                    price_counter, time_extractor)
 
-from app.config import configure_logging
+from config import configure_logging
 
 from .driver_manager import DriverManager
 from .services import make_transition

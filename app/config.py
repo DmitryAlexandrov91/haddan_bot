@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 
 from pydantic_settings import BaseSettings
 
-from app.constants import (DATETIME_FORMAT, LOG_FILE_PATH, LOG_FORMAT,
+from constants import (DATETIME_FORMAT, LOG_FILE_PATH, LOG_FORMAT,
                            MAX_LOG_SIZE, MAX_LOGS_COUNT)
 
 
