@@ -8,7 +8,6 @@ from typing import Optional
 
 import undetected_chromedriver as uc
 from aiogram import Bot
-from configs import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidSessionIdException,
@@ -19,6 +18,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+
+from app.config import configure_logging
 
 
 class DriverManager:
