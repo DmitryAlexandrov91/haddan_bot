@@ -3,15 +3,19 @@ import platform
 import re
 import threading
 import tkinter as tk
+from time import sleep
 from typing import Optional
 
+import undetected_chromedriver as uc
 from aiogram import Bot
 from configs import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
+from selenium.common.exceptions import (InvalidSessionIdException,
+                                        NoAlertPresentException)
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.remote.webdriver import WebElement
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -51,44 +55,59 @@ class DriverManager:
         self.forest_button = forest_button
 
     def _get_default_options(self):
-        options = webdriver.ChromeOptions()
-
-        #  Работа в полном окне
-        options.add_argument('--start-maximized')
-
-        # Анти-детект
-        options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_experimental_option(
-            'excludeSwitches', ['enable-automation'])
-        options.add_experimental_option('useAutomationExtension', False)
-
-        # options.add_argument('--disable-gpu')
-
-        #  экспериментально
-        # options.add_argument('--single-process')
-        # options.add_argument('--disable-features=V8ProxyResolver')
-
-        #  Только DOM
-        options.set_capability("pageLoadStrategy", "eager")
-
-        #  Отключает расширения
-        options.add_argument('--disable-extensions')
-        #  Ускоряет загрузку
-        options.add_argument('--disable-plugins-discovery')
-        #  Блокируем уведомления(ломает бой)
-        # options.add_argument('--disable-notifications')
-
-        #  Разрешить старые плагины
-        # options.add_argument('--allow-outdated-plugins')
-        #  Автозагрузка плагинов
-        # options.add_argument('--always-authorize-plugins')
 
         if platform.system() == 'Windows':
+            options = uc.ChromeOptions()
             options.binary_location = CHROME_PATH
+            options.add_experimental_option(
+                'excludeSwitches',
+                ['enable-automation']
+            )
+            options.add_argument("--disable-application-cache")
+            options.add_argument("--disk-cache-size=0")
+            options.add_argument("--disable-gcm")
+            options.add_experimental_option(
+                "excludeSwitches",
+                ["enable-logging", "disable-background-networking"]
+            )
+
         else:
+            options = webdriver.ChromeOptions()
             #  только для linux
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
+
+            options.add_experimental_option(
+                'excludeSwitches', ['enable-automation'])
+
+            # options.add_argument('--disable-gpu')
+
+            #  экспериментально
+            # options.add_argument('--single-process')
+            # options.add_argument('--disable-features=V8ProxyResolver')
+
+            #  Блокируем уведомления(ломает бой)
+            # options.add_argument('--disable-notifications')
+
+            #  Разрешить старые плагины
+            # options.add_argument('--allow-outdated-plugins')
+            #  Автозагрузка плагинов
+            # options.add_argument('--always-authorize-plugins')
+
+        #  Общие настройки
+        #  Работа в полном окне
+        options.add_argument('--start-maximized')
+        # Анти-детект
+        options.add_argument(
+            '--disable-blink-features=AutomationControlled'
+        )
+        #  Только DOM
+        options.set_capability("pageLoadStrategy", "eager")
+        options.add_experimental_option('useAutomationExtension', False)
+        #  Ускоряет загрузку
+        options.add_argument('--disable-plugins-discovery')
+        #  Отключает расширения
+        options.add_argument('--disable-extensions')
 
         return options
 
@@ -132,6 +151,7 @@ class DriverManager:
                     service=service,
                     options=self.options
                 )
+
                 self.driver.set_page_load_timeout(self.wait_timeout)
                 self.driver.set_script_timeout(self.wait_timeout)
 
@@ -166,6 +186,9 @@ class DriverManager:
 
         В файле page.html в корне проекта.
         """
+        if not self.driver:
+            raise InvalidSessionIdException
+
         page_source = self.driver.page_source
         with open('page.html', 'w', encoding='utf-8') as file:
             file.write(page_source)
@@ -230,4 +253,31 @@ class DriverManager:
         """Очищает все уведомления."""
         self.send_alarm_message()
         self.send_info_message()
+        self.send_status_message()
+
+    def is_alert_present(self):
+        """Метод определения наличия уведомления на странице."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+            self.driver.switch_to.alert
+            return True
+        except NoAlertPresentException:
+            return False
+
+    def sleep_while_event_is_true(
+            self, time_to_sleep: int):
+        """Ждёт указанное количество секунд.
+
+        Пока флаг event == True.
+        :time_to_sleep: кол-во секунд для ожидания.
+        """
+        counter = time_to_sleep
+        while self.cycle_is_running and counter > 0:
+            sleep(1)
+            counter -= 1
+            self.send_status_message(
+                text=f'Ждём секунд: {counter}'
+            )
         self.send_status_message()

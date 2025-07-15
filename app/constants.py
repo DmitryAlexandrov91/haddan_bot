@@ -109,14 +109,14 @@ WINDOWS_PROFILE_DIR = 'hd_windows_profile'
 LINUX_PROFILE_DIR = 'hd_linux_profile'
 
 
-POETRY_SPIRIT_RIGHT_ANSWERS = (
+POETRY_SPIRIT_RIGHT_ANSWERS = {
     'давай дальше', ' / ', 'Начали!', 'Дальше!', 'пора обратно',
     'с наградой', 'Телепортироваться', 'Увечье нам не надо', 'Поехали!'
-)
+}
 
-GAMBLE_SPIRIT_RIGHT_ANSWERS = (
+GAMBLE_SPIRIT_RIGHT_ANSWERS = {
     'Телепортироваться', 'делу давай!', ' / ', 'пошли'
-)
+}
 
 
 #  Константы интерфейса Tkinter
@@ -178,21 +178,6 @@ class Room:
     east: bool = False
 
 
-@dataclass
-class ForestRoom:
-    number: int
-    north: bool = False
-    south: bool = False
-    west: bool = False
-    east: bool = False
-
-
-FOREST_MAP = [
-    ForestRoom(number=1, east=True),
-    ForestRoom(number=2, east=True),
-]
-
-
 DEFAULT_TK_STATUS = 'Бот готов к работе'
 
 
@@ -203,3 +188,18 @@ CHARS_ACCESS = {
 }
 
 DT_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
+class NPCImgTags(StrEnum):
+    """Класс констант с img тегами NPC."""
+
+    gamble_spirit = 'img[id="roomnpc1850578"]'
+    poetry_spirit = 'img[id="roomnpc1850579"]'
+    mind_spirit = 'img[id="roomnpc1850577"]'
+    distans_fairy = 'img[id="roomnpc231778"]'
+    near_fairy = 'img[id="roomnpc17481"]'
+    morning_dragon = 'img[id="roomnpc2460307"]'
+    evening_dragon = 'img[id="roomnpc2337344"]'
+    daily_dragon = 'img[id="roomnpc2460308"]'
+    ancient_maze_city_portal_from_second_floor = 'img[id="roomnpc5038398"]'
+    baby_maze_ciy_portal_from_first_floor = 'img[id="roomnpc5038442"]'

@@ -5,11 +5,14 @@ from collections import deque
 from time import sleep
 from typing import List, Optional, Tuple
 
+from bot_classes import DriverManager
 from constants import LABIRINT_MAP_URL, Floor, Room
+from selenium.common.exceptions import InvalidSessionIdException
 from selenium.webdriver.common.by import By
 
 
-def text_delimetr(text: str) -> Optional[tuple[int, str]]:
+def room_info_text_delimeter(text: str) -> Optional[tuple[int, str]]:
+    """Разделяет текст с инфо о комнате на номер и остальное."""
     expr = r'^(\d+)([\s\S]+)'
     match = re.match(expr, text)
 
@@ -23,8 +26,12 @@ def text_delimetr(text: str) -> Optional[tuple[int, str]]:
 def get_labirint_map(
         url: str,
         floor: Floor,
-        manager) -> list[Room]:
+        manager: DriverManager) -> list[Room]:
+    """Формирует карту лабиринта."""
     lab_url = url + floor
+
+    if not manager.driver:
+        raise InvalidSessionIdException
 
     manager.driver.set_page_load_timeout(30)
     manager.driver.set_script_timeout(30)
@@ -65,7 +72,7 @@ def get_labirint_map(
                         )
                     )
                 else:
-                    room_number, rest_part = text_delimetr(text)
+                    room_number, rest_part = room_info_text_delimeter(text)
                     line.append(
                         Room(
                             number=room_number,
@@ -225,7 +232,6 @@ def find_path_via_boxes_with_directions(
     full_path_coords = []
     current_pos = start_pos
 
-    # Проходим через все коробки
     remaining_boxes = set(boxes)
     while remaining_boxes:
         nearest_box = None
@@ -242,11 +248,10 @@ def find_path_via_boxes_with_directions(
         if not nearest_box:
             return None
 
-        full_path_coords.extend(shortest_path[1:])  # Исключаем текущую позицию
+        full_path_coords.extend(shortest_path[1:])
         current_pos = nearest_box
         remaining_boxes.remove(nearest_box)
 
-    # Идём в целевую комнату
     if current_pos != target_pos:
         path_to_target = find_shortest_path(
             labirint_map,
@@ -264,7 +269,8 @@ def find_path_via_boxes_with_directions(
 
 def get_floor_map(
         floor: Floor,
-        manager) -> list[list[Room]]:
+        manager: DriverManager) -> list[list[Room]]:
+    """Формирует карту лабиринта выбранного этажа."""
     manager.options.add_argument('--headless')
     temp_directory = tempfile.mkdtemp()
     manager.options.add_argument(f'--user-data-dir={temp_directory}')
@@ -359,7 +365,6 @@ def find_path_via_boxes_with_room_numbers(
     full_path_coords = []
     current_pos = start_pos
 
-    # Проходим через все коробки
     remaining_boxes = set(boxes)
     while remaining_boxes:
         nearest_box = None
@@ -380,7 +385,6 @@ def find_path_via_boxes_with_room_numbers(
         current_pos = nearest_box
         remaining_boxes.remove(nearest_box)
 
-    # Идём в целевую комнату
     if current_pos != target_pos:
         path_to_target = find_shortest_path(
             labirint_map,
@@ -391,7 +395,6 @@ def find_path_via_boxes_with_room_numbers(
             return None
         full_path_coords.extend(path_to_target[1:])
 
-    # Преобразуем координаты в направления и номера комнат
     full_path_coords = [start_pos] + full_path_coords
     directions = convert_path_to_directions(labirint_map, full_path_coords)
     room_numbers = convert_path_to_room_numbers(labirint_map, full_path_coords)
