@@ -39,7 +39,7 @@ class DriverManager:
             status_label: Optional[tk.Label] = None,
             start_button: Optional[tk.Button] = None,
             forest_button: Optional[tk.Button] = None,
-    ):
+    ) -> None:
         self.options = self._get_default_options()
         self.driver = driver
         self.cycle_thread = cycle_thread
@@ -129,11 +129,10 @@ class DriverManager:
         pattern = rf'{attr}="([^"]+)"'
         match = re.search(pattern, text)
         if match:
-            title_text = match.group(1)
-            return title_text
+            return match.group(1)
         return None
 
-    def start_driver(self):
+    def start_driver(self) -> None:
         """Создаёт объект класса webdriver учитывая self.options."""
         self.close_driver()
 
@@ -160,7 +159,7 @@ class DriverManager:
                     stack_info=False,
                 )
 
-    def close_driver(self):
+    def close_driver(self) -> None:
         """Закрывает активный driver если таковой имеется."""
         if self.driver is not None:
             try:
@@ -179,7 +178,7 @@ class DriverManager:
         """Функция для проверки наличия активного драйвера."""
         return self.driver
 
-    def save_url_content(self):
+    def save_url_content(self) -> None:
         """Сохраняет контент страницы.
 
         В файле page.html в корне проекта.
@@ -191,11 +190,11 @@ class DriverManager:
         with open('page.html', 'w', encoding='utf-8') as file:
             file.write(page_source)
 
-    def start_event(self):
+    def start_event(self) -> None:
         """Устанавливает флаг в положение True."""
         self.event.set()
 
-    def stop_event(self):
+    def stop_event(self) -> None:
         """Устанавливает флаг в положение False."""
         self.event.clear()
 
@@ -206,7 +205,7 @@ class DriverManager:
             WebDriverWait(self.driver, 5).until(
                 EC.element_to_be_clickable(element))
 
-    def scroll_to_element(self, element: WebElement):
+    def scroll_to_element(self, element: WebElement) -> None:
         """Прокручивает до нужного жлемента."""
         if self.driver:
             self.driver.execute_script(
@@ -214,7 +213,7 @@ class DriverManager:
                 element,
             )
 
-    def click_to_element_with_actionchains(self, element: WebElement):
+    def click_to_element_with_actionchains(self, element: WebElement) -> None:
         """Щёлкает по элементу методом click класса ActionChains.
 
         Максимальная эмуляция реального нажатия мышкой*
@@ -225,7 +224,7 @@ class DriverManager:
 
     def send_alarm_message(
             self,
-            text: str = ''):
+            text: str = '') -> None:
         """Меняет текст alarm_label Tkinter."""
         self.alarm_label.configure(
             text=text,
@@ -233,7 +232,7 @@ class DriverManager:
 
     def send_info_message(
             self,
-            text: str = ''):
+            text: str = '') -> None:
         """Меняет текст info_label Tkinter."""
         self.info_label.configure(
             text=text,
@@ -241,19 +240,19 @@ class DriverManager:
 
     def send_status_message(
             self,
-            text: str = ''):
+            text: str = '') -> None:
         """Меняет текст status_label Tkinter."""
         self.status_label.configure(
             text=text,
         ) if self.status_label else print(text)
 
-    def clean_label_messages(self):
+    def clean_label_messages(self) -> None:
         """Очищает все уведомления."""
         self.send_alarm_message()
         self.send_info_message()
         self.send_status_message()
 
-    def is_alert_present(self):
+    def is_alert_present(self) -> Optional[bool]:
         """Метод определения наличия уведомления на странице."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -265,7 +264,7 @@ class DriverManager:
             return False
 
     def sleep_while_event_is_true(
-            self, time_to_sleep: int):
+            self, time_to_sleep: int) -> None:
         """Ждёт указанное количество секунд.
 
         Пока флаг event == True.

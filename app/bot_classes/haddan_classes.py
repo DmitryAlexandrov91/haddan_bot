@@ -70,13 +70,13 @@ class HaddanUser:
             char: str,
             driver: webdriver.Chrome,
             password: str,
-    ):
+    ) -> None:
         self.driver = driver
         self.char = char
         self.password = password
         self.login_url: str = HADDAN_URL
 
-    def login_to_game(self, domen: str):
+    def login_to_game(self, domen: str) -> None:
         """Заходит в игру под заданным именем char."""
         self.driver.get(domen)
         username_field = self.driver.find_element(
@@ -98,7 +98,7 @@ class HaddanUser:
 class HaddanCommonDriver(DriverManager):
     """Класс управления фреймами и общие методы."""
 
-    def try_to_switch_to_central_frame(self):
+    def try_to_switch_to_central_frame(self) -> None:
         """Переключается на центральный фрейм окна."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -111,7 +111,7 @@ class HaddanCommonDriver(DriverManager):
             except Exception:
                 self.driver.switch_to.default_content()
 
-    def try_to_switch_to_dialog(self):
+    def try_to_switch_to_dialog(self) -> None:
         """Переключается на фрейм диалога."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -124,7 +124,7 @@ class HaddanCommonDriver(DriverManager):
             except Exception:
                 self.driver.switch_to.default_content()
 
-    def find_all_iframes(self):
+    def find_all_iframes(self) -> None:
         """Выводит в терминал список всех iframe егов на странице."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -251,7 +251,7 @@ class HaddanCommonDriver(DriverManager):
         except TimeoutException:
             self.wait_until_alert_present(time=time)
 
-    def try_to_click_to_glade_fairy(self):
+    def try_to_click_to_glade_fairy(self) -> None:
         """Ищет фею поляны и щёлкает на неё."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -269,7 +269,7 @@ class HaddanCommonDriver(DriverManager):
         if glade_fairy:
             self.click_to_element_with_actionchains(glade_fairy[0])
 
-    def actions_after_exception(self, exception: Exception):
+    def actions_after_exception(self, exception: Exception) -> None:
         """Общее действие обработки исключения."""
         logging.error(
             f'\nВозникло исключение {str(exception)}\n',
@@ -311,8 +311,8 @@ class HaddanFightDriver(HaddanCommonDriver):
         )
         return bool(hits)
 
-    def try_to_come_back_from_fight(self):
-        """"Если бой закончен, нажимает 'вернуться' """
+    def try_to_come_back_from_fight(self) -> None:
+        """"Если бой закончен, нажимает 'вернуться'. """
         if not self.driver:
             raise InvalidSessionIdException
 
@@ -375,7 +375,7 @@ class HaddanFightDriver(HaddanCommonDriver):
     def open_slot_and_choise_spell(
             self,
             slots_page: SlotsPage,
-            slot: Slot):
+            slot: Slot) -> None:
         """Открывает меню быстрых слотов и выбирает знужный закл."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -446,7 +446,7 @@ class HaddanFightDriver(HaddanCommonDriver):
             self,
             spell_book: dict | None,
             default_slot: SlotsPage = SlotsPage._1,
-            default_spell: Slot = Slot._1):
+            default_spell: Slot = Slot._1) -> None:
         """Проводит бой."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -527,7 +527,7 @@ class HaddanFightDriver(HaddanCommonDriver):
 class HaddanSpiritPlay(HaddanFightDriver):
     """Класс игры с духами."""
 
-    def right_answers_choise(self, right_answers):
+    def right_answers_choise(self, right_answers) -> None:
         """Проходит циклом по правильным ответам.
 
         Если такой ответ есть, нажимает на него.
@@ -543,7 +543,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     right_choise[0],
                 )
 
-    def play_with_gamble_spirit(self):
+    def play_with_gamble_spirit(self) -> None:
         """Игра с духом азарта."""
         if not self.driver:
             return
@@ -634,7 +634,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                 self.play_with_gamble_spirit()
             pass
 
-    def play_with_poetry_spirit(self):
+    def play_with_poetry_spirit(self) -> None:
         """Игра с духом поэзии."""
         if not self.driver:
             raise
@@ -677,7 +677,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     self.play_with_poetry_spirit()
                 pass
 
-    def play_with_mind_spirit(self):
+    def play_with_mind_spirit(self) -> None:
         """Игра с духом ума."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -750,7 +750,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
     def __init__(
             self,
             user: HaddanUser | None = None,
-            bot: Bot | None = None):
+            bot: Bot | None = None) -> None:
         super().__init__(bot=bot)
         self.user = user
         self.loop = asyncio.new_event_loop()
@@ -775,10 +775,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
         self.baby_maze_second_floor_map: list[list[Room]] | None = None
         self.kapthca_sent = False
 
-    def _register_handlers(self):
+    def _register_handlers(self) -> None:
         """Регистрация обработчиков сообщений."""
         @self.router.message(F.text)
-        async def kaptcha_handler(message: types.Message):
+        async def kaptcha_handler(message: types.Message) -> None:
             """Обработчик ответа на капчу."""
             if not self.driver:
                 raise InvalidSessionIdException
@@ -824,18 +824,18 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         except Exception as e:
                             logging.error(f"⛔ Ошибка при обработке файла: {e}")
 
-    def start_loop(self):
+    def start_loop(self) -> None:
         """Запускает поток с aiogram ботом."""
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
 
-    async def send_msg(self, text, telegram_id):
+    async def send_msg(self, text, telegram_id) -> None:
         await self.bot.send_message(
             chat_id=telegram_id,
             text=text,
         ) if self.bot else None
 
-    async def send_kaptcha(self, telegram_id):
+    async def send_kaptcha(self, telegram_id) -> None:
         if not self.bot:
             return
         try:
@@ -858,7 +858,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 text='С отправкой капчи какой-то косяк!',
             )
 
-    async def start_polling(self):
+    async def start_polling(self) -> None:
         if not self.bot:
             return
 
@@ -875,7 +875,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             except Exception as e:
                 logging.error(f"Ошибка при старте поллинга {str(e)}.")
 
-    async def stop_polling(self):
+    async def stop_polling(self) -> None:
         if self.polling_started.is_set():
             try:
                 self.polling_started.clear()
@@ -883,7 +883,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             except Exception as e:
                 logging.error(f"Ошибка при остановке поллинга {str(e)}")
 
-    def sync_send_message(self, text, telegram_id):
+    def sync_send_message(self, text, telegram_id) -> None:
         asyncio.run_coroutine_threadsafe(
             self.send_msg(
                 text=text,
@@ -892,19 +892,19 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.loop,
         )
 
-    def sync_send_kaptcha(self, telegram_id):
+    def sync_send_kaptcha(self, telegram_id) -> None:
         asyncio.run_coroutine_threadsafe(
             self.send_kaptcha(telegram_id=telegram_id),
             self.loop,
         )
 
-    def sync_start_polling(self):
+    def sync_start_polling(self) -> None:
         asyncio.run_coroutine_threadsafe(
             self.start_polling(),
             self.loop,
         )
 
-    def sync_stop_polling(self):
+    def sync_stop_polling(self) -> None:
         asyncio.run_coroutine_threadsafe(
             self.stop_polling(),
             self.loop,
@@ -913,7 +913,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
     def check_kaptcha(
             self,
             message_to_tg: bool,
-            telegram_id: int | None = None):
+            telegram_id: int | None = None) -> None:
         """Проверяет наличие капчи на странице."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -975,7 +975,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self,
             min_hp: int | None,
             message_to_tg: bool,
-            telegram_id: int | None):
+            telegram_id: int | None) -> None:
         """"Проверка ХП.
 
         :min_hp: минимальное кол-во ХП.
@@ -1081,7 +1081,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             return True
         return False
 
-    def crossing_to_the_west(self):
+    def crossing_to_the_west(self) -> bool:
         """Переходит на запад."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1096,7 +1096,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             return True
         return False
 
-    def crossing_to_the_east(self):
+    def crossing_to_the_east(self) -> bool:
         """Переходит на восток."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1118,7 +1118,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             spell: Slot = Slot._1,
             message_to_tg: bool = False,
             telegram_id: int | None = None,
-            spell_book: dict | None = None):
+            spell_book: dict | None = None) -> None:
         """Фарм поляны."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1215,7 +1215,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             cheerfulness: bool = False,
             cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1):
+            cheerfulness_spell: Slot = Slot._1) -> None:
         """Фарм с проведением боя."""
         if not self.driver:
             return
@@ -1295,7 +1295,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             default_spell: Slot = Slot._5,
             spell_book: dict | None = None,
             message_to_tg: bool = False,
-            telegram_id: int | None = None):
+            telegram_id: int | None = None) -> None:
         """"Фарм пыльных драконов."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1400,7 +1400,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self,
             cheerfulnes_min: int | None,
             cheerfulnes_slot: SlotsPage = SlotsPage._0,
-            cheerfulnes_spell: Slot = Slot._1):
+            cheerfulnes_spell: Slot = Slot._1) -> None:
         """Проверяет уровень бодрости.
 
         Если меньше установленного уровня, пъёт элик.
@@ -1456,7 +1456,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             second_floor: bool = False,
             third_floor: bool = False,
             baby_maze: bool = False,
-            ):
+            ) -> None:
         """Прохождение лабиринта."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1767,7 +1767,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             cheerfulness: bool = False,
             cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1):
+            cheerfulness_spell: Slot = Slot._1) -> None:
         """Стандартный набор действий в лабиринте."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1815,7 +1815,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             telegram_id=telegram_id,
         )
 
-    def check_room_for_drop(self):
+    def check_room_for_drop(self) -> None:
         """Проверяет наличие дропа к комнате лабиринта."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1852,7 +1852,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
         except StaleElementReferenceException:
             self.check_room_for_drop()
 
-    def check_room_for_stash_and_herd(self):
+    def check_room_for_stash_and_herd(self) -> None:
         """Проверяет комнату в лесу на наличие тайника."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1876,7 +1876,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
     def return_back_to_previous_room(
             self,
-            last_turn):
+            last_turn) -> None:
         """"Действие возврата в предыдущую комнату."""
         match last_turn:
             case 'запад': self.crossing_to_the_east()
@@ -1895,7 +1895,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             cheerfulness: bool = False,
             cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1):
+            cheerfulness_spell: Slot = Slot._1) -> None:
         if not self.driver:
             raise InvalidSessionIdException
 

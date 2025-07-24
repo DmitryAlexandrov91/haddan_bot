@@ -8,7 +8,7 @@ def make_transition(
         up,
         down,
         passed_rooms: set,
-        ):
+        ) -> None:
     """Делает переход в лесу, в зависимости от местоположения.
 
     Сумасшедствие с паттерном match case.

@@ -1,4 +1,5 @@
 import tkinter as tk
+from typing import Any
 
 from constants import (
     DEFAULT_SLOT,
@@ -11,7 +12,8 @@ from constants import (
 from tk_app.core import app
 
 
-def open_slots():
+def sync_slots() -> None:
+    """Синххронизирует все заклинания с основным."""
     sync_with_main_spell()
 
 
@@ -20,7 +22,7 @@ quick_slots_open_btn = tk.Button(
     text='sync ->',
     width=9,
     bg='#FFF4DC',
-    command=open_slots,
+    command=sync_slots,
 )
 quick_slots_open_btn.grid(
     row=0, column=6, sticky='w',
@@ -513,7 +515,7 @@ r6y4_spell_choise = tk.OptionMenu(
 r6y4_spell_choise.grid(row=13, column=12)
 
 
-def get_round_spells():
+def get_round_spells() -> dict[Any, Any]:
     """Формирует книгу заклинаний."""
     spell_book = {}
     spell_book['Раунд 1'] = {
@@ -629,7 +631,7 @@ def get_round_spells():
     return spell_book
 
 
-def sync_with_main_spell():
+def sync_with_main_spell() -> None:
     """Синхронизирует все слоты с основным ударом."""
     main_slot = main_slots_page.get()
     main_spell = main_spell_slot.get()

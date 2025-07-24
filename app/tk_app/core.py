@@ -36,7 +36,8 @@ from tk_app.interface.login import *  # noqa
 from tk_app.interface.maze import *  # noqa
 
 
-def start_app():
+def start_app() -> None:
+    """Запуск основного окна tkinter."""
     # username.insert(  # noqa
     #     0, FIRST_CHAR
     # ) if FIRST_CHAR else None

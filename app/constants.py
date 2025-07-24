@@ -10,6 +10,7 @@ load_dotenv()
 
 
 def get_bool_param_from_env(variable: str | bool) -> bool:
+    """Вытаскивает булево значение из строчной переменной .env."""
     if isinstance(variable, bool):
         return variable
     if variable.lower() == 'false':
@@ -126,6 +127,8 @@ SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7', 'p')
 
 
 class SlotsPage(StrEnum):
+    """Класс констант с номерами страниц слотов."""
+
     _0 = '1'
     _1 = '2'
     _2 = '3'
@@ -135,11 +138,13 @@ class SlotsPage(StrEnum):
     _6 = '7'
     _p = 'p'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
 class Slot(StrEnum):
+    """Класс констант с номерами быстрых слотов."""
+
     _1 = '1'
     _2 = '2'
     _3 = '3'
@@ -149,11 +154,13 @@ class Slot(StrEnum):
     _7 = '7'
     _p = 'p'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
 class Floor(StrEnum):
+    """Класс констант с этажами лабиринта."""
+
     FIRST_FLOOR = '1'
     SECOND_FLOOR = '2'
     THIRD_FLOOR = '3'
@@ -162,6 +169,8 @@ class Floor(StrEnum):
 
 
 class TkAlarmColors(StrEnum):
+    """Класс констант с цветами приложения."""
+
     APP = '#FFF4DC'
     RED = '#FF0000'
     GREEN = 'green'
@@ -170,6 +179,8 @@ class TkAlarmColors(StrEnum):
 
 @dataclass
 class Room:
+    """Класс комнаты лабиринта."""
+
     number: int
     box_outer: bool = False
     box_item: Optional[str] = None

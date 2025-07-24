@@ -20,7 +20,7 @@ from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 
 #  Функции фарма драконов.
-def start_dragon_farm():
+def start_dragon_farm() -> None:
     """Точка входа в цикл dragon_farm."""
     if not manager.driver:
         manager.send_alarm_message(
@@ -64,7 +64,8 @@ def start_dragon_farm():
         manager.send_status_message('Бот готов к работе')
 
 
-def stop_dragon_farm():
+def stop_dragon_farm() -> None:
+    """Останалвивает поток с циклом фарма дракона."""
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем фарм драконов')
@@ -79,7 +80,8 @@ def stop_dragon_farm():
     dragon_farm_start_button.configure(foreground='black')
 
 
-def start_dragon_thread():
+def start_dragon_thread() -> None:
+    """Запускает потом с циклом фарма дракона."""
     if not manager.cycle_thread or not manager.cycle_thread.is_alive():
         manager.stop_event()
         manager.cycle_thread = threading.Thread(

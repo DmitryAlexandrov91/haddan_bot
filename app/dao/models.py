@@ -7,6 +7,7 @@ from .database import BaseModel
 
 
 class Event(BaseModel):
+    """Модель события."""
 
     event_name: Mapped[str] = mapped_column(
         String(10),

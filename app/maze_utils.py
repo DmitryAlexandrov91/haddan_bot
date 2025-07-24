@@ -21,6 +21,7 @@ def room_info_text_delimeter(text: str) -> Optional[tuple[int, str]]:
         rest_part = match.group(2)
 
         return number_part, rest_part
+    return None
 
 
 def get_labirint_map(
@@ -92,7 +93,7 @@ def get_labirint_map(
 def find_room_position(
         labirint_map: List[List[Room]],
         room_number: int) -> Optional[Tuple[int, int]]:
-    """Находит координаты комнаты по номеру"""
+    """Находит координаты комнаты по номеру."""
     for i, row in enumerate(labirint_map):
         for j, room in enumerate(row):
             if room.number == room_number:
@@ -103,7 +104,7 @@ def find_room_position(
 def get_neighbors(
         labirint_map: List[List[Room]],
         pos: Tuple[int, int]) -> List[Tuple[int, int]]:
-    """Возвращает соседние комнаты, в которые можно перейти"""
+    """Возвращает соседние комнаты, в которые можно перейти."""
     i, j = pos
     room = labirint_map[i][j]
     neighbors = []
@@ -157,7 +158,7 @@ def find_shortest_path(
 def get_direction(
         current_pos: Tuple[int, int],
         next_pos: Tuple[int, int]) -> str:
-    """Определяет направление движения между двумя точками"""
+    """Определяет направление движения между двумя точками."""
     ci, cj = current_pos
     ni, nj = next_pos
 
@@ -175,7 +176,7 @@ def get_direction(
 def convert_path_to_directions(
         labirint_map: List[List[Room]],
         path_coords: List[Tuple[int, int]]) -> List[str]:
-    """Преобразует путь в координатах в список направлений"""
+    """Преобразует путь в координатах в список направлений."""
     directions = []
     for i in range(len(path_coords) - 1):
         current = path_coords[i]
@@ -190,7 +191,7 @@ def find_path_with_directions(
     start_room: int,
     end_room: int,
 ) -> Optional[List[str]]:
-    """Находит путь и возвращает направления (например, ['юг', 'восток'])"""
+    """Находит путь и возвращает направления (например, ['юг', 'восток'])."""
     start_pos = find_room_position(labirint_map, start_room)
     end_pos = find_room_position(labirint_map, end_room)
 
@@ -210,7 +211,8 @@ def find_path_via_boxes_with_directions(
     target_room: int,
     passed_rooms: set,
 ) -> Optional[List[str]]:
-    """Возвращает направления для пути:
+    """Возвращает направления для пути.
+
     1) Через все комнаты с box_outer=True,
     2) С завершением в target_room.
     """
@@ -274,12 +276,10 @@ def get_floor_map(
     manager.options.add_argument(f'--user-data-dir={temp_directory}')
     manager.start_driver()
 
-    labirint_map = get_labirint_map(
+    return get_labirint_map(
         url=LABIRINT_MAP_URL,
         floor=floor.value,
         manager=manager)
-
-    return labirint_map
 
 
 def get_sity_portal_room_number(
@@ -290,6 +290,7 @@ def get_sity_portal_room_number(
         for room in line:
             if room.box_item and 'город' in room.box_item:
                 return room.number
+    return None
 
 
 def get_upper_portal_room_number(
@@ -300,12 +301,13 @@ def get_upper_portal_room_number(
         for room in line:
             if room.box_item and 'портал' in room.box_item:
                 return room.number
+    return None
 
 
 def convert_path_to_room_numbers(
         labirint_map: List[List[Room]],
         path_coords: List[Tuple[int, int]]) -> List[int]:
-    """Преобразует путь в координатах в список номеров комнат"""
+    """Преобразует путь в координатах в список номеров комнат."""
     room_numbers = []
     for coord in path_coords:
         i, j = coord
@@ -319,7 +321,7 @@ def find_path_with_room_numbers(
     start_room: int,
     end_room: int,
 ) -> Optional[Tuple[List[str], List[int]]]:
-    """Находит путь и возвращает направления и номера комнат"""
+    """Находит путь и возвращает направления и номера комнат."""
     start_pos = find_room_position(labirint_map, start_room)
     end_pos = find_room_position(labirint_map, end_room)
 
@@ -342,7 +344,8 @@ def find_path_via_boxes_with_room_numbers(
     target_room: int,
     passed_rooms: set,
 ) -> Optional[Tuple[List[str], List[int]]]:
-    """Возвращает направления и номера комнат для пути:
+    """Возвращает направления и номера комнат для пути.
+
     1) Через все комнаты с box_outer=True,
     2) С завершением в target_room.
     """

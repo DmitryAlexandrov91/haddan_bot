@@ -14,6 +14,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    """Класс базовых настроект приложения."""
+
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
     DB_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/data/db.sqlite3"
     SYNC_DB_URL: str = f"sqlite+pysqlite:///{BASE_DIR}/data/db.sqlite3"
@@ -24,7 +26,8 @@ database_url = settings.DB_URL
 sync_db_url = settings.DB_URL
 
 
-def configure_logging():
+def configure_logging() -> None:
+    """Конфигурация логгера."""
     logs_dir = os.path.join(settings.BASE_DIR, 'logs')
     os.makedirs(logs_dir, exist_ok=True)
     rotating_handler = RotatingFileHandler(
