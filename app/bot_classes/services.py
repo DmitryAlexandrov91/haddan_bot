@@ -1,14 +1,15 @@
 """Вспомогательные функции для классов."""
+from typing import Callable
 
 
 def make_transition(
         room_number: int,
-        right,
-        left,
-        up,
-        down,
-        passed_rooms: set
-        ):
+        right: Callable[[], None],
+        left: Callable[[], None],
+        up: Callable[[], None],
+        down: Callable[[], None],
+        passed_rooms: set,
+) -> None:
     """Делает переход в лесу, в зависимости от местоположения.
 
     Сумасшедствие с паттерном match case.

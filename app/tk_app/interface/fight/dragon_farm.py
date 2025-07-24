@@ -1,19 +1,26 @@
 import threading
 import tkinter as tk
 
-from selenium.common.exceptions import (InvalidSessionIdException,
-                                        NoSuchWindowException)
+from selenium.common.exceptions import (
+    InvalidSessionIdException,
+    NoSuchWindowException,
+)
+from urllib3.exceptions import MaxRetryError
+
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.login import (send_message_checkbox_value,
-                                    start_login_thread, stop_bot, tg_id_field)
-from urllib3.exceptions import MaxRetryError
+from tk_app.interface.login import (
+    send_message_checkbox_value,
+    start_login_thread,
+    stop_bot,
+    tg_id_field,
+)
 
 from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 
 #  Функции фарма драконов.
-def start_dragon_farm():
+def start_dragon_farm() -> None:
     """Точка входа в цикл dragon_farm."""
     if not manager.driver:
         manager.send_alarm_message(
@@ -21,7 +28,7 @@ def start_dragon_farm():
         exit()
 
     manager.send_status_message(
-        text='Начинаем фарм дракона'
+        text='Начинаем фарм дракона',
     )
     dragon_farm_start_button.configure(foreground='green')
     manager.send_alarm_message()
@@ -35,16 +42,16 @@ def start_dragon_farm():
             default_spell=main_spell_slot.get(),
             spell_book=get_round_spells(),
             message_to_tg=send_message_checkbox_value.get(),
-            telegram_id=int(tg_id) if tg_id else None
+            telegram_id=int(tg_id) if tg_id else None,
         )
 
     except (
         InvalidSessionIdException,
         MaxRetryError,
-        NoSuchWindowException
+        NoSuchWindowException,
     ):
         manager.send_alarm_message(
-            'Драйвер не обнаружен, перезагрузка.'
+            'Драйвер не обнаружен, перезагрузка.',
         )
         stop_dragon_farm()
         stop_bot()
@@ -57,7 +64,8 @@ def start_dragon_farm():
         manager.send_status_message('Бот готов к работе')
 
 
-def stop_dragon_farm():
+def stop_dragon_farm() -> None:
+    """Останалвивает поток с циклом фарма дракона."""
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем фарм драконов')
@@ -65,14 +73,15 @@ def stop_dragon_farm():
     else:
         manager.send_alarm_message()
         manager.send_status_message(
-            'Бот готов к работе'
+            'Бот готов к работе',
         ) if manager.driver else manager.send_alarm_message(
-            'Игра не запущена'
+            'Игра не запущена',
         )
     dragon_farm_start_button.configure(foreground='black')
 
 
-def start_dragon_thread():
+def start_dragon_thread() -> None:
+    """Запускает потом с циклом фарма дракона."""
     if not manager.cycle_thread or not manager.cycle_thread.is_alive():
         manager.stop_event()
         manager.cycle_thread = threading.Thread(
@@ -80,7 +89,7 @@ def start_dragon_thread():
         manager.cycle_thread.start()
     else:
         manager.send_alarm_message(
-            'Сначала завершите активный цикл!'
+            'Сначала завершите активный цикл!',
         )
 
 
@@ -96,10 +105,10 @@ dragon_farm_start_button = tk.Button(
     text='старт',
     width=9,
     bg='#FFF4DC',
-    command=start_dragon_thread
+    command=start_dragon_thread,
     )
 dragon_farm_start_button.grid(
-    row=4, column=5
+    row=4, column=5,
 )
 
 dragon_farm_stop_button = tk.Button(
@@ -107,9 +116,9 @@ dragon_farm_stop_button = tk.Button(
     text='стоп',
     width=9,
     bg='#FFF4DC',
-    command=stop_dragon_farm
+    command=stop_dragon_farm,
     )
 dragon_farm_stop_button.grid(
-    row=4, column=6
+    row=4, column=6,
 )
 #  --------------------------------------------------------------------

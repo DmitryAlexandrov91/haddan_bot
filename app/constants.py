@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from enum import StrEnum
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -9,16 +10,17 @@ load_dotenv()
 
 
 def get_bool_param_from_env(variable: str | bool) -> bool:
+    """Вытаскивает булево значение из строчной переменной .env."""
     if isinstance(variable, bool):
         return variable
-    else:
-        if variable.lower() == 'false':
-            return False
-        return True
+    if variable.lower() == 'false':
+        return False
+    return True
 
 
 # Константы для директорий/путей.
-BASE_DIR = os.getcwd()
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 DOWNLOADS_DIR_NAME = os.path.join(BASE_DIR, 'temp')
 KAPCHA_NAME = 'kapcha.png'
 SCREENSHOT_NAME = 'screenshot.png'
@@ -49,7 +51,7 @@ DOMENS = {
     'haddan': 'https://haddan.ru/',
     'online-igra': 'https://www.online-igra.ru/',
     'new.haddan': 'https://new.haddan.ru/',
-    'ru.haddan': 'https://ru.haddan.ru/'
+    'ru.haddan': 'https://ru.haddan.ru/',
 }
 
 
@@ -64,7 +66,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', None)
 CHARS = [
     FIRST_CHAR,
     SECOND_CHAR,
-    THIRD_CHAR
+    THIRD_CHAR,
 ]
 
 
@@ -85,7 +87,7 @@ CHEERFULNESS = get_bool_param_from_env(
 DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', '2')
 DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', '1')
 DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
-    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1'
+    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1',
 )
 DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', '1')
 
@@ -97,7 +99,7 @@ FIELD_PRICES = {
     'Мандрагора': 60,
     'Зеленая массивка': 67,
     'Колючник Черный': 101,
-    'Гертаниум': 190
+    'Гертаниум': 190,
     }
 
 # Список для парсинга 'http://ordenpegasa.ru/shop/'
@@ -111,11 +113,11 @@ LINUX_PROFILE_DIR = 'hd_linux_profile'
 
 POETRY_SPIRIT_RIGHT_ANSWERS = {
     'давай дальше', ' / ', 'Начали!', 'Дальше!', 'пора обратно',
-    'с наградой', 'Телепортироваться', 'Увечье нам не надо', 'Поехали!'
+    'с наградой', 'Телепортироваться', 'Увечье нам не надо', 'Поехали!',
 }
 
 GAMBLE_SPIRIT_RIGHT_ANSWERS = {
-    'Телепортироваться', 'делу давай!', ' / ', 'пошли'
+    'Телепортироваться', 'делу давай!', ' / ', 'пошли',
 }
 
 
@@ -125,6 +127,8 @@ SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7', 'p')
 
 
 class SlotsPage(StrEnum):
+    """Класс констант с номерами страниц слотов."""
+
     _0 = '1'
     _1 = '2'
     _2 = '3'
@@ -134,11 +138,13 @@ class SlotsPage(StrEnum):
     _6 = '7'
     _p = 'p'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
 class Slot(StrEnum):
+    """Класс констант с номерами быстрых слотов."""
+
     _1 = '1'
     _2 = '2'
     _3 = '3'
@@ -148,11 +154,13 @@ class Slot(StrEnum):
     _7 = '7'
     _p = 'p'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
 class Floor(StrEnum):
+    """Класс констант с этажами лабиринта."""
+
     FIRST_FLOOR = '1'
     SECOND_FLOOR = '2'
     THIRD_FLOOR = '3'
@@ -161,6 +169,8 @@ class Floor(StrEnum):
 
 
 class TkAlarmColors(StrEnum):
+    """Класс констант с цветами приложения."""
+
     APP = '#FFF4DC'
     RED = '#FF0000'
     GREEN = 'green'
@@ -169,6 +179,8 @@ class TkAlarmColors(StrEnum):
 
 @dataclass
 class Room:
+    """Класс комнаты лабиринта."""
+
     number: int
     box_outer: bool = False
     box_item: Optional[str] = None
@@ -184,7 +196,7 @@ DEFAULT_TK_STATUS = 'Бот готов к работе'
 CHARS_ACCESS = {
     'SwordS': '2033-06-28 23:59:59',
     'Nordman': '2033-06-27 23:59:59',
-    'фантазёрка': '2033-06-27 23:59:59'
+    'фантазёрка': '2033-06-27 23:59:59',
 }
 
 DT_FORMAT = '%Y-%m-%d %H:%M:%S'

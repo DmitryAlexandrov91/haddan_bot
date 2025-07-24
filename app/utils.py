@@ -1,16 +1,19 @@
-"""Утилитки приложения haddan_bot"""
+"""Утилитки приложения haddan_bot."""
 import re
 import tempfile
 from datetime import datetime
 from time import sleep
+from typing import Any
 
+from bot_classes import DriverManager
 from constants import FIELD_PRICES, RES_LIST, SHOP_URL
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def price_counter(resurses: list, price_diсt: dict = FIELD_PRICES):
+def price_counter(resurses: list, price_diсt: dict = FIELD_PRICES) -> int:
     """Находит самый дорогой ресурс из списка и возвращает его индекс."""
     result = []
     for s in resurses:
@@ -23,7 +26,7 @@ def price_counter(resurses: list, price_diсt: dict = FIELD_PRICES):
     return result.index(max(result))
 
 
-def time_extractor(text):
+def time_extractor(text: str) -> int:
     """Извлекает время из строки с текстом."""
     pattern = r'-?\d+:\d+'
     matches = re.findall(pattern, text)
@@ -36,21 +39,22 @@ def time_extractor(text):
     return 0
 
 
-def res_price_finder(driver, res):
+def res_price_finder(driver: WebDriver, res: str) -> Any:
+    """Находит цену ресурса по его названию."""
     res_label = driver.find_elements(
         By.CSS_SELECTOR,
-        f'input[value="{res}"]'
+        f'input[value="{res}"]',
     )
     if res_label:
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(res_label[0]))
+            ec.element_to_be_clickable(res_label[0]))
         res_label[0].click()
     sleep(2)
     all_shops = driver.find_element(
-        By.CSS_SELECTOR, 'table[id="response"]'
+        By.CSS_SELECTOR, 'table[id="response"]',
     )
     shops = all_shops.find_elements(
-        By.TAG_NAME, 'tr'
+        By.TAG_NAME, 'tr',
     )
     first_shop_price = shops[1].text.split()
     if len(first_shop_price) == 4:
@@ -58,7 +62,7 @@ def res_price_finder(driver, res):
     return first_shop_price[3]
 
 
-def get_glade_price_list(manager):
+def get_glade_price_list(manager: DriverManager) -> dict[Any, Any]:
     """Возвращает словарь с ценами ресурсов поляны.
 
     Парсит поисковик по базару на сайте
@@ -72,7 +76,7 @@ def get_glade_price_list(manager):
     manager.driver.get(SHOP_URL)
     glade_button = manager.driver.find_elements(
         By.CSS_SELECTOR,
-        'label[for="tab_4"]'
+        'label[for="tab_4"]',
     )
     if glade_button:
         glade_button[0].click()
@@ -80,7 +84,7 @@ def get_glade_price_list(manager):
     result = []
     for res in RES_LIST:
         result.append(
-            res_price_finder(manager.driver, res)
+            res_price_finder(manager.driver, res),
         )
 
     result_dict = {}
@@ -93,7 +97,8 @@ def get_intimidation_and_next_room(text: str) -> tuple[int, int]:
     """Вытаскивает данные из ответа духа азарта.
 
     1. intimidation - показатель запугивания
-    2. next_room - номер следующей комнаты."""
+    2. next_room - номер следующей комнаты.
+    """
     intimidation_pattern = r'Запугивание\s*-\s*(\d+)'
     match = re.search(intimidation_pattern, text)
     if match:
@@ -117,17 +122,15 @@ def get_attr_from_string(text: str, attr: str) -> str | None:
     pattern = rf'{attr}="([^"]+)"'
     match = re.search(pattern, text)
     if match:
-        title_text = match.group(1)
-        return title_text
+        return match.group(1)
     return None
 
 
-def get_dragon_time_wait(text: str):
-    """
-    Извлекает время и дату из текста вида "09:16:12 17-04-2025",
+def get_dragon_time_wait(text: str) -> int:
+    """Извлекает время и дату из текста вида "09:16:12 17-04-2025".
+
     сравнивает с текущим временем и возвращает разницу в секундах.
     """
-
     pattern = r"\d{2}:\d{2}:\d{2}\s\d{2}-\d{2}-\d{4}$"
     match = re.search(pattern, text)
     if match:
@@ -141,6 +144,4 @@ def get_dragon_time_wait(text: str):
 
     delta = wait_time - current_time
 
-    seconds_to_wait = int(delta.total_seconds())
-
-    return seconds_to_wait
+    return int(delta.total_seconds())

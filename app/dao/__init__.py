@@ -1,2 +1,2 @@
 from .database import BaseModel  # noqa
-from .models import SpellBook  # noqa
+from .models import Event  # noqa

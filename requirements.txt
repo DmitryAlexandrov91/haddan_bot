@@ -10,7 +10,6 @@ annotated-types==0.7.0
 appdirs==1.4.4
 attrs==25.3.0
 beautifulsoup4==4.13.4
-bs4==0.0.2
 certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
@@ -62,10 +61,12 @@ pytest==8.4.1
 python-dotenv==1.1.0
 python3-xlib==0.15
 pytweening==1.2.0
+pytz==2025.2
 PyWavelets==1.8.0
 pywin32-ctypes==0.2.3
 requests==2.32.3
 requests-html==0.10.0
+ruff==0.12.4
 scipy==1.15.3
 selenium==4.31.0
 setuptools==80.0.1

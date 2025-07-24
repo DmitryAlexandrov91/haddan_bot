@@ -1,11 +1,19 @@
 import tkinter as tk
+from typing import Any
 
-from constants import (DEFAULT_SLOT, DEFAULT_SLOTS_PAGE, SLOT_VALUES, Slot,
-                       SlotsPage)
+from constants import (
+    DEFAULT_SLOT,
+    DEFAULT_SLOTS_PAGE,
+    SLOT_VALUES,
+    Slot,
+    SlotsPage,
+)
+
 from tk_app.core import app
 
 
-def open_slots():
+def sync_slots() -> None:
+    """Синххронизирует все заклинания с основным."""
     sync_with_main_spell()
 
 
@@ -14,10 +22,10 @@ quick_slots_open_btn = tk.Button(
     text='sync ->',
     width=9,
     bg='#FFF4DC',
-    command=open_slots
+    command=sync_slots,
 )
 quick_slots_open_btn.grid(
-    row=0, column=6, sticky='w'
+    row=0, column=6, sticky='w',
 )
 
 #  Кнопки основного заклинания ----------------------------------------
@@ -28,7 +36,7 @@ main_spell_slot = tk.StringVar(app)
 main_spell_slot.set(DEFAULT_SLOT)
 
 main_slot_label = tk.OptionMenu(
-    app, main_slots_page, *SLOT_VALUES
+    app, main_slots_page, *SLOT_VALUES,
 )
 main_slot_label.grid(row=1, column=5)
 
@@ -44,7 +52,7 @@ for element in range(4):
     widget = tk.Label(
         app,
         text=f'Р1 У{element + 1}',
-        bg='#FFF4DC'
+        bg='#FFF4DC',
     )
     widget.grid(row=0 + element, column=7)
 
@@ -123,7 +131,7 @@ for element in range(4):
     widget = tk.Label(
         app,
         text=f'Р2 У{element + 1}',
-        bg='#FFF4DC'
+        bg='#FFF4DC',
     )
     widget.grid(row=0 + element, column=10)
 
@@ -188,7 +196,7 @@ r2y4_spell = tk.StringVar(app)
 r2y4_spell.set(DEFAULT_SLOT)
 
 r2y4_slot_choise = tk.OptionMenu(
-    app, r2y4_slot, *SLOT_VALUES
+    app, r2y4_slot, *SLOT_VALUES,
 )
 r2y4_slot_choise.grid(row=3, column=11)
 
@@ -202,7 +210,7 @@ for element in range(4):
     widget = tk.Label(
         app,
         text=f'Р3 У{element + 1}',
-        bg='#FFF4DC'
+        bg='#FFF4DC',
     )
     widget.grid(row=5 + element, column=7)
 
@@ -280,7 +288,7 @@ for element in range(4):
     widget = tk.Label(
         app,
         text=f'Р4 У{element + 1}',
-        bg='#FFF4DC'
+        bg='#FFF4DC',
     )
     widget.grid(row=5 + element, column=10)
 
@@ -357,7 +365,7 @@ for element in range(4):
     widget = tk.Label(
         app,
         text=f'Р5 У{element + 1}',
-        bg='#FFF4DC'
+        bg='#FFF4DC',
     )
     widget.grid(row=10 + element, column=7)
 
@@ -434,7 +442,7 @@ for element in range(4):
     widget = tk.Label(
         app,
         text=f'Р6 У{element + 1}',
-        bg='#FFF4DC'
+        bg='#FFF4DC',
     )
     widget.grid(row=10 + element, column=10)
 
@@ -507,123 +515,123 @@ r6y4_spell_choise = tk.OptionMenu(
 r6y4_spell_choise.grid(row=13, column=12)
 
 
-def get_round_spells():
+def get_round_spells() -> dict[Any, Any]:
     """Формирует книгу заклинаний."""
     spell_book = {}
     spell_book['Раунд 1'] = {
         'Ударить!': {
             'slot': r1y1_slot.get().strip(),
-            'spell': r1y1_spell.get().strip()
+            'spell': r1y1_spell.get().strip(),
         },
         'Ударить 2й раз!': {
             'slot': r1y2_slot.get().strip(),
-            'spell': r1y2_spell.get().strip()
+            'spell': r1y2_spell.get().strip(),
         },
         'Ударить 3й раз!': {
             'slot': r1y3_slot.get().strip(),
-            'spell': r1y3_spell.get().strip()
+            'spell': r1y3_spell.get().strip(),
         },
         'Ударить 4й раз!': {
             'slot': r1y4_slot.get().strip(),
-            'spell': r1y4_spell.get().strip()
+            'spell': r1y4_spell.get().strip(),
         },
     }
     spell_book['Раунд 2'] = {
         'Ударить!': {
             'slot': r2y1_slot.get().strip(),
-            'spell': r2y1_spell.get().strip()
+            'spell': r2y1_spell.get().strip(),
         },
         'Ударить 2й раз!': {
             'slot': r2y2_slot.get().strip(),
-            'spell': r2y2_spell.get().strip()
+            'spell': r2y2_spell.get().strip(),
         },
         'Ударить 3й раз!': {
             'slot': r2y3_slot.get().strip(),
-            'spell': r2y3_spell.get().strip()
+            'spell': r2y3_spell.get().strip(),
         },
         'Ударить 4й раз!': {
             'slot': r2y4_slot.get().strip(),
-            'spell': r2y4_spell.get().strip()
+            'spell': r2y4_spell.get().strip(),
         },
     }
     spell_book['Раунд 3'] = {
         'Ударить!': {
             'slot': r3y1_slot.get().strip(),
-            'spell': r3y1_spell.get().strip()
+            'spell': r3y1_spell.get().strip(),
         },
         'Ударить 2й раз!': {
             'slot': r3y2_slot.get().strip(),
-            'spell': r3y2_spell.get().strip()
+            'spell': r3y2_spell.get().strip(),
         },
         'Ударить 3й раз!': {
             'slot': r3y3_slot.get().strip(),
-            'spell': r3y3_spell.get().strip()
+            'spell': r3y3_spell.get().strip(),
         },
         'Ударить 4й раз!': {
             'slot': r3y4_slot.get().strip(),
-            'spell': r3y4_spell.get().strip()
+            'spell': r3y4_spell.get().strip(),
         },
     }
 
     spell_book['Раунд 4'] = {
         'Ударить!': {
             'slot': r4y1_slot.get().strip(),
-            'spell': r4y1_spell.get().strip()
+            'spell': r4y1_spell.get().strip(),
         },
         'Ударить 2й раз!': {
             'slot': r4y2_slot.get().strip(),
-            'spell': r4y2_spell.get().strip()
+            'spell': r4y2_spell.get().strip(),
         },
         'Ударить 3й раз!': {
             'slot': r4y3_slot.get().strip(),
-            'spell': r4y3_spell.get().strip()
+            'spell': r4y3_spell.get().strip(),
         },
         'Ударить 4й раз!': {
             'slot': r4y4_slot.get().strip(),
-            'spell': r4y4_spell.get().strip()
+            'spell': r4y4_spell.get().strip(),
         },
     }
     spell_book['Раунд 5'] = {
         'Ударить!': {
             'slot': r5y1_slot.get().strip(),
-            'spell': r5y1_spell.get().strip()
+            'spell': r5y1_spell.get().strip(),
         },
         'Ударить 2й раз!': {
             'slot': r5y2_slot.get().strip(),
-            'spell': r5y2_spell.get().strip()
+            'spell': r5y2_spell.get().strip(),
         },
         'Ударить 3й раз!': {
             'slot': r5y3_slot.get().strip(),
-            'spell': r5y3_spell.get().strip()
+            'spell': r5y3_spell.get().strip(),
         },
         'Ударить 4й раз!': {
             'slot': r5y4_slot.get().strip(),
-            'spell': r5y4_spell.get().strip()
+            'spell': r5y4_spell.get().strip(),
         },
     }
     spell_book['Раунд 6'] = {
         'Ударить!': {
             'slot': r6y1_slot.get().strip(),
-            'spell': r6y1_spell.get().strip()
+            'spell': r6y1_spell.get().strip(),
         },
         'Ударить 2й раз!': {
             'slot': r6y2_slot.get().strip(),
-            'spell': r6y2_spell.get().strip()
+            'spell': r6y2_spell.get().strip(),
         },
         'Ударить 3й раз!': {
             'slot': r6y3_slot.get().strip(),
-            'spell': r6y3_spell.get().strip()
+            'spell': r6y3_spell.get().strip(),
         },
         'Ударить 4й раз!': {
             'slot': r6y4_slot.get().strip(),
-            'spell': r6y4_spell.get().strip()
+            'spell': r6y4_spell.get().strip(),
         },
     }
 
     return spell_book
 
 
-def sync_with_main_spell():
+def sync_with_main_spell() -> None:
     """Синхронизирует все слоты с основным ударом."""
     main_slot = main_slots_page.get()
     main_spell = main_spell_slot.get()
@@ -687,14 +695,14 @@ sync_button = tk.Button(
     app,
     text='sync',
     bg='#FFF4DC',
-    command=sync_with_main_spell
+    command=sync_with_main_spell,
 )
 # sync_button.grid(
 #     row=4, column=10
 # )
 
 
-def get_dragon_preset():
+def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
     main_slot = SlotsPage._1
     main_spell = Slot._5
@@ -761,14 +769,14 @@ dragon_preset = tk.Button(
     app,
     text='Дракон',
     bg='#FFF4DC',
-    command=get_dragon_preset
+    command=get_dragon_preset,
 )
 dragon_preset.grid(
-    row=4, column=8
+    row=4, column=8,
 )
 
 
-def get_dragon_punch_preset():
+def get_dragon_punch_preset() -> None:
     """Пресет для фарма дракона физ ударами."""
     main_slot = SlotsPage._p
     main_spell = Slot._p
@@ -835,14 +843,14 @@ dragon_punch_preset = tk.Button(
     app,
     text='Дракон ФУ',
     bg='#FFF4DC',
-    command=get_dragon_punch_preset
+    command=get_dragon_punch_preset,
 )
 dragon_punch_preset.grid(
-    row=4, column=10
+    row=4, column=10,
 )
 
 
-def get_cy_preset():
+def get_cy_preset() -> None:
     """Пресет для кача в ЦУ."""
     main_slot = SlotsPage._1
     main_spell = Slot._1
@@ -860,14 +868,14 @@ farm_CY_preset = tk.Button(
     app,
     text='ЦУ',
     bg='#FFF4DC',
-    command=get_cy_preset
+    command=get_cy_preset,
 )
 farm_CY_preset.grid(
-    row=4, column=12
+    row=4, column=12,
 )
 
 
-def get_coast_preset():
+def get_coast_preset() -> None:
     """Пресет для фарма побережья."""
     main_slot = SlotsPage._1
     main_spell = Slot._6
@@ -906,14 +914,14 @@ farm_coast_preset = tk.Button(
     app,
     text='Берег',
     bg='#FFF4DC',
-    command=get_coast_preset
+    command=get_coast_preset,
 )
 farm_coast_preset.grid(
-    row=9, column=7
+    row=9, column=7,
 )
 
 
-def get_coast_preset_2():
+def get_coast_preset_2() -> None:
     """Пресет для фарма побережья с архангелами."""
     main_slot = SlotsPage._1
     main_spell = Slot._6
@@ -954,14 +962,14 @@ farm_coast_preset_2 = tk.Button(
     app,
     text='Берег 2',
     bg='#FFF4DC',
-    command=get_coast_preset_2
+    command=get_coast_preset_2,
 )
 farm_coast_preset_2.grid(
-        row=9, column=8
+        row=9, column=8,
 )
 
 
-def get_baby_maze_preset():
+def get_baby_maze_preset() -> None:
     """Пресет для детского лаба."""
     main_slot = SlotsPage._1
     main_spell = Slot._6
@@ -1002,14 +1010,14 @@ baby_maze_preset = tk.Button(
     app,
     text='ДЛ',
     bg='#FFF4DC',
-    command=get_baby_maze_preset
+    command=get_baby_maze_preset,
 )
 baby_maze_preset.grid(
-    row=9, column=12
+    row=9, column=12,
 )
 
 
-def get_forest_nordman():
+def get_forest_nordman() -> None:
     """Пресет для леса физом."""
     main_slot = SlotsPage._p
     main_spell = Slot._p
@@ -1027,8 +1035,8 @@ nordman_forest_preset = tk.Button(
     app,
     text='Лес физ',
     bg='#FFF4DC',
-    command=get_forest_nordman
+    command=get_forest_nordman,
 )
 nordman_forest_preset.grid(
-    row=9, column=10
+    row=9, column=10,
 )
