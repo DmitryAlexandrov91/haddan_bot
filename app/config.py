@@ -11,6 +11,7 @@ from constants import (DATETIME_FORMAT, LOG_FILE_PATH, LOG_FORMAT,
 class Settings(BaseSettings):
     BASE_DIR: str = os.getcwd()
     DB_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/data/db.sqlite3"
+    SYNC_DB_URL: str = f"sqlite+pysqlite:///{BASE_DIR}/data/db.sqlite3"
 
 
 def configure_logging():
@@ -32,3 +33,4 @@ def configure_logging():
 
 settings = Settings()
 database_url = settings.DB_URL
+sync_db_url = settings.DB_URL
