@@ -15,7 +15,7 @@ class BaseCRUD(Generic[T]):
     def get(self, session: Session, id: int) -> Optional[T]:
         """Получение записи по ID."""
         return session.get(self.model, id)
-
+    
     def get_all(
         self,
         session: Session,

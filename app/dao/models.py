@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -14,6 +15,6 @@ class Event(BaseModel):
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.utcnow,
-        doc="Дата и время создания",
+        default=lambda: datetime.now(pytz.timezone('Europe/Moscow')),
+        doc='Дата и время создания',
     )

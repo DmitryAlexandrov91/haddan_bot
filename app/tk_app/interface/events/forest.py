@@ -8,7 +8,7 @@ from dao.database import sync_session_maker
 
 last_forest_pass_label = tk.Label(
     app,
-    text="Лес пройден:",
+    text="Последнее событие:",
     bg='#FFF4DC',
 )
 last_forest_pass_label.grid(
@@ -17,15 +17,21 @@ last_forest_pass_label.grid(
 )
 
 with sync_session_maker() as session:
-
-    text = event_crud.create(
-        session=session,
-        event_name="Forest"
+    last_event = event_crud.get_latest(
+        session=session
     )
+
+formatted_time = last_event.created_at.strftime(
+    '%d.%m %H:%M:%S'
+) if last_event else ""
+
 
 last_foress_pass_time = tk.Label(
     app,
-    text='Здесь будет время',
+    text=(
+        f'{last_event.event_name if last_event else ""} - '
+        f'{formatted_time if formatted_time else ""}'
+    ),
     bg='#FFF4DC',
 )
 
