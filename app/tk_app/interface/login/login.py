@@ -5,11 +5,10 @@ import tkinter as tk
 from datetime import datetime
 
 from bot_classes import HaddanUser
+from config import configure_logging
 from constants import CHARS, CHARS_ACCESS, DOMENS, DT_FORMAT
 from tk_app.core import app
 from tk_app.driver_manager import manager
-
-from config import configure_logging
 
 
 def start_login_thread():

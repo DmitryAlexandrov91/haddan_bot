@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from enum import StrEnum
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -18,7 +19,8 @@ def get_bool_param_from_env(variable: str | bool) -> bool:
 
 
 # Константы для директорий/путей.
-BASE_DIR = os.getcwd()
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 DOWNLOADS_DIR_NAME = os.path.join(BASE_DIR, 'temp')
 KAPCHA_NAME = 'kapcha.png'
 SCREENSHOT_NAME = 'screenshot.png'

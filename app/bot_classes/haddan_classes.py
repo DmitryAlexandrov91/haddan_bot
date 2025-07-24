@@ -10,6 +10,7 @@ from typing import Optional
 
 import requests
 from aiogram import Bot, Dispatcher, F, Router, types
+from config import configure_logging
 from constants import (BASE_DIR, FIELD_PRICES, GAMBLE_SPIRIT_RIGHT_ANSWERS,
                        HADDAN_URL, LICH_ROOM, POETRY_SPIRIT_RIGHT_ANSWERS,
                        NPCImgTags, Room, Slot, SlotsPage)
@@ -29,8 +30,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utils import (get_dragon_time_wait, get_intimidation_and_next_room,
                    price_counter, time_extractor)
-
-from config import configure_logging
 
 from .driver_manager import DriverManager
 from .services import make_transition

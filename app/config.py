@@ -1,15 +1,15 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-
-from pydantic_settings import BaseSettings
+from pathlib import Path
 
 from constants import (DATETIME_FORMAT, LOG_FILE_PATH, LOG_FORMAT,
-                           MAX_LOG_SIZE, MAX_LOGS_COUNT)
+                       MAX_LOG_SIZE, MAX_LOGS_COUNT)
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    BASE_DIR: str = os.getcwd()
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent
     DB_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/data/db.sqlite3"
     SYNC_DB_URL: str = f"sqlite+pysqlite:///{BASE_DIR}/data/db.sqlite3"
 

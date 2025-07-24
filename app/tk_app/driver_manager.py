@@ -2,7 +2,6 @@
 import os
 import platform
 
-# from telebot import TeleBot
 from aiogram import Bot
 from bot_classes import HaddanDriverManager
 from constants import (LINUX_PROFILE_DIR, TELEGRAM_BOT_TOKEN,
