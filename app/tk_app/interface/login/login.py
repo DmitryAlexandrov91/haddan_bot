@@ -4,7 +4,7 @@ import threading
 import tkinter as tk
 from datetime import datetime
 
-from bot_classes import HaddanUser
+from bot_classes import DriverManager, HaddanUser
 from config import configure_logging
 from constants import CHARS, CHARS_ACCESS, DOMENS, DT_FORMAT
 
@@ -12,13 +12,14 @@ from tk_app.core import app
 from tk_app.driver_manager import manager
 
 
-def start_login_thread():
+def start_login_thread() -> None:
+    """Запускает поток с входом в игру."""
     manager.thread = threading.Thread(target=start_game)
     manager.thread.start()
 
 
-def start_game(manager=manager):
-
+def start_game(manager: DriverManager = manager) -> None:
+    """Запускает игру."""
     try:
         char = username.get().strip()
         password = password_field.get().strip()
@@ -61,7 +62,8 @@ def start_game(manager=manager):
         )
 
 
-def stop_bot(manager=manager):
+def stop_bot(manager: DriverManager = manager) -> None:
+    """Останавливает цикл."""
     manager.event.clear()
     manager.close_driver()
     login_to_game.configure(foreground='black')

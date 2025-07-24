@@ -1,4 +1,4 @@
-"""Валидаторы maze.py"""
+"""Валидаторы maze.py."""
 from bot_classes import HaddanDriverManager
 
 

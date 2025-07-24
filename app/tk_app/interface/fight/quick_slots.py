@@ -700,7 +700,7 @@ sync_button = tk.Button(
 # )
 
 
-def get_dragon_preset():
+def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
     main_slot = SlotsPage._1
     main_spell = Slot._5
@@ -774,7 +774,7 @@ dragon_preset.grid(
 )
 
 
-def get_dragon_punch_preset():
+def get_dragon_punch_preset() -> None:
     """Пресет для фарма дракона физ ударами."""
     main_slot = SlotsPage._p
     main_spell = Slot._p
@@ -848,7 +848,7 @@ dragon_punch_preset.grid(
 )
 
 
-def get_cy_preset():
+def get_cy_preset() -> None:
     """Пресет для кача в ЦУ."""
     main_slot = SlotsPage._1
     main_spell = Slot._1
@@ -873,7 +873,7 @@ farm_CY_preset.grid(
 )
 
 
-def get_coast_preset():
+def get_coast_preset() -> None:
     """Пресет для фарма побережья."""
     main_slot = SlotsPage._1
     main_spell = Slot._6
@@ -919,7 +919,7 @@ farm_coast_preset.grid(
 )
 
 
-def get_coast_preset_2():
+def get_coast_preset_2() -> None:
     """Пресет для фарма побережья с архангелами."""
     main_slot = SlotsPage._1
     main_spell = Slot._6
@@ -967,7 +967,7 @@ farm_coast_preset_2.grid(
 )
 
 
-def get_baby_maze_preset():
+def get_baby_maze_preset() -> None:
     """Пресет для детского лаба."""
     main_slot = SlotsPage._1
     main_spell = Slot._6
@@ -1015,7 +1015,7 @@ baby_maze_preset.grid(
 )
 
 
-def get_forest_nordman():
+def get_forest_nordman() -> None:
     """Пресет для леса физом."""
     main_slot = SlotsPage._p
     main_spell = Slot._p

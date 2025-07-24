@@ -28,7 +28,7 @@ from tk_app.interface.login import (
 
 
 #  Функции фарма леса.
-def start_forest_farm():
+def start_forest_farm() -> None:
     """Точка входа в цикл forest_farm."""
     if not manager.driver:
         manager.send_alarm_message(
@@ -76,7 +76,8 @@ def start_forest_farm():
         manager.send_alarm_message()
 
 
-def stop_forest_farm():
+def stop_forest_farm() -> None:
+    """Останавливает поток с циклом фарма леса."""
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем фарм поляны')
@@ -91,7 +92,8 @@ def stop_forest_farm():
     forest_farm_start_button.configure(foreground="black")
 
 
-def start_forest_thread():
+def start_forest_thread() -> None:
+    """Запускает поток с циклом фарма леса."""
     if not manager.cycle_thread or not manager.cycle_thread.is_alive() or (
         not manager.cycle_is_running
     ):

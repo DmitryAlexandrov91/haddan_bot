@@ -1,4 +1,4 @@
-"""Управление фармом поляны"""
+"""Управление фармом поляны."""
 import threading
 import tkinter as tk
 
@@ -26,7 +26,7 @@ from tk_app.interface.login import (
 from .glade_prices import GLADE_PRICES
 
 
-def tk_glade_farm():
+def tk_glade_farm() -> None:
     """Точка входа в цикл glade_farm."""
     if not manager.driver:
         manager.send_alarm_message(
@@ -71,7 +71,8 @@ def tk_glade_farm():
         manager.send_alarm_message()
 
 
-def stop_farm():
+def stop_farm() -> None:
+    """Останавливает цикл с фармом поляны."""
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем фарм поляны')
@@ -86,7 +87,8 @@ def stop_farm():
     glade_farm_start_buttton.configure(foreground="black")
 
 
-def start_glade_farm_thread():
+def start_glade_farm_thread() -> None:
+    """Запускает поток с циклом фарма поляны."""
     if not manager.cycle_thread or not manager.cycle_thread.is_alive() or (
         not manager.cycle_is_running
     ):
@@ -149,7 +151,8 @@ glade_farm_stop_buttton.grid(
 
 
 # Карта лабиринта
-def open_map():
+def open_map() -> None:
+    """Открывает сайт с картой лабиринта."""
     manager.driver.execute_script("window.open('');")
     windows = manager.driver.window_handles
     manager.driver.switch_to.window(windows[-1])
@@ -157,13 +160,14 @@ def open_map():
     manager.driver.switch_to.window(windows[0])
 
 
-def clear_arr_if_arr(array: set | list):
+def clear_arr_if_arr(array: set | list) -> None:
     """Очищает set или list."""
     if array is not None:
         array.clear()
 
 
-def delete_all_maps():
+def delete_all_maps() -> None:
+    """Стирает все карты из пямяти."""
     clear_arr_if_arr(manager.passed_forest_rooms)
     clear_arr_if_arr(manager.passed_maze_rooms)
     clear_arr_if_arr(manager.maze_first_floor_map)

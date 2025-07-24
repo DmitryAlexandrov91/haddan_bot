@@ -29,20 +29,23 @@ price_label.grid(row=4, column=1, columnspan=1, rowspan=5)
 
 
 # Блок изменения цены ресурсов.
-def label_update():
+def label_update() -> None:
+    """Формирует текст с перечнем ресурсов и их стоимости."""
     price_dict_content = '\n'.join(
         f'{key}: {value}' for key, value in GLADE_PRICES.items())
     price_label['label'] = price_dict_content
 
 
-def price_change(label, field):
+def price_change(label: str, field: tk.Entry) -> None:
+    """Меняет лейбл цены ресурса из поля ввода."""
     new_price = field.get().strip()
     if new_price:
         GLADE_PRICES[label['text']] = int(new_price)
-        update_price_label()  # Обновляем лейбл с ценами
+        update_price_label()
 
 
-def update_price_label():
+def update_price_label() -> None:
+    """Обновляет лейблы ресурсов."""
     global price_label
     price_dict_content = '\n'.join(
         f'{key}: {value}' for key, value in GLADE_PRICES.items()
@@ -50,7 +53,8 @@ def update_price_label():
     price_label.config(text=price_dict_content)
 
 
-def update_price_from_search():
+def update_price_from_search() -> None:
+    """Парсит поисковик по базару и обновляет лейблы в окне приложения."""
     try:
         global price_label
         global GLADE_PRICES
@@ -71,7 +75,8 @@ def update_price_from_search():
         )
 
 
-def start_price_update():
+def start_price_update() -> None:
+    """Старт потока с парсингом цены ресов поляны."""
     sync_button.configure(foreground='green')
     new_thread = threading.Thread(target=update_price_from_search, daemon=True)
     new_thread.start()

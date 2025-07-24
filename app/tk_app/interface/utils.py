@@ -3,12 +3,12 @@ import tkinter as tk
 
 
 def label_packing(
-        app: tk,
+        app: tk.Tk,
         elements_amount: int,
         row: int,
         column: int,
         sticky: str = 'c',
-        horizon=False):
+        horizon: bool = False) -> None:
     """Метод размещения нескольких лейблов в окне приложения."""
     for element in range(elements_amount):
         widget = tk.Label(

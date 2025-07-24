@@ -32,7 +32,7 @@ from tk_app.interface.login import start_login_thread, stop_bot
 from .validators import send_message_and_stop_cycle
 
 
-def start_maze_passing():
+def start_maze_passing() -> None:
     """Точка входа в цикл farm."""
     if not manager.driver:
         manager.send_alarm_message(
@@ -191,7 +191,8 @@ def start_maze_passing():
         manager.send_status_message('Бот готов к работе')
 
 
-def start_maze_passing_thread():
+def start_maze_passing_thread() -> None:
+    """Старт потока с прохождением лабиринта."""
     if not manager.cycle_thread or not manager.cycle_thread.is_alive():
         manager.stop_event()
         manager.cycle_thread = threading.Thread(
@@ -203,7 +204,8 @@ def start_maze_passing_thread():
         )
 
 
-def stop_maze_passing():
+def stop_maze_passing() -> None:
+    """Останавливает цикл прохождения лабиринта."""
     manager.stop_event()
     if manager.cycle_thread.is_alive():
         manager.send_status_message('Останавливаем прохождение лабиринта')
