@@ -1,7 +1,8 @@
-from typing import Type, TypeVar, Generic, Optional, List
-from sqlalchemy.orm import Session
-from ..database import BaseModel
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
 
+from sqlalchemy.orm import Session
+
+from ..database import BaseModel
 
 T = TypeVar('T', bound='BaseModel')
 
@@ -9,13 +10,14 @@ T = TypeVar('T', bound='BaseModel')
 class BaseCRUD(Generic[T]):
     """Базовый CRUD класс с общими операциями."""
 
-    def __init__(self, model: Type[T]):
+    def __init__(self, model: Type[T]) -> None:
+        """Инициализация базового CRUD."""
         self.model = model
 
-    def get(self, session: Session, id: int) -> Optional[T]:
+    def get(self, session: Session, obj_id: int) -> Optional[T]:
         """Получение записи по ID."""
-        return session.get(self.model, id)
-    
+        return session.get(self.model, obj_id)
+
     def get_all(
         self,
         session: Session,
@@ -26,12 +28,12 @@ class BaseCRUD(Generic[T]):
     def filter_by(
         self,
         session: Session,
-        **filters
+        **filters: Dict[str, Any],
     ) -> List[T]:
         """Фильтрация записей по параметрам."""
         return session.query(self.model).filter_by(**filters).all()
 
-    def create(self, session: Session, **kwargs) -> T:
+    def create(self, session: Session, **kwargs: Dict[str, Any]) -> T:
         """Создание новой записи."""
         instance = self.model(**kwargs)
         session.add(instance)

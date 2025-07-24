@@ -1,10 +1,9 @@
 import tkinter as tk
 
-from tk_app.core import app
-
 from dao.crud import event_crud
 from dao.database import sync_session_maker
 
+from tk_app.core import app
 
 last_forest_pass_label = tk.Label(
     app,
@@ -18,11 +17,11 @@ last_forest_pass_label.grid(
 
 with sync_session_maker() as session:
     last_event = event_crud.get_latest(
-        session=session
+        session=session,
     )
 
 formatted_time = last_event.created_at.strftime(
-    '%d.%m %H:%M:%S'
+    '%d.%m %H:%M:%S',
 ) if last_event else ""
 
 
@@ -38,5 +37,5 @@ last_foress_pass_time = tk.Label(
 last_foress_pass_time.grid(
     row=14,
     column=1,
-    columnspan=2
+    columnspan=2,
 )
