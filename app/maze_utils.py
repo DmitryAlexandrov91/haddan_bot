@@ -68,8 +68,8 @@ def get_labirint_map(
                             north=bool(int(north)),
                             south=bool(int(south)),
                             west=bool(int(west)),
-                            east=bool(int(east))
-                        )
+                            east=bool(int(east)),
+                        ),
                     )
                 else:
                     room_number, rest_part = room_info_text_delimeter(text)
@@ -81,8 +81,8 @@ def get_labirint_map(
                             north=bool(int(north)),
                             south=bool(int(south)),
                             west=bool(int(west)),
-                            east=bool(int(east))
-                        )
+                            east=bool(int(east)),
+                        ),
                     )
             labirint_map.append(line)
 
@@ -163,14 +163,13 @@ def get_direction(
 
     if ni == ci - 1 and nj == cj:
         return "север"
-    elif ni == ci + 1 and nj == cj:
+    if ni == ci + 1 and nj == cj:
         return "юг"
-    elif ni == ci and nj == cj - 1:
+    if ni == ci and nj == cj - 1:
         return "запад"
-    elif ni == ci and nj == cj + 1:
+    if ni == ci and nj == cj + 1:
         return "восток"
-    else:
-        raise ValueError("Невозможно определить направление")
+    raise ValueError("Невозможно определить направление")
 
 
 def convert_path_to_directions(
@@ -189,7 +188,7 @@ def convert_path_to_directions(
 def find_path_with_directions(
     labirint_map: List[List[Room]],
     start_room: int,
-    end_room: int
+    end_room: int,
 ) -> Optional[List[str]]:
     """Находит путь и возвращает направления (например, ['юг', 'восток'])"""
     start_pos = find_room_position(labirint_map, start_room)
@@ -209,10 +208,9 @@ def find_path_via_boxes_with_directions(
     labirint_map: List[List[Room]],
     start_room: int,
     target_room: int,
-    passed_rooms: set
+    passed_rooms: set,
 ) -> Optional[List[str]]:
-    """
-    Возвращает направления для пути:
+    """Возвращает направления для пути:
     1) Через все комнаты с box_outer=True,
     2) С завершением в target_room.
     """
@@ -256,7 +254,7 @@ def find_path_via_boxes_with_directions(
         path_to_target = find_shortest_path(
             labirint_map,
             current_pos,
-            target_pos
+            target_pos,
         )
         if not path_to_target:
             return None
@@ -285,7 +283,7 @@ def get_floor_map(
 
 
 def get_sity_portal_room_number(
-        labirint_map: list[list[Room]]
+        labirint_map: list[list[Room]],
 ) -> int:
     """Возвращает номер команты с порталом в город."""
     for line in labirint_map:
@@ -295,7 +293,7 @@ def get_sity_portal_room_number(
 
 
 def get_upper_portal_room_number(
-        labirint_map: list[list[Room]]
+        labirint_map: list[list[Room]],
 ) -> int:
     """Возвращает номер команты с порталом на следующий этаж."""
     for line in labirint_map:
@@ -319,7 +317,7 @@ def convert_path_to_room_numbers(
 def find_path_with_room_numbers(
     labirint_map: List[List[Room]],
     start_room: int,
-    end_room: int
+    end_room: int,
 ) -> Optional[Tuple[List[str], List[int]]]:
     """Находит путь и возвращает направления и номера комнат"""
     start_pos = find_room_position(labirint_map, start_room)
@@ -342,10 +340,9 @@ def find_path_via_boxes_with_room_numbers(
     labirint_map: List[List[Room]],
     start_room: int,
     target_room: int,
-    passed_rooms: set
+    passed_rooms: set,
 ) -> Optional[Tuple[List[str], List[int]]]:
-    """
-    Возвращает направления и номера комнат для пути:
+    """Возвращает направления и номера комнат для пути:
     1) Через все комнаты с box_outer=True,
     2) С завершением в target_room.
     """
@@ -389,7 +386,7 @@ def find_path_via_boxes_with_room_numbers(
         path_to_target = find_shortest_path(
             labirint_map,
             current_pos,
-            target_pos
+            target_pos,
         )
         if not path_to_target:
             return None

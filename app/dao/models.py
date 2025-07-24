@@ -9,7 +9,7 @@ from .database import BaseModel
 class Event(BaseModel):
 
     event_name: Mapped[str] = mapped_column(
-        String(10)
+        String(10),
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,

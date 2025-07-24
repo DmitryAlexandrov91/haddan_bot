@@ -11,8 +11,10 @@ from aiogram import Bot
 from config import configure_logging
 from constants import CHROME_PATH
 from selenium import webdriver
-from selenium.common.exceptions import (InvalidSessionIdException,
-                                        NoAlertPresentException)
+from selenium.common.exceptions import (
+    InvalidSessionIdException,
+    NoAlertPresentException,
+)
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
@@ -36,7 +38,7 @@ class DriverManager:
             info_label: Optional[tk.Label] = None,
             status_label: Optional[tk.Label] = None,
             start_button: Optional[tk.Button] = None,
-            forest_button: Optional[tk.Button] = None
+            forest_button: Optional[tk.Button] = None,
     ):
         self.options = self._get_default_options()
         self.driver = driver
@@ -58,14 +60,14 @@ class DriverManager:
             options.binary_location = CHROME_PATH
             options.add_experimental_option(
                 'excludeSwitches',
-                ['enable-automation']
+                ['enable-automation'],
             )
             options.add_argument("--disable-application-cache")
             options.add_argument("--disk-cache-size=0")
             options.add_argument("--disable-gcm")
             options.add_experimental_option(
                 "excludeSwitches",
-                ["enable-logging", "disable-background-networking"]
+                ["enable-logging", "disable-background-networking"],
             )
 
         else:
@@ -96,7 +98,7 @@ class DriverManager:
         options.add_argument('--start-maximized')
         # Анти-детект
         options.add_argument(
-            '--disable-blink-features=AutomationControlled'
+            '--disable-blink-features=AutomationControlled',
         )
         #  Только DOM
         options.set_capability("pageLoadStrategy", "eager")
@@ -121,7 +123,6 @@ class DriverManager:
     @staticmethod
     def get_attr_from_element(element: WebElement, attr: str) -> Optional[str]:
         """Вытаскивает регуляркой значение атрибута из элемента."""
-
         text = element.get_attribute('outerHTML')
         if not text:
             return None
@@ -146,7 +147,7 @@ class DriverManager:
 
                 self.driver = webdriver.Chrome(
                     service=service,
-                    options=self.options
+                    options=self.options,
                 )
 
                 self.driver.set_page_load_timeout(self.wait_timeout)
@@ -156,7 +157,7 @@ class DriverManager:
                 configure_logging()
                 logging.exception(
                     f'\nВозникло исключение {str(e)}\n',
-                    stack_info=False
+                    stack_info=False,
                 )
 
     def close_driver(self):
@@ -168,7 +169,7 @@ class DriverManager:
                 configure_logging()
                 logging.exception(
                     f'\nВозникло исключение {str(e)}\n',
-                    stack_info=False
+                    stack_info=False,
                 )
             finally:
                 self.driver = None
@@ -210,7 +211,7 @@ class DriverManager:
         if self.driver:
             self.driver.execute_script(
                 "arguments[0].scrollIntoView();",
-                element
+                element,
             )
 
     def click_to_element_with_actionchains(self, element: WebElement):
@@ -227,7 +228,7 @@ class DriverManager:
             text: str = ''):
         """Меняет текст alarm_label Tkinter."""
         self.alarm_label.configure(
-            text=text
+            text=text,
         ) if self.alarm_label else print(text)
 
     def send_info_message(
@@ -235,7 +236,7 @@ class DriverManager:
             text: str = ''):
         """Меняет текст info_label Tkinter."""
         self.info_label.configure(
-            text=text
+            text=text,
         ) if self.info_label else print(text)
 
     def send_status_message(
@@ -243,7 +244,7 @@ class DriverManager:
             text: str = ''):
         """Меняет текст status_label Tkinter."""
         self.status_label.configure(
-            text=text
+            text=text,
         ) if self.status_label else print(text)
 
     def clean_label_messages(self):
@@ -275,6 +276,6 @@ class DriverManager:
             sleep(1)
             counter -= 1
             self.send_status_message(
-                text=f'Ждём секунд: {counter}'
+                text=f'Ждём секунд: {counter}',
             )
         self.send_status_message()

@@ -3,15 +3,25 @@ import threading
 import tkinter as tk
 
 from constants import LABIRINT_MAP_URL
-from selenium.common.exceptions import (InvalidSessionIdException,
-                                        NoSuchWindowException)
+from selenium.common.exceptions import (
+    InvalidSessionIdException,
+    NoSuchWindowException,
+)
+from urllib3.exceptions import MaxRetryError
+
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.fight import (get_round_spells, main_slots_page,
-                                    main_spell_slot)
-from tk_app.interface.login import (send_message_checkbox_value,
-                                    start_login_thread, stop_bot, tg_id_field)
-from urllib3.exceptions import MaxRetryError
+from tk_app.interface.fight import (
+    get_round_spells,
+    main_slots_page,
+    main_spell_slot,
+)
+from tk_app.interface.login import (
+    send_message_checkbox_value,
+    start_login_thread,
+    stop_bot,
+    tg_id_field,
+)
 
 from .glade_prices import GLADE_PRICES
 
@@ -36,19 +46,19 @@ def tk_glade_farm():
                 price_dict=GLADE_PRICES,
                 message_to_tg=send_message_to_tg,
                 telegram_id=int(
-                    user_telegram_id
+                    user_telegram_id,
                 ) if user_telegram_id else None,
                 slots=main_slots_page.get(),
                 spell=main_spell_slot.get(),
-                spell_book=get_round_spells()
+                spell_book=get_round_spells(),
             )
     except (
         InvalidSessionIdException,
         MaxRetryError,
-        NoSuchWindowException
+        NoSuchWindowException,
     ):
         manager.send_alarm_message(
-            'Драйвер не обнаружен, перезагрузка.'
+            'Драйвер не обнаружен, перезагрузка.',
         )
         stop_farm()
         stop_bot()
@@ -69,9 +79,9 @@ def stop_farm():
     else:
         manager.send_alarm_message()
         manager.send_status_message(
-            'Бот готов к работе'
+            'Бот готов к работе',
         ) if manager.driver else manager.send_alarm_message(
-            'Игра не запущена'
+            'Игра не запущена',
         )
     glade_farm_start_buttton.configure(foreground="black")
 
@@ -86,7 +96,7 @@ def start_glade_farm_thread():
         manager.cycle_thread.start()
     else:
         manager.send_alarm_message(
-            'Сначала завершите активный цикл!'
+            'Сначала завершите активный цикл!',
         )
 
 
@@ -102,10 +112,10 @@ glade_farm_start_buttton = tk.Button(
     text='старт',
     width=9,
     bg='#FFF4DC',
-    command=start_glade_farm_thread
+    command=start_glade_farm_thread,
     )
 glade_farm_start_buttton.grid(
-    row=2, column=1
+    row=2, column=1,
 )
 
 glade_farm_stop_buttton = tk.Button(
@@ -113,10 +123,10 @@ glade_farm_stop_buttton = tk.Button(
     text='стоп',
     width=9,
     bg='#FFF4DC',
-    command=stop_farm
+    command=stop_farm,
     )
 glade_farm_stop_buttton.grid(
-    row=2, column=2
+    row=2, column=2,
 )
 
 # Информационный блок
@@ -168,7 +178,7 @@ labirint_map = tk.Button(
     text='карта лабиринта',
     width=15,
     bg='#FFF4DC',
-    command=open_map
+    command=open_map,
 )
 labirint_map.grid(
     row=10,
@@ -180,10 +190,10 @@ clear_all_maps = tk.Button(
     text='очистить карты',
     width=15,
     bg='#FFF4DC',
-    command=delete_all_maps
+    command=delete_all_maps,
 )
 clear_all_maps.grid(
-    row=10, column=4, sticky='w'
+    row=10, column=4, sticky='w',
 )
 
 #  --------------------------------------------------------------------

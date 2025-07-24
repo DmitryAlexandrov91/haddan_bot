@@ -62,8 +62,8 @@ def get_labirint_map(
                         north=bool(int(north)),
                         south=bool(int(south)),
                         west=bool(int(west)),
-                        east=bool(int(east))
-                    )
+                        east=bool(int(east)),
+                    ),
                 )
             else:
                 room_number, rest_part = text_delimetr(text)
@@ -75,8 +75,8 @@ def get_labirint_map(
                         north=bool(int(north)),
                         south=bool(int(south)),
                         west=bool(int(west)),
-                        east=bool(int(east))
-                    )
+                        east=bool(int(east)),
+                    ),
                 )
         labirint_map.append(line)
 
@@ -161,10 +161,9 @@ def get_outer_boxes(labirint_map: List[List[Room]]) -> List[Tuple[int, int]]:
 def find_path_via_boxes_to_target(
     labirint_map: List[List[Room]],
     start_room: int,
-    target_room: int
+    target_room: int,
 ) -> Optional[List[int]]:
-    """
-    Находит путь, который:
+    """Находит путь, который:
     1) Начинается в start_room,
     2) Проходит через ВСЕ комнаты с box_outer=True,
     3) Заканчивается в target_room.
@@ -214,7 +213,7 @@ def find_path_via_boxes_to_target(
         path_to_target = find_shortest_path(
             labirint_map,
             current_pos,
-            target_pos
+            target_pos,
         )
         if not path_to_target:
             return None

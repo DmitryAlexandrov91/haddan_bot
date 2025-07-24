@@ -7,7 +7,7 @@ def make_transition(
         left,
         up,
         down,
-        passed_rooms: set
+        passed_rooms: set,
         ):
     """Делает переход в лесу, в зависимости от местоположения.
 

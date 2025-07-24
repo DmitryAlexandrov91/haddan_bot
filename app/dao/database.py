@@ -4,14 +4,23 @@ from decimal import Decimal
 
 from config import database_url, sync_db_url
 from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
-from sqlalchemy.ext.asyncio import (AsyncAttrs, AsyncSession,
-                                    async_sessionmaker, create_async_engine)
-from sqlalchemy.orm import (DeclarativeBase, Mapped, declared_attr,
-                            mapped_column, sessionmaker)
+from sqlalchemy.ext.asyncio import (
+    AsyncAttrs,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    declared_attr,
+    mapped_column,
+    sessionmaker,
+)
 
 engine = create_async_engine(url=database_url)
 async_session_maker = async_sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
+    engine, class_=AsyncSession, expire_on_commit=False,
 )
 
 sync_engine = create_engine(url=sync_db_url)
@@ -19,7 +28,7 @@ sync_session_maker = sessionmaker(
     bind=sync_engine,
     autocommit=False,
     autoflush=False,
-    expire_on_commit=False
+    expire_on_commit=False,
 )
 
 

@@ -6,19 +6,28 @@ import tkinter as tk
 from bot_classes import DriverManager
 from constants import Floor
 from maze_utils import get_floor_map
-from selenium.common.exceptions import (InvalidSessionIdException,
-                                        NoSuchWindowException)
+from selenium.common.exceptions import (
+    InvalidSessionIdException,
+    NoSuchWindowException,
+)
+from urllib3.exceptions import MaxRetryError
+
 from tk_app.core import app
 from tk_app.driver_manager import manager
-from tk_app.interface.fight import (cheerfulness_drink_checkbox_value,
-                                    cheerfulness_drink_field,
-                                    cheerfulness_slot, cheerfulness_spell,
-                                    main_slots_page, main_spell_slot,
-                                    min_hp_field, mind_spirit_checkbox_value,
-                                    send_message_checkbox_value, tg_id_field)
+from tk_app.interface.fight import (
+    cheerfulness_drink_checkbox_value,
+    cheerfulness_drink_field,
+    cheerfulness_slot,
+    cheerfulness_spell,
+    main_slots_page,
+    main_spell_slot,
+    min_hp_field,
+    mind_spirit_checkbox_value,
+    send_message_checkbox_value,
+    tg_id_field,
+)
 from tk_app.interface.fight.quick_slots import get_round_spells
 from tk_app.interface.login import start_login_thread, stop_bot
-from urllib3.exceptions import MaxRetryError
 
 from .validators import send_message_and_stop_cycle
 
@@ -48,7 +57,7 @@ def start_maze_passing():
     if not first_floor and not second_floor and not third_floor:
         send_message_and_stop_cycle(
             message='Выберите этаж, на котором вы находитесь!',
-            manager=manager
+            manager=manager,
         )
 
     temp_manager = DriverManager()
@@ -72,7 +81,7 @@ def start_maze_passing():
             if not manager.maze_second_floor_map:
                 labirint_map = get_floor_map(
                     floor=Floor.SECOND_FLOOR,
-                    manager=temp_manager
+                    manager=temp_manager,
                     )
                 manager.maze_second_floor_map = copy.deepcopy(labirint_map)
                 if manager.passed_maze_rooms:
@@ -83,7 +92,7 @@ def start_maze_passing():
             if not manager.maze_third_floor_map:
                 labirint_map = get_floor_map(
                     floor=Floor.THIRD_FLOOR,
-                    manager=temp_manager
+                    manager=temp_manager,
                     )
                 manager.maze_third_floor_map = copy.deepcopy(labirint_map)
                 if manager.passed_maze_rooms:
@@ -107,7 +116,7 @@ def start_maze_passing():
             if not manager.baby_maze_second_floor_map:
                 labirint_map = get_floor_map(
                     floor=Floor.BABY_SECOND_FLOOR,
-                    manager=temp_manager
+                    manager=temp_manager,
                     )
                 manager.baby_maze_second_floor_map = copy.deepcopy(
                     labirint_map)
@@ -121,7 +130,7 @@ def start_maze_passing():
                 message=(
                     'В детском лабе нет третьего этажа!'
                 ),
-                manager=manager
+                manager=manager,
             )
 
     if not labirint_map:
@@ -130,7 +139,7 @@ def start_maze_passing():
                 'Не получилось нарисовать маршрут, '
                 'попробуйте ещё раз.'
             ),
-            manager=manager
+            manager=manager,
         )
 
     try:
@@ -144,7 +153,7 @@ def start_maze_passing():
                 mind_spirit_play=mind_spirit_play,
                 message_to_tg=send_message_to_tg,
                 telegram_id=int(
-                    user_telegram_id
+                    user_telegram_id,
                 ) if user_telegram_id else None,
                 min_hp=int(minimum_hp) if minimum_hp else 0,
                 spell_book=get_round_spells(),
@@ -155,16 +164,16 @@ def start_maze_passing():
                 first_floor=first_floor_checkbox_value.get(),
                 second_floor=second_floor_checkbox_value.get(),
                 third_floor=third_floor_checkbox_value.get(),
-                baby_maze=baby_maze_checkbox_value.get()
+                baby_maze=baby_maze_checkbox_value.get(),
             )
 
     except (
         InvalidSessionIdException,
         MaxRetryError,
-        NoSuchWindowException
+        NoSuchWindowException,
     ):
         manager.send_alarm_message(
-            'Драйвер не обнаружен, перезагрузка.'
+            'Драйвер не обнаружен, перезагрузка.',
         )
         stop_maze_passing()
         stop_bot()
@@ -174,7 +183,7 @@ def start_maze_passing():
 
     except Exception as e:
         manager.send_alarm_message(
-            f'При старте прохождения лабиринта возникла ошибка - {e}'
+            f'При старте прохождения лабиринта возникла ошибка - {e}',
         )
 
     finally:
@@ -190,7 +199,7 @@ def start_maze_passing_thread():
         manager.cycle_thread.start()
     else:
         manager.send_alarm_message(
-            'Сначала завершите активный цикл!'
+            'Сначала завершите активный цикл!',
         )
 
 
@@ -202,9 +211,9 @@ def stop_maze_passing():
     else:
         manager.send_alarm_message()
         manager.send_status_message(
-            'Бот готов к работе'
+            'Бот готов к работе',
         ) if manager.driver else manager.send_alarm_message(
-            'Игра не запущена'
+            'Игра не запущена',
         )
     maze_passing_start_button.configure(foreground='black')
 
@@ -212,7 +221,7 @@ def stop_maze_passing():
 maze_farm_label = tk.Label(
     app,
     text='Прохождение лабиринта ->',
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 maze_farm_label.grid(row=11, column=0)
 
@@ -221,10 +230,10 @@ maze_passing_start_button = tk.Button(
     text='старт',
     width=9,
     bg='#FFF4DC',
-    command=start_maze_passing_thread
+    command=start_maze_passing_thread,
     )
 maze_passing_start_button.grid(
-    row=11, column=1
+    row=11, column=1,
 )
 
 maze_passing_stop_button = tk.Button(
@@ -232,21 +241,21 @@ maze_passing_stop_button = tk.Button(
     text='стоп',
     width=9,
     bg='#FFF4DC',
-    command=stop_maze_passing
+    command=stop_maze_passing,
     )
 maze_passing_stop_button.grid(
-    row=11, column=2
+    row=11, column=2,
 )
 
 direct_path_label = tk.Label(
     app,
     text='До комнаты №',
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 direct_path_label.grid(row=12, column=0, sticky='w')
 
 direct_path_field = tk.Entry(
-    app, width=4
+    app, width=4,
 )
 direct_path_field.grid(row=12, column=0, sticky='e')
 
@@ -257,7 +266,7 @@ via_drop_checkbox_button = tk.Checkbutton(
     app,
     text="Через весь дроп",
     variable=via_drop_checkbox_value,
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 via_drop_checkbox_button.grid(
     row=12,
@@ -270,7 +279,7 @@ baby_maze_checkbox_button = tk.Checkbutton(
     app,
     text="Детский лаб",
     variable=baby_maze_checkbox_value,
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 baby_maze_checkbox_button.grid(
     row=12,
@@ -285,7 +294,7 @@ first_floor_checkbox_button = tk.Checkbutton(
     app,
     text="Этаж 1",
     variable=first_floor_checkbox_value,
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 first_floor_checkbox_button.grid(
     row=13,
@@ -300,7 +309,7 @@ second_floor_checkbox_button = tk.Checkbutton(
     app,
     text="Этаж 2",
     variable=second_floor_checkbox_value,
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 second_floor_checkbox_button.grid(
     row=13,
@@ -315,7 +324,7 @@ third_floor_checkbox_button = tk.Checkbutton(
     app,
     text="Этаж 3",
     variable=third_floor_checkbox_value,
-    bg='#FFF4DC'
+    bg='#FFF4DC',
 )
 third_floor_checkbox_button.grid(
     row=13,

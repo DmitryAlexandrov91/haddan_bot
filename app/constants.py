@@ -12,10 +12,9 @@ load_dotenv()
 def get_bool_param_from_env(variable: str | bool) -> bool:
     if isinstance(variable, bool):
         return variable
-    else:
-        if variable.lower() == 'false':
-            return False
-        return True
+    if variable.lower() == 'false':
+        return False
+    return True
 
 
 # Константы для директорий/путей.
@@ -51,7 +50,7 @@ DOMENS = {
     'haddan': 'https://haddan.ru/',
     'online-igra': 'https://www.online-igra.ru/',
     'new.haddan': 'https://new.haddan.ru/',
-    'ru.haddan': 'https://ru.haddan.ru/'
+    'ru.haddan': 'https://ru.haddan.ru/',
 }
 
 
@@ -66,7 +65,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', None)
 CHARS = [
     FIRST_CHAR,
     SECOND_CHAR,
-    THIRD_CHAR
+    THIRD_CHAR,
 ]
 
 
@@ -87,7 +86,7 @@ CHEERFULNESS = get_bool_param_from_env(
 DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', '2')
 DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', '1')
 DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
-    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1'
+    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1',
 )
 DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', '1')
 
@@ -99,7 +98,7 @@ FIELD_PRICES = {
     'Мандрагора': 60,
     'Зеленая массивка': 67,
     'Колючник Черный': 101,
-    'Гертаниум': 190
+    'Гертаниум': 190,
     }
 
 # Список для парсинга 'http://ordenpegasa.ru/shop/'
@@ -113,11 +112,11 @@ LINUX_PROFILE_DIR = 'hd_linux_profile'
 
 POETRY_SPIRIT_RIGHT_ANSWERS = {
     'давай дальше', ' / ', 'Начали!', 'Дальше!', 'пора обратно',
-    'с наградой', 'Телепортироваться', 'Увечье нам не надо', 'Поехали!'
+    'с наградой', 'Телепортироваться', 'Увечье нам не надо', 'Поехали!',
 }
 
 GAMBLE_SPIRIT_RIGHT_ANSWERS = {
-    'Телепортироваться', 'делу давай!', ' / ', 'пошли'
+    'Телепортироваться', 'делу давай!', ' / ', 'пошли',
 }
 
 
@@ -186,7 +185,7 @@ DEFAULT_TK_STATUS = 'Бот готов к работе'
 CHARS_ACCESS = {
     'SwordS': '2033-06-28 23:59:59',
     'Nordman': '2033-06-27 23:59:59',
-    'фантазёрка': '2033-06-27 23:59:59'
+    'фантазёрка': '2033-06-27 23:59:59',
 }
 
 DT_FORMAT = '%Y-%m-%d %H:%M:%S'

@@ -4,7 +4,7 @@ import tkinter as tk
 
 def label_packing(
         app: tk,
-        elements_amount: int, 
+        elements_amount: int,
         row: int,
         column: int,
         sticky: str = 'c',
@@ -14,7 +14,7 @@ def label_packing(
         widget = tk.Label(
             app,
             text=f'Р {element + 1} У {element + 1}',
-            bg='#FFF4DC'
+            bg='#FFF4DC',
         )
 
         if not horizon:
@@ -23,5 +23,5 @@ def label_packing(
             widget.grid(
                 row=row,
                 column=column + element,
-                sticky=sticky
+                sticky=sticky,
             )

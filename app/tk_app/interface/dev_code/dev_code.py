@@ -3,8 +3,8 @@ import tkinter as tk
 from time import sleep  # noqa
 
 from bot_classes import DriverManager
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+
 from tk_app.core import app
 from tk_app.driver_manager import manager
 
@@ -52,10 +52,10 @@ test_btn = tk.Button(
     text='тест 1',
     width=9,
     bg='#FFF4DC',
-    command=start_test_thread
+    command=start_test_thread,
     )
 test_btn.grid(
-    row=7, column=5
+    row=7, column=5,
 )
 
 
@@ -64,8 +64,8 @@ test_btn_2 = tk.Button(
     text='тест 2',
     width=9,
     bg='#FFF4DC',
-    command=start_test_thread_2
+    command=start_test_thread_2,
     )
 test_btn_2.grid(
-    row=7, column=6
+    row=7, column=6,
 )
