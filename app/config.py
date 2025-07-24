@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 database_url = settings.DB_URL
-sync_db_url = settings.DB_URL
+sync_db_url = settings.SYNC_DB_URL
 
 
 def configure_logging() -> None:

@@ -5,7 +5,6 @@ from decimal import Decimal
 from config import database_url, sync_db_url
 from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
 from sqlalchemy.ext.asyncio import (
-    AsyncAttrs,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
@@ -32,7 +31,7 @@ sync_session_maker = sessionmaker(
 )
 
 
-class BaseModel(AsyncAttrs, DeclarativeBase):
+class BaseModel(DeclarativeBase):
     """Базовый класс для всех моделей."""
 
     @declared_attr.directive

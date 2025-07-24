@@ -33,6 +33,7 @@ from tk_app.interface.forest_passing import *  # noqa
 from tk_app.interface.glade_farm import *  # noqa
 from tk_app.interface.login import *  # noqa
 from tk_app.interface.maze import *  # noqa
+from tk_app.interface.events import *  # noqa
 
 
 def start_app() -> None:
