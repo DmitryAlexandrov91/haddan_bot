@@ -40,7 +40,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from utils import (
     get_dragon_time_wait,
@@ -71,6 +71,7 @@ class HaddanUser:
             driver: webdriver.Chrome,
             password: str,
     ) -> None:
+        """Инициализация класса HaddanUser."""
         self.driver = driver
         self.char = char
         self.password = password
@@ -89,7 +90,7 @@ class HaddanUser:
             By.CSS_SELECTOR,
             '[href="javascript:void(enterHaddan())"]')
         WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(
+            ec.element_to_be_clickable(
                 submit_button),
             )
         submit_button.click()
@@ -167,7 +168,7 @@ class HaddanCommonDriver(DriverManager):
         try:
 
             WebDriverWait(self.driver, time).until_not(
-                EC.presence_of_element_located((
+                ec.presence_of_element_located((
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]',
                     )),
@@ -184,7 +185,7 @@ class HaddanCommonDriver(DriverManager):
         try:
 
             WebDriverWait(self.driver, time).until_not(
-                EC.presence_of_element_located((
+                ec.presence_of_element_located((
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]',
                     )),
@@ -204,7 +205,7 @@ class HaddanCommonDriver(DriverManager):
         try:
 
             WebDriverWait(self.driver, time).until_not(
-                    EC.presence_of_element_located((
+                    ec.presence_of_element_located((
                         By.CSS_SELECTOR,
                         NPCImgTags.mind_spirit,
                         ),
@@ -225,7 +226,7 @@ class HaddanCommonDriver(DriverManager):
         try:
 
             WebDriverWait(self.driver, time).until_not(
-                EC.presence_of_element_located((
+                ec.presence_of_element_located((
                     By.XPATH,
                     "//*[contains(text(),'Вы можете попасть')]",
                     )),
@@ -312,7 +313,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         return bool(hits)
 
     def try_to_come_back_from_fight(self) -> None:
-        """"Если бой закончен, нажимает 'вернуться'. """
+        """"Если бой закончен, нажимает 'вернуться'."""
         if not self.driver:
             raise InvalidSessionIdException
 
@@ -436,9 +437,9 @@ class HaddanFightDriver(HaddanCommonDriver):
                 By.CLASS_NAME, 'sys_time',
             )
             if last_round:
-                round = last_round[0].text.rstrip().split()
-                round[-1] = str(int(round[-1]) + 1)
-                return f'{round[0]} {round[1]}'
+                current_round = last_round[0].text.rstrip().split()
+                current_round[-1] = str(int(current_round[-1]) + 1)
+                return f'{current_round[0]} {current_round[1]}'
 
         return 'Раунд 1'
 
@@ -454,7 +455,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
-        round = self.get_round_number()
+        current_round = self.get_round_number()
         kick = self.get_hit_number()
 
         if not kick:
@@ -470,8 +471,8 @@ class HaddanFightDriver(HaddanCommonDriver):
             try:
                 if spell_book:
                     self.open_slot_and_choise_spell(
-                        slots_page=spell_book[round][kick]['slot'],
-                        slot=spell_book[round][kick]['spell'])
+                        slots_page=spell_book[current_round][kick]['slot'],
+                        slot=spell_book[current_round][kick]['spell'])
 
                 else:
                     self.open_slot_and_choise_spell(
@@ -504,9 +505,10 @@ class HaddanFightDriver(HaddanCommonDriver):
                         ''',
                     )
                     WebDriverWait(self.driver, 30).until_not(
-                            EC.presence_of_element_located((
+                            ec.presence_of_element_located((
                                 By.XPATH,
-                                "//*[contains(text(),'Пожалуйста, подождите')]",
+                                "//*[contains(text(),"
+                                "'Пожалуйста, подождите')]",
                                 )),
                         )
                     try:
@@ -527,7 +529,7 @@ class HaddanFightDriver(HaddanCommonDriver):
 class HaddanSpiritPlay(HaddanFightDriver):
     """Класс игры с духами."""
 
-    def right_answers_choise(self, right_answers) -> None:
+    def right_answers_choise(self, right_answers: set) -> None:
         """Проходит циклом по правильным ответам.
 
         Если такой ответ есть, нажимает на него.
@@ -750,7 +752,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
     def __init__(
             self,
             user: HaddanUser | None = None,
-            bot: Bot | None = None) -> None:
+            bot: Bot | None = None,
+    ) -> None:
+        """Инициализация класса HaddanDriverManager."""
         super().__init__(bot=bot)
         self.user = user
         self.loop = asyncio.new_event_loop()
@@ -793,7 +797,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     if kaptcha_runes:
                         for number in text:
                             kaptcha_runes[int(number)].click()
-                            sleep(0.5)
+                            await asyncio.sleep(0.5)
                     self.try_to_switch_to_central_frame()
                     buttons = self.driver.find_elements(
                                     By.TAG_NAME, 'button')
@@ -822,20 +826,24 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                     f"⚠️ Файл не найден: {source_file}",
                                 )
                         except Exception as e:
-                            logging.error(f"⛔ Ошибка при обработке файла: {e}")
+                            logging.error(
+                                f"⛔ Ошибка при обработке файла: {e}",
+                            )
 
     def start_loop(self) -> None:
         """Запускает поток с aiogram ботом."""
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
 
-    async def send_msg(self, text, telegram_id) -> None:
+    async def send_msg(self, text: str, telegram_id: int) -> None:
+        """Аминхронная отправка сообщения."""
         await self.bot.send_message(
             chat_id=telegram_id,
             text=text,
         ) if self.bot else None
 
-    async def send_kaptcha(self, telegram_id) -> None:
+    async def send_kaptcha(self, telegram_id: int) -> None:
+        """Асинхронная отправка капчи."""
         if not self.bot:
             return
         try:
@@ -859,6 +867,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             )
 
     async def start_polling(self) -> None:
+        """Асинхронный старт поллинга бота."""
         if not self.bot:
             return
 
@@ -876,6 +885,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 logging.error(f"Ошибка при старте поллинга {str(e)}.")
 
     async def stop_polling(self) -> None:
+        """Асинхронная остановка поллинга бота."""
         if self.polling_started.is_set():
             try:
                 self.polling_started.clear()
@@ -883,7 +893,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
             except Exception as e:
                 logging.error(f"Ошибка при остановке поллинга {str(e)}")
 
-    def sync_send_message(self, text, telegram_id) -> None:
+    def sync_send_message(self, text: str, telegram_id: int) -> None:
+        """Синхронная отправка сообщения."""
         asyncio.run_coroutine_threadsafe(
             self.send_msg(
                 text=text,
@@ -892,19 +903,22 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.loop,
         )
 
-    def sync_send_kaptcha(self, telegram_id) -> None:
+    def sync_send_kaptcha(self, telegram_id: int) -> None:
+        """Синхронна отправка капчи."""
         asyncio.run_coroutine_threadsafe(
             self.send_kaptcha(telegram_id=telegram_id),
             self.loop,
         )
 
     def sync_start_polling(self) -> None:
+        """Синхронный старт поллинга бота."""
         asyncio.run_coroutine_threadsafe(
             self.start_polling(),
             self.loop,
         )
 
     def sync_stop_polling(self) -> None:
+        """Синхроная остановка поллинга бота."""
         asyncio.run_coroutine_threadsafe(
             self.stop_polling(),
             self.loop,
@@ -1876,7 +1890,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
     def return_back_to_previous_room(
             self,
-            last_turn) -> None:
+            last_turn: str,
+    ) -> None:
         """"Действие возврата в предыдущую комнату."""
         match last_turn:
             case 'запад': self.crossing_to_the_east()
@@ -1895,7 +1910,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
             cheerfulness: bool = False,
             cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1) -> None:
+            cheerfulness_spell: Slot = Slot._1,
+    ) -> None:
+        """Логика прохождения леса."""
         if not self.driver:
             raise InvalidSessionIdException
 

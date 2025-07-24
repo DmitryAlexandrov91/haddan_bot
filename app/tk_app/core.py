@@ -28,7 +28,6 @@ photo = ImageTk.PhotoImage(img)
 app.iconphoto(True, photo)
 
 
-from tk_app.interface.dev_code import *  # noqa
 from tk_app.interface.fight import *  # noqa
 from tk_app.interface.forest_passing import *  # noqa
 from tk_app.interface.glade_farm import *  # noqa

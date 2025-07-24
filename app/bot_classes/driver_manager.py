@@ -15,10 +15,11 @@ from selenium.common.exceptions import (
     InvalidSessionIdException,
     NoAlertPresentException,
 )
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -40,6 +41,7 @@ class DriverManager:
             start_button: Optional[tk.Button] = None,
             forest_button: Optional[tk.Button] = None,
     ) -> None:
+        """Инициализация класса DriverManager."""
         self.options = self._get_default_options()
         self.driver = driver
         self.cycle_thread = cycle_thread
@@ -53,7 +55,7 @@ class DriverManager:
         self.start_button = start_button
         self.forest_button = forest_button
 
-    def _get_default_options(self):
+    def _get_default_options(self) -> uc.ChromeOptions | Options:
 
         if platform.system() == 'Windows':
             options = uc.ChromeOptions()
@@ -111,7 +113,7 @@ class DriverManager:
         return options
 
     @property
-    def cycle_is_running(self):
+    def cycle_is_running(self) -> bool:
         """Цикл запущен."""
         return self.event.is_set()
 
@@ -203,7 +205,7 @@ class DriverManager:
         """Ждёт пока элемент станет кликабельным."""
         if self.driver:
             WebDriverWait(self.driver, 5).until(
-                EC.element_to_be_clickable(element))
+                ec.element_to_be_clickable(element))
 
     def scroll_to_element(self, element: WebElement) -> None:
         """Прокручивает до нужного жлемента."""
