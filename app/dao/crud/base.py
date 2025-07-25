@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, List, Optional, Type, TypeVar
 
 from sqlalchemy.orm import Session
 
@@ -28,12 +28,12 @@ class BaseCRUD(Generic[T]):
     def filter_by(
         self,
         session: Session,
-        **filters: Dict[str, Any],
+        **filters: Any,
     ) -> List[T]:
         """Фильтрация записей по параметрам."""
         return session.query(self.model).filter_by(**filters).all()
 
-    def create(self, session: Session, **kwargs: Dict[str, Any]) -> T:
+    def create(self, session: Session, **kwargs: Any) -> T:
         """Создание новой записи."""
         instance = self.model(**kwargs)
         session.add(instance)

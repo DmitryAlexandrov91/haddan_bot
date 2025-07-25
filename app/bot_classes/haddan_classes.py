@@ -911,11 +911,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.send_kaptcha(telegram_id=telegram_id),
             self.loop,
         )
-        with sync_session_maker() as session:
-            event_crud.create(
-                session=session,
-                event_name='Отправлена капча в телеграм',
-            )
 
     def sync_start_polling(self) -> None:
         """Синхронный старт поллинга бота."""
