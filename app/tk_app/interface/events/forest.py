@@ -7,7 +7,7 @@ from tk_app.core import app
 
 last_forest_pass_label = tk.Label(
     app,
-    text="Последнее событие:",
+    text="Лес пройден:",
     bg='#FFF4DC',
 )
 last_forest_pass_label.grid(
@@ -16,8 +16,9 @@ last_forest_pass_label.grid(
 )
 
 with sync_session_maker() as session:
-    last_event = event_crud.get_latest(
+    last_event = event_crud.filter_by(
         session=session,
+        event_name="Пройден лес",
     )
 
 formatted_time = last_event.created_at.strftime(
@@ -28,7 +29,6 @@ formatted_time = last_event.created_at.strftime(
 last_foress_pass_time = tk.Label(
     app,
     text=(
-        f'{last_event.event_name if last_event else ""} - '
         f'{formatted_time if formatted_time else ""}'
     ),
     bg='#FFF4DC',
@@ -38,4 +38,5 @@ last_foress_pass_time.grid(
     row=14,
     column=1,
     columnspan=2,
+    sticky='w',
 )
