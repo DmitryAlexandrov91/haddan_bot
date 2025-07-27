@@ -2,13 +2,9 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from config import database_url, sync_db_url
+from config import database_url
 from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -17,12 +13,7 @@ from sqlalchemy.orm import (
     sessionmaker,
 )
 
-engine = create_async_engine(url=database_url)
-async_session_maker = async_sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False,
-)
-
-sync_engine = create_engine(url=sync_db_url)
+sync_engine = create_engine(url=database_url)
 sync_session_maker = sessionmaker(
     bind=sync_engine,
     autocommit=False,
