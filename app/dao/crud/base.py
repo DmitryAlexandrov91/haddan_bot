@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, List, Optional, Type, TypeVar
 
 from sqlalchemy.orm import Session
 
@@ -18,22 +18,25 @@ class BaseCRUD(Generic[T]):
         """Получение записи по ID."""
         return session.get(self.model, obj_id)
 
-    def get_all(
+    def get_single_filtered(
+        self,
+        session: Session,
+        **filters: Any,
+    ) -> T | None:
+        """Возвращает последнюю добавленную запись по параметру."""
+        return (session.query(self.model).filter_by(**filters).order_by(
+            self.model.id.desc(),
+            ).first()
+        )
+
+    def get_multi(
         self,
         session: Session,
     ) -> List[T]:
         """Получение всех записей."""
         return session.query(self.model).all()
 
-    def filter_by(
-        self,
-        session: Session,
-        **filters: Dict[str, Any],
-    ) -> List[T]:
-        """Фильтрация записей по параметрам."""
-        return session.query(self.model).filter_by(**filters).all()
-
-    def create(self, session: Session, **kwargs: Dict[str, Any]) -> T:
+    def create(self, session: Session, **kwargs: Any) -> T:
         """Создание новой записи."""
         instance = self.model(**kwargs)
         session.add(instance)
