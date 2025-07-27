@@ -61,9 +61,3 @@ class BaseModel(DeclarativeBase):
                 result[column.key] = value
 
         return result
-
-
-if not settings.DB_FILE.exists():
-    open(settings.DB_FILE, 'w').close()
-    engine = create_engine(settings.DB_URL)
-    BaseModel.metadata.create_all(engine)

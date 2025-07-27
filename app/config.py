@@ -25,8 +25,6 @@ class Settings(BaseSettings):
     if not data_dir.exists():
         data_dir.mkdir()
 
-    DB_FILE: Path = data_dir / 'db.sqlite3'
-
     DB_URL: str = f"sqlite:///{BASE_DIR}/data/db.sqlite3"
 
 
