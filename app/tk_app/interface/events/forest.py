@@ -16,7 +16,7 @@ last_forest_pass_label.grid(
 )
 
 with sync_session_maker() as session:
-    last_event = event_crud.filter_by(
+    last_event = event_crud.get_single_filtered(
         session=session,
         event_name="Пройден лес",
     )
