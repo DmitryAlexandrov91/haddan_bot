@@ -17,13 +17,11 @@ class Settings(BaseSettings):
     """Класс базовых настроект приложения."""
 
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
-    DB_URL: str = f"sqlite+aiosqlite:///{BASE_DIR}/data/db.sqlite3"
-    SYNC_DB_URL: str = f"sqlite+pysqlite:///{BASE_DIR}/data/db.sqlite3"
+    DB_URL: str = f"sqlite:///{BASE_DIR}/data/db.sqlite3"
 
 
 settings = Settings()
 database_url = settings.DB_URL
-sync_db_url = settings.SYNC_DB_URL
 
 
 def configure_logging() -> None:

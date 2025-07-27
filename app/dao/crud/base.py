@@ -31,7 +31,11 @@ class BaseCRUD(Generic[T]):
         **filters: Any,
     ) -> T | None:
         """Фильтрация записей по параметрам."""
-        return session.query(self.model).filter_by(**filters).first()
+        return (
+            session.query(self.model).filter_by(
+                **filters
+            ).order_by(self.model.id.desc()).first()
+        )
 
     def create(self, session: Session, **kwargs: Any) -> T:
         """Создание новой записи."""
