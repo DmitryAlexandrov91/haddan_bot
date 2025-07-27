@@ -2,6 +2,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+import sys
 
 from constants import (
     DATETIME_FORMAT,
@@ -14,13 +15,23 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """Класс базовых настроект приложения."""
+    """Класс базовых настроек приложения."""
 
-    BASE_DIR: Path = Path(__file__).resolve().parent.parent
+    BASE_DIR: Path = Path(sys.executable).parent if getattr(
+        sys, 'frozen', False
+    ) else Path(__file__).resolve().parent.parent
+
+    data_dir: Path = BASE_DIR / 'data'
+    if not data_dir.exists():
+        data_dir.mkdir()
+
+    DB_FILE: Path = data_dir / 'db.sqlite3'
+
     DB_URL: str = f"sqlite:///{BASE_DIR}/data/db.sqlite3"
 
 
 settings = Settings()
+
 database_url = settings.DB_URL
 
 

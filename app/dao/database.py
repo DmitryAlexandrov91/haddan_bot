@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from config import database_url
+from config import settings
 from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
 
 from sqlalchemy.orm import (
@@ -13,7 +13,7 @@ from sqlalchemy.orm import (
 )
 
 
-sync_engine = create_engine(url=database_url)
+sync_engine = create_engine(url=settings.DB_URL)
 sync_session_maker = sessionmaker(
     bind=sync_engine,
     autocommit=False,
@@ -62,3 +62,9 @@ class BaseModel(DeclarativeBase):
                 result[column.key] = value
 
         return result
+
+
+if not settings.DB_FILE.exists():
+    open(settings.DB_FILE, 'w').close()
+    engine = create_engine(settings.DB_URL)
+    BaseModel.metadata.create_all(engine)
