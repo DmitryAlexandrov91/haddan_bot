@@ -1,11 +1,9 @@
 from logging.config import fileConfig
 
-from sqlalchemy import create_engine
-
-from dao import BaseModel, Event  # noqa
-from config import database_url
-
 from alembic import context
+from config import database_url
+from dao import BaseModel, Event  # noqa
+from sqlalchemy import create_engine
 
 config = context.config
 
@@ -49,7 +47,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata,
         )
 
         with context.begin_transaction():

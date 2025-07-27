@@ -33,7 +33,7 @@ class BaseCRUD(Generic[T]):
         """Фильтрация записей по параметрам."""
         return (
             session.query(self.model).filter_by(
-                **filters
+                **filters,
             ).order_by(self.model.id.desc()).first()
         )
 

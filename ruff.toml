@@ -2,7 +2,7 @@ indent-width = 4
 line-length = 79
 
 preview = true
-exclude = ["migration"]
+exclude = ["alembic"]
 
 [format]
 # Enable reformatting of code snippets in docstrings.

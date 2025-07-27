@@ -1,8 +1,8 @@
 import logging
 import os
+import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-import sys
 
 from constants import (
     DATETIME_FORMAT,
@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     """Класс базовых настроек приложения."""
 
     BASE_DIR: Path = Path(sys.executable).parent if getattr(
-        sys, 'frozen', False
+        sys, 'frozen', False,
     ) else Path(__file__).resolve().parent.parent
 
     data_dir: Path = BASE_DIR / 'data'

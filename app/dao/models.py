@@ -11,7 +11,7 @@ class Event(BaseModel):
     """Модель события."""
 
     event_name: Mapped[str] = mapped_column(
-        String(10),
+        String(30),
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
