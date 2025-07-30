@@ -278,8 +278,12 @@ class HaddanCommonDriver(DriverManager):
             f'\nВозникло исключение {str(exception)}\n',
             stack_info=False,
         )
+
         if not self.driver:
             raise InvalidSessionIdException
+
+        self.check_for_slot_clear_alarm_message()
+
         try:
 
             self.driver.switch_to.default_content()
@@ -296,6 +300,19 @@ class HaddanCommonDriver(DriverManager):
                 'Сначала войдите в игру!',
             )
             self.stop_event()
+
+    def check_for_slot_clear_alarm_message(self) -> None:
+        """Проверяет на наличие окна, спрашивающего об очистке слота."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.driver.switch_to.default_content()
+        alarm_window = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'input[id="talkModalButtonID_CANCEL"]')
+        if alarm_window:
+            alarm_window[0].click()
+        self.try_to_switch_to_central_frame()
 
 
 class HaddanFightDriver(HaddanCommonDriver):
@@ -383,6 +400,8 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
+        self.check_for_slot_clear_alarm_message()
+
         if not self.check_come_back():
 
             if slots_page == 'p' == slot:
@@ -457,13 +476,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
-        self.driver.switch_to.default_content()
-        alarm_window = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'input[id="talkModalButtonID_CANCEL"]')
-        if alarm_window:
-            alarm_window[0].click()
-        self.try_to_switch_to_central_frame()
+        self.check_for_slot_clear_alarm_message()
 
         current_round = self.get_round_number()
         kick = self.get_hit_number()
@@ -490,6 +503,7 @@ class HaddanFightDriver(HaddanCommonDriver):
                         slot=default_spell)
 
             except Exception:
+                self.check_for_slot_clear_alarm_message()
                 self.open_slot_and_choise_spell(
                     slots_page=default_slot,
                     slot=default_spell)

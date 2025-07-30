@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-
 from config import database_url
 from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
 from sqlalchemy.orm import (
@@ -12,7 +11,6 @@ from sqlalchemy.orm import (
     mapped_column,
     sessionmaker,
 )
-
 
 sync_engine = create_engine(url=database_url)
 sync_session_maker = sessionmaker(
