@@ -506,13 +506,14 @@ class HaddanFightDriver(HaddanCommonDriver):
                         return document.activeElement;
                         ''',
                     )
-                    WebDriverWait(self.driver, 30).until_not(
-                            ec.presence_of_element_located((
-                                By.XPATH,
-                                "//*[contains(text(),"
-                                "'Пожалуйста, подождите')]",
-                                )),
-                        )
+                    sleep(0.2)
+                    # WebDriverWait(self.driver, 30).until_not(
+                    #         ec.presence_of_element_located((
+                    #             By.XPATH,
+                    #             "//*[contains(text(),"
+                    #             "'Пожалуйста, подождите')]",
+                    #             )),
+                    #     )
                     try:
                         if element:
                             element.send_keys(Keys.TAB)
@@ -1436,7 +1437,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
                 if cheerfulnes_min:
 
-                    while cheerfulnes < cheerfulnes_min:
+                    while cheerfulnes < cheerfulnes_min and (
+                        self.check_for_fight() is False
+                    ):
 
                         self.open_slot_and_choise_spell(
                             slots_page=cheerfulnes_slot,
@@ -1453,26 +1456,26 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             break
 
     def maze_passing(
-            self,
-            labirint_map: list[list[Room]],
-            via_drop: bool = True,
-            to_the_room: int | None = None,
-            message_to_tg: bool = False,
-            telegram_id: int | None = None,
-            slots: SlotsPage = SlotsPage._1,
-            spell: Slot = Slot._1,
-            mind_spirit_play: bool = True,
-            min_hp: int | None = None,
-            spell_book: dict | None = None,
-            cheerfulness: bool = False,
-            cheerfulness_min: int | None = None,
-            cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1,
-            first_floor: bool = False,
-            second_floor: bool = False,
-            third_floor: bool = False,
-            baby_maze: bool = False,
-            ) -> None:
+        self,
+        labirint_map: list[list[Room]],
+        via_drop: bool = True,
+        to_the_room: int | None = None,
+        message_to_tg: bool = False,
+        telegram_id: int | None = None,
+        slots: SlotsPage = SlotsPage._1,
+        spell: Slot = Slot._1,
+        mind_spirit_play: bool = True,
+        min_hp: int | None = None,
+        spell_book: dict | None = None,
+        cheerfulness: bool = False,
+        cheerfulness_min: int | None = None,
+        cheerfulness_slot: SlotsPage = SlotsPage._0,
+        cheerfulness_spell: Slot = Slot._1,
+        first_floor: bool = False,
+        second_floor: bool = False,
+        third_floor: bool = False,
+        baby_maze: bool = False,
+    ) -> None:
         """Прохождение лабиринта."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -1772,29 +1775,29 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.actions_after_exception(e)
 
     def default_maze_actions(
-            self,
-            message_to_tg: bool = False,
-            telegram_id: int | None = None,
-            slots: SlotsPage = SlotsPage._1,
-            spell: Slot = Slot._1,
-            mind_spirit_play: bool = True,
-            min_hp: int | None = None,
-            spell_book: dict | None = None,
-            cheerfulness: bool = False,
-            cheerfulness_min: int | None = None,
-            cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1) -> None:
+        self,
+        message_to_tg: bool = False,
+        telegram_id: int | None = None,
+        slots: SlotsPage = SlotsPage._1,
+        spell: Slot = Slot._1,
+        mind_spirit_play: bool = True,
+        min_hp: int | None = None,
+        spell_book: dict | None = None,
+        cheerfulness: bool = False,
+        cheerfulness_min: int | None = None,
+        cheerfulness_slot: SlotsPage = SlotsPage._0,
+        cheerfulness_spell: Slot = Slot._1,
+    ) -> None:
         """Стандартный набор действий в лабиринте."""
         if not self.driver:
             raise InvalidSessionIdException
 
-        if cheerfulness:
-            if not self.check_for_fight():
-                self.check_cheerfulnes_level(
-                    cheerfulnes_min=cheerfulness_min,
-                    cheerfulnes_slot=cheerfulness_slot,
-                    cheerfulnes_spell=cheerfulness_spell,
-                )
+        if cheerfulness and self.check_for_fight() is False:
+            self.check_cheerfulnes_level(
+                cheerfulnes_min=cheerfulness_min,
+                cheerfulnes_slot=cheerfulness_slot,
+                cheerfulnes_spell=cheerfulness_spell,
+            )
 
         self.try_to_switch_to_central_frame()
         sleep(0.5)
@@ -1903,16 +1906,16 @@ class HaddanDriverManager(HaddanSpiritPlay):
             case _: pass
 
     def forest_passing(
-            self,
-            message_to_tg: bool = False,
-            telegram_id: int | None = None,
-            slots: SlotsPage = SlotsPage._1,
-            spell: Slot = Slot._1,
-            spell_book: dict | None = None,
-            cheerfulness: bool = False,
-            cheerfulness_min: int | None = None,
-            cheerfulness_slot: SlotsPage = SlotsPage._0,
-            cheerfulness_spell: Slot = Slot._1,
+        self,
+        message_to_tg: bool = False,
+        telegram_id: int | None = None,
+        slots: SlotsPage = SlotsPage._1,
+        spell: Slot = Slot._1,
+        spell_book: dict | None = None,
+        cheerfulness: bool = False,
+        cheerfulness_min: int | None = None,
+        cheerfulness_slot: SlotsPage = SlotsPage._0,
+        cheerfulness_spell: Slot = Slot._1,
     ) -> None:
         """Логика прохождения леса."""
         if not self.driver:
@@ -1996,9 +1999,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.actions_after_exception(e)
 
     def actions_with_mind_spirit(
-            self,
-            message_to_tg: bool,
-            telegram_id: int | None,
+        self,
+        message_to_tg: bool,
+        telegram_id: int | None,
     ) -> None:
         """Действия для ручной игре с духом ума."""
         if not self.driver:
