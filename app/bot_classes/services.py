@@ -17,60 +17,29 @@ def make_transition(
     passed_rooms.add(room_number)
 
     match room_number:
-        case 1 | 2 | 3: right()
-        case 4: down()
-        case 19 | 20 | 21: right()
-        case 22: up()
+        case 1 | 2 | 3 | 5 | 80 | 96 | 186 | 187 | 188 | 219 | 220 | 55 | (
+            112 | 66 | 52 | 53 | 68 | 99 | 182 | 46 | 62 | 9 | 44 | 71 | 73 | (
+                56 | 101 | 102 | 146 | 130 | 144 | 176 | 173 | 23 | 19 | 20 | (
+                    21)
+            )
+        ): right()
+        case 39 | 38 | 37 | 51 | 83 | 115 | 129 | 143 | 172 | 203: left()
+        case 22 | 113 | 98 | 82 | 233 | 218 | 216 | 241: up()
+        case 4 | 8 | 24 | 36 | 50 | 65 | 81 | 97 | 54 | 84 | 100 | (
+            114 | 128 | 142 | 157 | 189 | 204 | 221 | 236 | 171 | 202 | 217 | (
+                232 | 184 | 213
+            )
+        ): down()
         case 7: left() if 6 not in passed_rooms else right()
         case 6: left() if 5 not in passed_rooms else right()
-        case 5: right()
-        case 8: down()
-        case 23: right()
-        case 24: down()
-        case 39 | 38 | 37: left()
-        case 36: down()
-        case 51: left()
-        case 50: down()
-        case 65: down()
-        case 80: right()
-        case 81: down()
-        case 96: right()
-        case 97: down()
-        case 112: right()
-        case 113: up()
-        case 98: up()
-        case 83: left()
-        case 82: up()
         case 67: left() if 66 not in passed_rooms else up()
-        case 66: right()
-        case 52 | 53: right()
-        case 54: down()
         case 69: left() if 68 not in passed_rooms else down()
-        case 68: right()
-        case 84: down()
-        case 99: right()
-        case 100: down()
-        case 115: left()
-        case 114: down()
-        case 129: left()
-        case 128: down()
-        case 143: left()
-        case 142 | 157: down()
-        case 172: left()
-        case 171: down()
-        case 186 | 187 | 188: right()
-        case 189 | 204: down()
-        case 219 | 220: right()
-        case 221 | 236: down()
         case 251: left() if 250 not in passed_rooms else right()
         case 250: up() if 235 not in passed_rooms else right()
         case 235: left() if 234 not in passed_rooms else down()
         case 234: down() if 249 not in passed_rooms else right()
         case 249: left() if 248 not in passed_rooms else up()
         case 248: up() if 233 not in passed_rooms else right()
-        case 233 | 218: up()
-        case 203: left()
-        case 202 | 217 | 232: down()
         case 247: left() if 246 not in passed_rooms else right()
         case 246: up() if 231 not in passed_rooms else right()
         case 231: left() if 230 not in passed_rooms else down()
@@ -79,41 +48,36 @@ def make_transition(
         case 200:
             if 201 not in passed_rooms:
                 right()
-            if 185 in passed_rooms and 201 in passed_rooms:
+            elif 185 in passed_rooms and 201 in passed_rooms:
                 down()
             else:
                 up()
         case 201: down() if 216 not in passed_rooms else left()
-        case 216: up()
         case 185: up() if 170 not in passed_rooms else down()
         case 169: left() if 168 not in passed_rooms else right()
         case 170: left() if 169 not in passed_rooms else down()
         case 168: down() if 183 not in passed_rooms else right()
         case 183: left() if 182 not in passed_rooms else right()
-        case 182: right()
-        case 184: down()
         case 199: down() if 214 not in passed_rooms else left()
         case 214: down() if 229 not in passed_rooms else up()
         case 229: left() if 228 not in passed_rooms else up()
         case 228:
             if 213 not in passed_rooms and 243 not in passed_rooms:
                 up()
-            if 243 not in passed_rooms and 213 in passed_rooms:
+            elif 243 not in passed_rooms and 213 in passed_rooms:
                 down()
             else:
                 right()
-        case 213: down()
         case 243:
             if 244 not in passed_rooms and 242 not in passed_rooms:
                 right()
-            if 244 in passed_rooms and 242 not in passed_rooms:
+            elif 244 in passed_rooms and 242 not in passed_rooms:
                 left()
             else:
                 up()
         case 242: up() if 227 not in passed_rooms else right()
         case 227: left() if 226 not in passed_rooms else down()
         case 226: down() if 241 not in passed_rooms else right()
-        case 241: up()
         case 198: left()
         case 197: down()
         case 212: left()
@@ -142,9 +106,7 @@ def make_transition(
         case 77: down() if 92 not in passed_rooms else left()
         case 92: up()
         case 61: up()
-        case 46: right()
         case 47: down()
-        case 62: right()
         case 63 | 48: up()
         case 33: left() if 32 not in passed_rooms else right()
         case 32: left()
@@ -163,7 +125,7 @@ def make_transition(
         case 126:
             if 127 not in passed_rooms and 125 not in passed_rooms:
                 right()
-            if 125 not in passed_rooms and 127 in passed_rooms:
+            elif 125 not in passed_rooms and 127 in passed_rooms:
                 left()
             else:
                 up()
@@ -173,7 +135,7 @@ def make_transition(
         case 155:
             if 154 not in passed_rooms and 156 not in passed_rooms:
                 right()
-            if 154 not in passed_rooms and 156 in passed_rooms:
+            elif 154 not in passed_rooms and 156 in passed_rooms:
                 left()
             else:
                 up()
@@ -214,33 +176,24 @@ def make_transition(
         case 162 | 161 | 160: left()
         case 159: left() if 158 not in passed_rooms else up()
         case 158: down()
-        case 173: right()
         case 174: right() if 175 not in passed_rooms else up()
         case 175: right() if 176 not in passed_rooms else left()
-        case 176: right()
         case 177: down()
         case 192: left()
         case 191: left()
         case 190: down() if 205 not in passed_rooms else up()
         case 205: right() if 206 not in passed_rooms else up()
         case 206: left()
-        case 144: right()
         case 145: up()
-        case 130: right()
         case 131: down()
-        case 146: right()
         case 147 | 132: up()
         case 117: left()
         case 116: up()
-        case 101 | 102: right()
         case 103: up()
         case 88 | 87 | 86: left()
         case 85 | 70: up()
-        case 55 | 56: right()
         case 57: down()
         case 72: left() if 71 not in passed_rooms else right()
-        case 71: right()
-        case 73: right()
         case 74: up()
         case 59: left()
         case 58 | 43: up()
@@ -254,11 +207,9 @@ def make_transition(
         case 15: down()
         case 30: left()
         case 29: down()
-        case 44: right()
         case 45 | 60 | 75: down()
         case 90: left()
         case 244: right() if 245 not in passed_rooms else left()
         case 245: left()
         case 35: left()
         case 148: down()
-        case 9: right()

@@ -5,7 +5,6 @@ from decimal import Decimal
 
 from config import database_url
 from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
-
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
