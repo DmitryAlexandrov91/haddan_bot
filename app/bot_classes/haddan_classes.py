@@ -457,6 +457,14 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
+        self.driver.switch_to.default_content()
+        alarm_window = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'input[id="talkModalButtonID_CANCEL"]')
+        if alarm_window:
+            alarm_window[0].click()
+        self.try_to_switch_to_central_frame()
+
         current_round = self.get_round_number()
         kick = self.get_hit_number()
 
@@ -1240,8 +1248,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
         while self.cycle_is_running:
 
             try:
-                if cheerfulness:
 
+                self.driver.switch_to.default_content()
+                alarm_window = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'input[id="talkModalButtonID_CANCEL"]')
+                if alarm_window:
+                    alarm_window[0].click()
+
+                if cheerfulness:
                     self.check_cheerfulnes_level(
                         cheerfulnes_min=cheerfulness_min,
                         cheerfulnes_slot=cheerfulness_slot,

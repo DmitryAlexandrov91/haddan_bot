@@ -7,9 +7,10 @@ import tkinter as tk
 from bot_classes import DriverManager
 from config import configure_logging
 from constants import FIELD_PRICES
-from utils import get_glade_price_list
 
 from tk_app.core import app
+
+from .utils import get_glade_price_list
 
 GLADE_PRICES = FIELD_PRICES.copy()
 
