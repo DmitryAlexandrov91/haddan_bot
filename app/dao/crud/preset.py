@@ -28,7 +28,7 @@ class PresetCrud(BaseCRUD):
                         "slots": (
                             sb.slot_spell.page_num,
                             sb.slot_spell.slot_num,
-                        )
+                        ),
 
                     } for sb in preset.spell_books
                 ],

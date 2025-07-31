@@ -1,4 +1,3 @@
-import sys
 import tkinter as tk
 from typing import Any
 
@@ -934,11 +933,10 @@ def get_preset_dataset_from_tk(preset_name: str) -> dict[str, Any]:
 
 def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
-
     with sync_session_maker() as session:
         dragon_preset = preset_crud.get_single_filtered(
             session=session,
-            name='Дракон'
+            name='Дракон',
         )
 
         if not dragon_preset:
@@ -1005,7 +1003,7 @@ def get_dragon_preset() -> None:
 
         spell_books = spell_book_crud.get_multi_filtered(
             session=session,
-            preset_id=dragon_preset.id
+            preset_id=dragon_preset.id,
 
         )
 
@@ -1013,7 +1011,9 @@ def get_dragon_preset() -> None:
         main_spell_slot.set(dragon_preset.main_slot)
 
         round_1_data = {
-            data.kick_num: data.slot_spell for data in spell_books if data.round_num == '1'
+            data.kick_num: data.slot_spell for data in spell_books if (
+                data.round_num == '1'
+            )
         }
 
         r1y1_slot.set(round_1_data['1'].page_num)
@@ -1026,7 +1026,9 @@ def get_dragon_preset() -> None:
         r1y4_spell.set(round_1_data['4'].slot_num)
 
         round_2_data = {
-            data.kick_num: data.slot_spell for data in spell_books if data.round_num == '2'
+            data.kick_num: data.slot_spell for data in spell_books if (
+                data.round_num == '2'
+            )
         }
 
         r2y1_slot.set(round_2_data['1'].page_num)
@@ -1039,7 +1041,9 @@ def get_dragon_preset() -> None:
         r2y4_spell.set(round_2_data['4'].slot_num)
 
         round_3_data = {
-            data.kick_num: data.slot_spell for data in spell_books if data.round_num == '3'
+            data.kick_num: data.slot_spell for data in spell_books if (
+                data.round_num == '3'
+            )
         }
 
         r3y1_slot.set(round_3_data['1'].page_num)
@@ -1052,7 +1056,9 @@ def get_dragon_preset() -> None:
         r3y4_spell.set(round_3_data['4'].slot_num)
 
         round_4_data = {
-            data.kick_num: data.slot_spell for data in spell_books if data.round_num == '4'
+            data.kick_num: data.slot_spell for data in spell_books if (
+                data.round_num == '4'
+            )
         }
 
         r4y1_slot.set(round_4_data['1'].page_num)
@@ -1065,7 +1071,9 @@ def get_dragon_preset() -> None:
         r4y4_spell.set(round_4_data['4'].slot_num)
 
         round_5_data = {
-            data.kick_num: data.slot_spell for data in spell_books if data.round_num == '5'
+            data.kick_num: data.slot_spell for data in spell_books if (
+                data.round_num == '5'
+            )
         }
 
         r5y1_slot.set(round_5_data['1'].page_num)
@@ -1078,7 +1086,9 @@ def get_dragon_preset() -> None:
         r5y4_spell.set(round_5_data['4'].slot_num)
 
         round_6_data = {
-            data.kick_num: data.slot_spell for data in spell_books if data.round_num == '6'
+            data.kick_num: data.slot_spell for data in spell_books if (
+                data.round_num == '6'
+            )
         }
 
         r6y1_slot.set(round_6_data['1'].page_num)
@@ -1111,7 +1121,7 @@ def create_update_dragon_preset() -> None:
                 round_num=spell_book_data['round_num'],
                 kick_num=spell_book_data['kick_num'],
                 preset_id=preset.id,
-                preset=preset
+                preset=preset,
             )
 
             slot_spell_crud.get_or_create_or_update(
@@ -1119,7 +1129,7 @@ def create_update_dragon_preset() -> None:
                 page_num=spell_book_data['slot_spells']['page_num'],
                 slot_num=spell_book_data['slot_spells']['slot_num'],
                 spell_book_id=spell_book.id,
-                spell_book=spell_book
+                spell_book=spell_book,
             )
 
 
@@ -1133,88 +1143,14 @@ dragon_preset_button.grid(
     row=4, column=7,
 )
 
-dragon_preset_save = tk.Button(
+dragon_preset_upd = tk.Button(
     app,
     text='upd',
     bg='#FFF4DC',
     command=create_update_dragon_preset,
 )
-dragon_preset_save.grid(
+dragon_preset_upd.grid(
     row=4, column=8,
-)
-
-
-def get_dragon_punch_preset() -> None:
-    """Пресет для фарма дракона физ ударами."""
-    main_slot = SlotsPage._p
-    main_spell = Slot._p
-
-    main_slots_page.set(main_slot)
-    main_spell_slot.set(main_spell)
-
-    r1y1_slot.set(SlotsPage._1)
-    r1y1_spell.set(Slot._1)
-    r1y2_slot.set(SlotsPage._1)
-    r1y2_spell.set(Slot._2)
-    r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Slot._3)
-    r1y4_slot.set(main_slot)
-    r1y4_spell.set(main_spell)
-
-    r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Slot._4)
-    r2y2_slot.set(main_slot)
-    r2y2_spell.set(main_spell)
-    r2y3_slot.set(main_slot)
-    r2y3_spell.set(main_spell)
-    r2y4_slot.set(main_slot)
-    r2y4_spell.set(main_spell)
-
-    r3y1_slot.set(main_slot)
-    r3y1_spell.set(main_spell)
-    r3y2_slot.set(main_slot)
-    r3y2_spell.set(main_spell)
-    r3y3_slot.set(main_slot)
-    r3y3_spell.set(main_spell)
-    r3y4_slot.set(main_slot)
-    r3y4_spell.set(main_spell)
-
-    r4y1_slot.set(main_slot)
-    r4y1_spell.set(main_spell)
-    r4y2_slot.set(main_slot)
-    r4y2_spell.set(main_spell)
-    r4y3_slot.set(main_slot)
-    r4y3_spell.set(main_spell)
-    r4y4_slot.set(main_slot)
-    r4y4_spell.set(main_spell)
-
-    r5y1_slot.set(main_slot)
-    r5y1_spell.set(main_spell)
-    r5y2_slot.set(main_slot)
-    r5y2_spell.set(main_spell)
-    r5y3_slot.set(main_slot)
-    r5y3_spell.set(main_spell)
-    r5y4_slot.set(main_slot)
-    r5y4_spell.set(main_spell)
-
-    r6y1_slot.set(SlotsPage._1)
-    r6y1_spell.set(Slot._1)
-    r6y2_slot.set(SlotsPage._1)
-    r6y2_spell.set(Slot._2)
-    r6y3_slot.set(SlotsPage._1)
-    r6y3_spell.set(Slot._3)
-    r6y4_slot.set(main_slot)
-    r6y4_spell.set(main_spell)
-
-
-dragon_punch_preset = tk.Button(
-    app,
-    text='Дракон ФУ',
-    bg='#FFF4DC',
-    command=get_dragon_punch_preset,
-)
-dragon_punch_preset.grid(
-    row=4, column=10,
 )
 
 
@@ -1239,7 +1175,7 @@ farm_CY_preset = tk.Button(
     command=get_cy_preset,
 )
 farm_CY_preset.grid(
-    row=4, column=12,
+    row=4, column=9,
 )
 
 
