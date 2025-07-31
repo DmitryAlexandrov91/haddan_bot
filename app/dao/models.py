@@ -36,6 +36,18 @@ class Preset(BaseModel):
         cascade="all, delete-orphan",
     )
 
+    main_page: Mapped[str] = mapped_column(
+        String(3),
+        nullable=False,
+        comment='Номер страницы слотов главного заклинания',
+    )
+
+    main_slot: Mapped[str] = mapped_column(
+        String(3),
+        nullable=False,
+        comment='Номер слота главного заклинания',
+    )
+
 
 class SpellBook(BaseModel):
     """Модель книги заклинаний."""

@@ -693,17 +693,6 @@ def sync_with_main_spell() -> None:
     r6y4_spell.set(main_spell)
 
 
-sync_button = tk.Button(
-    app,
-    text='sync',
-    bg='#FFF4DC',
-    command=sync_with_main_spell,
-)
-# sync_button.grid(
-#     row=4, column=10
-# )
-
-
 def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
 
@@ -712,68 +701,88 @@ def get_dragon_preset() -> None:
             session=session,
             preset_name='Дракон'
         )
-        if not spell_book:
-            pass
 
-    main_slot = SlotsPage._1
-    main_spell = Slot._5
+    if not spell_book:
+        main_slot = SlotsPage._1
+        main_spell = Slot._5
 
-    main_slots_page.set(main_slot)
-    main_spell_slot.set(main_spell)
+        main_slots_page.set(main_slot)
+        main_spell_slot.set(main_spell)
 
-    r1y1_slot.set(SlotsPage._1)
-    r1y1_spell.set(Slot._1)
-    r1y2_slot.set(SlotsPage._1)
-    r1y2_spell.set(Slot._2)
-    r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Slot._3)
-    r1y4_slot.set(main_slot)
-    r1y4_spell.set(main_spell)
+        r1y1_slot.set(SlotsPage._1)
+        r1y1_spell.set(Slot._1)
+        r1y2_slot.set(SlotsPage._1)
+        r1y2_spell.set(Slot._2)
+        r1y3_slot.set(SlotsPage._1)
+        r1y3_spell.set(Slot._3)
+        r1y4_slot.set(main_slot)
+        r1y4_spell.set(main_spell)
 
-    r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Slot._4)
-    r2y2_slot.set(main_slot)
-    r2y2_spell.set(main_spell)
-    r2y3_slot.set(main_slot)
-    r2y3_spell.set(main_spell)
-    r2y4_slot.set(main_slot)
-    r2y4_spell.set(main_spell)
+        r2y1_slot.set(SlotsPage._1)
+        r2y1_spell.set(Slot._4)
+        r2y2_slot.set(main_slot)
+        r2y2_spell.set(main_spell)
+        r2y3_slot.set(main_slot)
+        r2y3_spell.set(main_spell)
+        r2y4_slot.set(main_slot)
+        r2y4_spell.set(main_spell)
 
-    r3y1_slot.set(main_slot)
-    r3y1_spell.set(main_spell)
-    r3y2_slot.set(main_slot)
-    r3y2_spell.set(main_spell)
-    r3y3_slot.set(main_slot)
-    r3y3_spell.set(main_spell)
-    r3y4_slot.set(main_slot)
-    r3y4_spell.set(main_spell)
+        r3y1_slot.set(main_slot)
+        r3y1_spell.set(main_spell)
+        r3y2_slot.set(main_slot)
+        r3y2_spell.set(main_spell)
+        r3y3_slot.set(main_slot)
+        r3y3_spell.set(main_spell)
+        r3y4_slot.set(main_slot)
+        r3y4_spell.set(main_spell)
 
-    r4y1_slot.set(main_slot)
-    r4y1_spell.set(main_spell)
-    r4y2_slot.set(main_slot)
-    r4y2_spell.set(main_spell)
-    r4y3_slot.set(main_slot)
-    r4y3_spell.set(main_spell)
-    r4y4_slot.set(main_slot)
-    r4y4_spell.set(main_spell)
+        r4y1_slot.set(main_slot)
+        r4y1_spell.set(main_spell)
+        r4y2_slot.set(main_slot)
+        r4y2_spell.set(main_spell)
+        r4y3_slot.set(main_slot)
+        r4y3_spell.set(main_spell)
+        r4y4_slot.set(main_slot)
+        r4y4_spell.set(main_spell)
 
-    r5y1_slot.set(main_slot)
-    r5y1_spell.set(main_spell)
-    r5y2_slot.set(main_slot)
-    r5y2_spell.set(main_spell)
-    r5y3_slot.set(main_slot)
-    r5y3_spell.set(main_spell)
-    r5y4_slot.set(main_slot)
-    r5y4_spell.set(main_spell)
+        r5y1_slot.set(main_slot)
+        r5y1_spell.set(main_spell)
+        r5y2_slot.set(main_slot)
+        r5y2_spell.set(main_spell)
+        r5y3_slot.set(main_slot)
+        r5y3_spell.set(main_spell)
+        r5y4_slot.set(main_slot)
+        r5y4_spell.set(main_spell)
 
-    r6y1_slot.set(SlotsPage._1)
-    r6y1_spell.set(Slot._1)
-    r6y2_slot.set(SlotsPage._1)
-    r6y2_spell.set(Slot._2)
-    r6y3_slot.set(SlotsPage._1)
-    r6y3_spell.set(Slot._3)
-    r6y4_slot.set(main_slot)
-    r6y4_spell.set(main_spell)
+        r6y1_slot.set(SlotsPage._1)
+        r6y1_spell.set(Slot._1)
+        r6y2_slot.set(SlotsPage._1)
+        r6y2_spell.set(Slot._2)
+        r6y3_slot.set(SlotsPage._1)
+        r6y3_spell.set(Slot._3)
+        r6y4_slot.set(main_slot)
+        r6y4_spell.set(main_spell)
+
+
+def create_update_dragon_preset() -> None:
+    preset_data = {
+        'name': 'Дракон',
+        'main_page': main_slots_page.get(),
+        'main_slot': main_spell_slot.get()
+    }
+
+    with sync_session_maker() as session:
+        preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Дракон'
+        )
+        if not preset:
+            preset_crud.create(
+                session=session,
+                name=preset_data['name'],
+                main_page=preset_data['main_page'],
+                main_slot=preset_data['main_slot']
+            )
 
 
 dragon_preset = tk.Button(
@@ -784,6 +793,16 @@ dragon_preset = tk.Button(
 )
 dragon_preset.grid(
     row=4, column=7,
+)
+
+dragon_preset_save = tk.Button(
+    app,
+    text='upd',
+    bg='#FFF4DC',
+    command=create_update_dragon_preset,
+)
+dragon_preset_save.grid(
+    row=4, column=8,
 )
 
 

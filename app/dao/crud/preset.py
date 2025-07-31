@@ -19,6 +19,8 @@ class PresetCrud(BaseCRUD):
         if preset:
             return {
                 "preset": preset.name,
+                "main_page": preset.main_page,
+                "main_slot": preset.main_slot,
                 "spell_books": [
                     {
                         "round": sb.round_num,
