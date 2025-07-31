@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: 18453cf7a796
+Revision ID: 2cdde16b7bc7
 Revises: 
-Create Date: 2025-07-31 13:05:16.108973
+Create Date: 2025-07-31 14:36:02.111878
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '18453cf7a796'
+revision: str = '2cdde16b7bc7'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,6 @@ def upgrade() -> None:
     sa.Column('event_name', sa.String(length=30), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('id', sa.Integer(), sa.Identity(always=True), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('preset',
@@ -33,7 +32,6 @@ def upgrade() -> None:
     sa.Column('main_page', sa.String(length=3), nullable=False, comment='Номер страницы слотов главного заклинания'),
     sa.Column('main_slot', sa.String(length=3), nullable=False, comment='Номер слота главного заклинания'),
     sa.Column('id', sa.Integer(), sa.Identity(always=True), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -42,7 +40,6 @@ def upgrade() -> None:
     sa.Column('kick_num', sa.String(length=3), nullable=False, comment='Номер удара'),
     sa.Column('preset_id', sa.Integer(), nullable=False, comment='ID связанного пресета'),
     sa.Column('id', sa.Integer(), sa.Identity(always=True), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['preset_id'], ['preset.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -52,7 +49,6 @@ def upgrade() -> None:
     sa.Column('spell_name', sa.String(length=100), nullable=True, comment='Название заклинания'),
     sa.Column('spell_book_id', sa.Integer(), nullable=False, comment='ID связанной книги заклинаний'),
     sa.Column('id', sa.Integer(), sa.Identity(always=True), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['spell_book_id'], ['spellbook.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )

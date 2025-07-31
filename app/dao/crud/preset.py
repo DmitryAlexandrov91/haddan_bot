@@ -1,4 +1,5 @@
 from typing import Any
+
 from sqlalchemy.orm import Session
 
 from ..models import Preset
@@ -11,10 +12,9 @@ class PresetCrud(BaseCRUD):
     def get_spellbook_by_preset_name(
             self,
             session: Session,
-            preset_name: str
+            preset_name: str,
     ) -> dict[str, Any] | None:
         """Вытаскивает всю книгу заклинаний по названию пресета."""
-
         preset = session.query(Preset).filter_by(name=preset_name).first()
         if preset:
             return {
@@ -29,11 +29,11 @@ class PresetCrud(BaseCRUD):
                             {
                                 "slot": ss.slot_num,
                                 "spell": ss.spell_name,
-                                "page": ss.page_num
+                                "page": ss.page_num,
                             } for ss in sb.slot_spells
-                        ]
+                        ],
                     } for sb in preset.spell_books
-                ]
+                ],
             }
         return None
 

@@ -43,3 +43,23 @@ class BaseCRUD(Generic[T]):
         session.commit()
         session.refresh(instance)
         return instance
+
+    def get_or_create_or_update(self, session: Session, **kwargs: Any) -> T:
+        """Получает, обновляет, создаёт объект в БД."""
+        filter_kwargs = kwargs
+        if hasattr(self.model, 'name'):
+            filter_kwargs = {'name': kwargs.get('name')}
+
+        obj = session.query(self.model).filter_by(**filter_kwargs).first()
+        if obj:
+            for key, value in kwargs.items():
+                if hasattr(obj, key) and getattr(obj, key) != value:
+                    setattr(obj, key, value)
+            session.commit()
+            session.refresh(obj)
+        else:
+            obj = self.model(**kwargs)
+            session.add(obj)
+            session.commit()
+            session.refresh(obj)
+        return obj

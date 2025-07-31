@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from config import database_url
-from sqlalchemy import Boolean, Identity, Integer, create_engine, inspect
+from sqlalchemy import Identity, Integer, create_engine, inspect
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -33,8 +33,6 @@ class BaseModel(DeclarativeBase):
             Identity(always=True),
             primary_key=True,
         )
-
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     def to_dict(self, exclude_none: bool = False) -> dict:
         """Преобразует объект модели в словарь.
