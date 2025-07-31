@@ -528,7 +528,7 @@ class HaddanFightDriver(HaddanCommonDriver):
                         return document.activeElement;
                         ''',
                     )
-                    sleep(0.2)
+                    sleep(float(os.getenv('BEETS_DELAY', 0.2)))
                     # WebDriverWait(self.driver, 30).until_not(
                     #         ec.presence_of_element_located((
                     #             By.XPATH,

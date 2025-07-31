@@ -10,6 +10,8 @@ from constants import (
 )
 
 from tk_app.core import app
+from dao.database import sync_session_maker
+from dao.crud import preset_crud
 
 
 def sync_slots() -> None:
@@ -704,6 +706,15 @@ sync_button = tk.Button(
 
 def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
+
+    with sync_session_maker() as session:
+        spell_book = preset_crud.get_spellbook_by_preset_name(
+            session=session,
+            preset_name='Дракон'
+        )
+        if not spell_book:
+            pass
+
     main_slot = SlotsPage._1
     main_spell = Slot._5
 
@@ -772,7 +783,7 @@ dragon_preset = tk.Button(
     command=get_dragon_preset,
 )
 dragon_preset.grid(
-    row=4, column=8,
+    row=4, column=7,
 )
 
 
