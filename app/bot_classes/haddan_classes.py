@@ -1231,8 +1231,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.driver.switch_to.default_content()
 
             except UnexpectedAlertPresentException:
-                # self.sleep_while_event_is_true(15)
-                # sleep(15)
                 self.send_status_message('Получено уведомление, ждём.')
                 self.wait_until_kaptcha_on_page(30)
 

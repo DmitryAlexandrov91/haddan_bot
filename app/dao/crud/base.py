@@ -36,6 +36,13 @@ class BaseCRUD(Generic[T]):
         """Получение всех записей."""
         return session.query(self.model).all()
 
+    def get_multi_filtered(
+            self,
+            session: Session,
+            **filters: Any) -> Optional[List[T]]:
+        """Получение всех записей с фильтрами."""
+        return (session.query(self.model).filter_by(**filters)).all()
+
     def create(self, session: Session, **kwargs: Any) -> T:
         """Создание новой записи."""
         instance = self.model(**kwargs)
