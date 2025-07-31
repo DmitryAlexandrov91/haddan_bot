@@ -282,7 +282,7 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        self.check_for_slot_clear_alarm_message()
+        # self.check_for_slot_clear_alarm_message()
 
         try:
 
@@ -400,7 +400,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
-        self.check_for_slot_clear_alarm_message()
+        # self.check_for_slot_clear_alarm_message()
 
         if not self.check_come_back():
 
@@ -476,7 +476,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
-        self.check_for_slot_clear_alarm_message()
+        # self.check_for_slot_clear_alarm_message()
 
         current_round = self.get_round_number()
         kick = self.get_hit_number()
@@ -503,13 +503,12 @@ class HaddanFightDriver(HaddanCommonDriver):
                         slot=default_spell)
 
             except Exception:
-                self.check_for_slot_clear_alarm_message()
+                # self.check_for_slot_clear_alarm_message()
                 self.open_slot_and_choise_spell(
                     slots_page=default_slot,
                     slot=default_spell)
 
             self.try_to_switch_to_central_frame()
-            # sleep(0.5)
 
             come_back = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Вернуться')
@@ -1263,12 +1262,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
             try:
 
-                self.driver.switch_to.default_content()
-                alarm_window = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        'input[id="talkModalButtonID_CANCEL"]')
-                if alarm_window:
-                    alarm_window[0].click()
+                self.check_for_slot_clear_alarm_message()
 
                 if cheerfulness:
                     self.check_cheerfulnes_level(
@@ -1278,7 +1272,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
 
                 self.try_to_switch_to_central_frame()
-                sleep(1)
+                # sleep(1)
 
                 self.check_kaptcha(message_to_tg=message_to_tg,
                                    telegram_id=telegram_id)

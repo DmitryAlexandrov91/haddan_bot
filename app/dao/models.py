@@ -72,7 +72,7 @@ class SpellBook(BaseModel):
         back_populates="spell_books",
     )
 
-    slot_spells: Mapped[list["SlotSpell"]] = relationship(
+    slot_spell: Mapped["SlotSpell"] = relationship(
         back_populates="spell_book",
         cascade="all, delete-orphan",
     )
@@ -105,5 +105,5 @@ class SlotSpell(BaseModel):
         comment="ID связанной книги заклинаний",
     )
     spell_book: Mapped["SpellBook"] = relationship(
-        back_populates="slot_spells",
+        back_populates="slot_spell",
     )

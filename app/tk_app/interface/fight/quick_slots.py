@@ -693,8 +693,8 @@ def sync_with_main_spell() -> None:
     r6y4_spell.set(main_spell)
 
 
-def get_preset_dataset(preset_name: str) -> dict[str, Any]:
-    """Формирует словарь для дальнейшей обработки в БД."""
+def get_preset_dataset_from_tk(preset_name: str) -> dict[str, Any]:
+    """Формирует словарь заклинаний на основании значений окна Tkinter."""
     return {
         'name': preset_name,
         'main_page': main_slots_page.get(),
@@ -703,252 +703,229 @@ def get_preset_dataset(preset_name: str) -> dict[str, Any]:
             {
                 'round_num': '1',
                 'kick_num': '1',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r1y1_slot.get(),
                         'page_num': r1y1_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '1',
                 'kick_num': '2',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r1y2_slot.get(),
                         'page_num': r1y2_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '1',
                 'kick_num': '3',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r1y3_slot.get(),
                         'page_num': r1y3_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '1',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r1y4_slot.get(),
                         'page_num': r1y4_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '2',
                 'kick_num': '1',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r2y1_slot.get(),
                         'page_num': r2y1_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '2',
                 'kick_num': '2',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r2y2_slot.get(),
                         'page_num': r2y2_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '2',
                 'kick_num': '3',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r2y3_slot.get(),
                         'page_num': r2y3_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '2',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r2y4_slot.get(),
                         'page_num': r2y4_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '3',
                 'kick_num': '1',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r3y1_slot.get(),
                         'page_num': r3y1_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '3',
                 'kick_num': '2',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r3y2_slot.get(),
                         'page_num': r3y2_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '3',
                 'kick_num': '3',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r3y3_slot.get(),
                         'page_num': r3y3_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '3',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r3y4_slot.get(),
                         'page_num': r3y4_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '4',
                 'kick_num': '1',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r4y1_slot.get(),
                         'page_num': r4y1_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '4',
                 'kick_num': '2',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r4y2_slot.get(),
                         'page_num': r4y2_spell.get(),
                     },
-                ],
+
             },
             {
                 'round_num': '4',
                 'kick_num': '3',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r4y3_slot.get(),
                         'page_num': r4y3_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '4',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r4y4_slot.get(),
                         'page_num': r4y4_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '5',
                 'kick_num': '1',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r5y1_slot.get(),
                         'page_num': r5y1_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '5',
                 'kick_num': '2',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r5y2_slot.get(),
                         'page_num': r5y2_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '5',
                 'kick_num': '3',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r5y3_slot.get(),
                         'page_num': r5y3_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '5',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r5y4_slot.get(),
                         'page_num': r5y4_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '5',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r5y4_slot.get(),
                         'page_num': r5y4_spell.get(),
                     },
-                ],
+
             },
             {
                 'round_num': '6',
                 'kick_num': '1',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r6y1_slot.get(),
                         'page_num': r6y1_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '6',
                 'kick_num': '2',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r6y2_slot.get(),
                         'page_num': r6y2_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '6',
                 'kick_num': '3',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r6y3_slot.get(),
                         'page_num': r6y3_spell.get(),
                     },
-                ],
             },
             {
                 'round_num': '6',
                 'kick_num': '4',
-                'slot_spells': [
+                'slot_spells':
                     {
                         'slot_num': r6y4_slot.get(),
                         'page_num': r6y4_spell.get(),
                     },
-                ],
             },
         ],
     }
@@ -956,6 +933,7 @@ def get_preset_dataset(preset_name: str) -> dict[str, Any]:
 
 def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
+
     main_slot = SlotsPage._1
     main_spell = Slot._5
 
@@ -1019,7 +997,7 @@ def get_dragon_preset() -> None:
 
 def create_update_dragon_preset() -> None:
     """Обработка кнопки upd пресета Дракон."""
-    preset_data = get_preset_dataset(
+    preset_data = get_preset_dataset_from_tk(
         preset_name='Дракон',
     )
 
@@ -1037,24 +1015,25 @@ def create_update_dragon_preset() -> None:
                 round_num=spell_book_data['round_num'],
                 kick_num=spell_book_data['kick_num'],
                 preset_id=preset.id,
+                preset=preset
             )
-            for slot in spell_book_data['slot_spells']:
-                slotspell = slot_spell_crud.get_or_create_or_update(
-                    session=session,
-                    slot_num=slot['slot_num'],
-                    page_num=slot['page_num'],
-                    spell_book_id=spell_book.id,
-                )
-                print(slotspell)
+
+            slot_spell_crud.get_or_create_or_update(
+                session=session,
+                page_num=spell_book_data['slot_spells']['page_num'],
+                slot_num=spell_book_data['slot_spells']['slot_num'],
+                spell_book_id=spell_book.id,
+                spell_book=spell_book
+            )
 
 
-dragon_preset = tk.Button(
+dragon_preset_button = tk.Button(
     app,
     text='Дракон',
     bg='#FFF4DC',
     command=get_dragon_preset,
 )
-dragon_preset.grid(
+dragon_preset_button.grid(
     row=4, column=7,
 )
 

@@ -25,13 +25,11 @@ class PresetCrud(BaseCRUD):
                     {
                         "round": sb.round_num,
                         "kick": sb.kick_num,
-                        "slots": [
-                            {
-                                "slot": ss.slot_num,
-                                "spell": ss.spell_name,
-                                "page": ss.page_num,
-                            } for ss in sb.slot_spells
-                        ],
+                        "slots": (
+                            sb.slot_spell.page_num,
+                            sb.slot_spell.slot_num,
+                        )
+
                     } for sb in preset.spell_books
                 ],
             }
