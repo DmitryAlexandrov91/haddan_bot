@@ -1039,10 +1039,14 @@ def config_tk_preset_from_db_data(
 
 
 def confirm_and_execute(
-        text: str,
+        preset_button: tk.Button,
         func: Callable,
 ) -> Any:
     """Функция - обёртка для выдачи окна подтверждения."""
+    text = (
+        'Вы уверены что хотите записать текущие слоты'
+        f' в пресет {preset_button.cget('text')}?'
+    )
     if messagebox.askyesno(message=text):
         func()
 
@@ -1159,9 +1163,9 @@ dragon_preset_upd = tk.Button(
     app,
     text='upd',
     width=1,
-    bg="#ED9A3B",
+    bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет Дракон?',
+        preset_button=dragon_preset_button,
         func=functools.partial(create_update_dragon_preset),
     ),
 )
@@ -1232,9 +1236,9 @@ farm_CY_preset_upd = tk.Button(
     app,
     text='upd',
     width=1,
-    bg="#ED9A3B",
+    bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет ЦУ?',
+        preset_button=farm_CY_preset_button,
         func=functools.partial(create_update_cy_preset),
     ),
 )
@@ -1305,9 +1309,9 @@ maze_preset_button_upd = tk.Button(
     app,
     text='upd',
     width=1,
-    bg="#ED9A3B",
+    bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет Лаб?',
+        preset_button=maze_preset_button,
         func=functools.partial(create_update_maze_preset),
     ),
 )
@@ -1403,7 +1407,7 @@ coast_preset_upd_button = tk.Button(
     width=1,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет Берег?',
+        preset_button=coast_preset_button,
         func=functools.partial(create_update_coast_preset),
     ),
 )
@@ -1496,7 +1500,7 @@ coast_preset_upd_button_2 = tk.Button(
     width=1,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет Берег2?',
+        preset_button=coast_preset_button_2,
         func=functools.partial(create_update_coast_preset_2),
     ),
 )
@@ -1571,7 +1575,7 @@ forest_preset_upd_button = tk.Button(
     width=1,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет Лес?',
+        preset_button=forest_preset_button,
         func=functools.partial(create_update_forest_preset),
     ),
 )
@@ -1667,7 +1671,7 @@ baby_maze_preset_upd_button = tk.Button(
     width=1,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
-        text='Обновить пресет ДЛ?',
+        preset_button=baby_maze_preset_button,
         func=functools.partial(get_baby_maze_preset),
     ),
 )
