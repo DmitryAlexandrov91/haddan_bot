@@ -10,6 +10,7 @@ from constants import (
 )
 from dao.crud import preset_crud, spell_book_crud
 from dao.database import sync_session_maker
+from dao.models import Preset, SpellBook
 
 from tk_app.core import app
 
@@ -51,7 +52,7 @@ main_spell_label.grid(row=1, column=6)
 #  --------------------------------------------------------------------
 
 
-# Раунд 1 (4 удара) ----------------------------
+# Раунд 1 (4 удара) ---------------------------------------------------
 for element in range(4):
     widget = tk.Label(
         app,
@@ -518,7 +519,10 @@ r6y4_spell_choise = tk.OptionMenu(
 )
 r6y4_spell_choise.grid(row=13, column=12)
 
+# -------------------------------------------------------------
 
+
+# Общие методы интерфейса быстрых слотов-----------------------
 def get_round_spells() -> dict[Any, Any]:
     """Формирует книгу заклинаний."""
     spell_book = {}
@@ -933,6 +937,107 @@ def get_preset_dataset_from_tk(preset_name: str) -> dict[str, Any]:
     }
 
 
+def config_tk_preset_from_db_data(
+        preset: Preset,
+        spell_books: list[SpellBook],
+) -> None:
+    """Конфигурирует настройки tkinter на основе объектов из БД."""
+    main_slots_page.set(preset.main_page)
+    main_spell_slot.set(preset.main_slot)
+
+    round_1_data = {
+        data.kick_num: data.slot_spell for data in spell_books if (
+            data.round_num == '1'
+        )
+    }
+
+    r1y1_slot.set(round_1_data['1'].page_num)
+    r1y1_spell.set(round_1_data['1'].slot_num)
+    r1y2_slot.set(round_1_data['2'].page_num)
+    r1y2_spell.set(round_1_data['2'].slot_num)
+    r1y3_slot.set(round_1_data['3'].page_num)
+    r1y3_spell.set(round_1_data['3'].slot_num)
+    r1y4_slot.set(round_1_data['4'].page_num)
+    r1y4_spell.set(round_1_data['4'].slot_num)
+
+    round_2_data = {
+        data.kick_num: data.slot_spell for data in spell_books if (
+            data.round_num == '2'
+        )
+    }
+
+    r2y1_slot.set(round_2_data['1'].page_num)
+    r2y1_spell.set(round_2_data['1'].slot_num)
+    r2y2_slot.set(round_2_data['2'].page_num)
+    r2y2_spell.set(round_2_data['2'].slot_num)
+    r2y3_slot.set(round_2_data['3'].page_num)
+    r2y3_spell.set(round_2_data['3'].slot_num)
+    r2y4_slot.set(round_2_data['4'].page_num)
+    r2y4_spell.set(round_2_data['4'].slot_num)
+
+    round_3_data = {
+        data.kick_num: data.slot_spell for data in spell_books if (
+            data.round_num == '3'
+        )
+    }
+
+    r3y1_slot.set(round_3_data['1'].page_num)
+    r3y1_spell.set(round_3_data['1'].slot_num)
+    r3y2_slot.set(round_3_data['2'].page_num)
+    r3y2_spell.set(round_3_data['2'].slot_num)
+    r3y3_slot.set(round_3_data['3'].page_num)
+    r3y3_spell.set(round_3_data['3'].slot_num)
+    r3y4_slot.set(round_3_data['4'].page_num)
+    r3y4_spell.set(round_3_data['4'].slot_num)
+
+    round_4_data = {
+        data.kick_num: data.slot_spell for data in spell_books if (
+            data.round_num == '4'
+        )
+    }
+
+    r4y1_slot.set(round_4_data['1'].page_num)
+    r4y1_spell.set(round_4_data['1'].slot_num)
+    r4y2_slot.set(round_4_data['2'].page_num)
+    r4y2_spell.set(round_4_data['2'].slot_num)
+    r4y3_slot.set(round_4_data['3'].page_num)
+    r4y3_spell.set(round_4_data['3'].slot_num)
+    r4y4_slot.set(round_4_data['4'].page_num)
+    r4y4_spell.set(round_4_data['4'].slot_num)
+
+    round_5_data = {
+        data.kick_num: data.slot_spell for data in spell_books if (
+            data.round_num == '5'
+        )
+    }
+
+    r5y1_slot.set(round_5_data['1'].page_num)
+    r5y1_spell.set(round_5_data['1'].slot_num)
+    r5y2_slot.set(round_5_data['2'].page_num)
+    r5y2_spell.set(round_5_data['2'].slot_num)
+    r5y3_slot.set(round_5_data['3'].page_num)
+    r5y3_spell.set(round_5_data['3'].slot_num)
+    r5y4_slot.set(round_5_data['4'].page_num)
+    r5y4_spell.set(round_5_data['4'].slot_num)
+
+    round_6_data = {
+        data.kick_num: data.slot_spell for data in spell_books if (
+            data.round_num == '6'
+        )
+    }
+
+    r6y1_slot.set(round_6_data['1'].page_num)
+    r6y1_spell.set(round_6_data['1'].slot_num)
+    r6y2_slot.set(round_6_data['2'].page_num)
+    r6y2_spell.set(round_6_data['2'].slot_num)
+    r6y3_slot.set(round_6_data['3'].page_num)
+    r6y3_spell.set(round_6_data['3'].slot_num)
+    r6y4_slot.set(round_6_data['4'].page_num)
+    r6y4_spell.set(round_6_data['4'].slot_num)
+# ----------------------------------------------------------------------------
+
+
+# Пресет Дракон --------------------------------------------------------------
 def get_dragon_preset() -> None:
     """Пресет для фарма дракона маг ударами."""
     with sync_session_maker() as session:
@@ -1009,98 +1114,10 @@ def get_dragon_preset() -> None:
 
         )
 
-        main_slots_page.set(dragon_preset.main_page)
-        main_spell_slot.set(dragon_preset.main_slot)
-
-        round_1_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '1'
-            )
-        }
-
-        r1y1_slot.set(round_1_data['1'].page_num)
-        r1y1_spell.set(round_1_data['1'].slot_num)
-        r1y2_slot.set(round_1_data['2'].page_num)
-        r1y2_spell.set(round_1_data['2'].slot_num)
-        r1y3_slot.set(round_1_data['3'].page_num)
-        r1y3_spell.set(round_1_data['3'].slot_num)
-        r1y4_slot.set(round_1_data['4'].page_num)
-        r1y4_spell.set(round_1_data['4'].slot_num)
-
-        round_2_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '2'
-            )
-        }
-
-        r2y1_slot.set(round_2_data['1'].page_num)
-        r2y1_spell.set(round_2_data['1'].slot_num)
-        r2y2_slot.set(round_2_data['2'].page_num)
-        r2y2_spell.set(round_2_data['2'].slot_num)
-        r2y3_slot.set(round_2_data['3'].page_num)
-        r2y3_spell.set(round_2_data['3'].slot_num)
-        r2y4_slot.set(round_2_data['4'].page_num)
-        r2y4_spell.set(round_2_data['4'].slot_num)
-
-        round_3_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '3'
-            )
-        }
-
-        r3y1_slot.set(round_3_data['1'].page_num)
-        r3y1_spell.set(round_3_data['1'].slot_num)
-        r3y2_slot.set(round_3_data['2'].page_num)
-        r3y2_spell.set(round_3_data['2'].slot_num)
-        r3y3_slot.set(round_3_data['3'].page_num)
-        r3y3_spell.set(round_3_data['3'].slot_num)
-        r3y4_slot.set(round_3_data['4'].page_num)
-        r3y4_spell.set(round_3_data['4'].slot_num)
-
-        round_4_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '4'
-            )
-        }
-
-        r4y1_slot.set(round_4_data['1'].page_num)
-        r4y1_spell.set(round_4_data['1'].slot_num)
-        r4y2_slot.set(round_4_data['2'].page_num)
-        r4y2_spell.set(round_4_data['2'].slot_num)
-        r4y3_slot.set(round_4_data['3'].page_num)
-        r4y3_spell.set(round_4_data['3'].slot_num)
-        r4y4_slot.set(round_4_data['4'].page_num)
-        r4y4_spell.set(round_4_data['4'].slot_num)
-
-        round_5_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '5'
-            )
-        }
-
-        r5y1_slot.set(round_5_data['1'].page_num)
-        r5y1_spell.set(round_5_data['1'].slot_num)
-        r5y2_slot.set(round_5_data['2'].page_num)
-        r5y2_spell.set(round_5_data['2'].slot_num)
-        r5y3_slot.set(round_5_data['3'].page_num)
-        r5y3_spell.set(round_5_data['3'].slot_num)
-        r5y4_slot.set(round_5_data['4'].page_num)
-        r5y4_spell.set(round_5_data['4'].slot_num)
-
-        round_6_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '6'
-            )
-        }
-
-        r6y1_slot.set(round_6_data['1'].page_num)
-        r6y1_spell.set(round_6_data['1'].slot_num)
-        r6y2_slot.set(round_6_data['2'].page_num)
-        r6y2_spell.set(round_6_data['2'].slot_num)
-        r6y3_slot.set(round_6_data['3'].page_num)
-        r6y3_spell.set(round_6_data['3'].slot_num)
-        r6y4_slot.set(round_6_data['4'].page_num)
-        r6y4_spell.set(round_6_data['4'].slot_num)
+        config_tk_preset_from_db_data(
+            preset=dragon_preset,
+            spell_books=spell_books,
+        )
 
 
 def create_update_dragon_preset() -> None:
@@ -1129,14 +1146,17 @@ dragon_preset_button.grid(
 dragon_preset_upd = tk.Button(
     app,
     text='upd',
-    bg='#FFF4DC',
+    width=1,
+    bg="#ED9A3B",
     command=create_update_dragon_preset,
 )
 dragon_preset_upd.grid(
     row=4, column=8,
 )
+# ----------------------------------------------------------------------------
 
 
+# Пресет ЦУ-------------------------------------------------------------------
 def get_cy_preset() -> None:
     """Пресет для кача в ЦУ."""
     with sync_session_maker() as session:
@@ -1164,98 +1184,10 @@ def get_cy_preset() -> None:
 
         )
 
-        main_slots_page.set(cy_preset.main_page)
-        main_spell_slot.set(cy_preset.main_slot)
-
-        round_1_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '1'
-            )
-        }
-
-        r1y1_slot.set(round_1_data['1'].page_num)
-        r1y1_spell.set(round_1_data['1'].slot_num)
-        r1y2_slot.set(round_1_data['2'].page_num)
-        r1y2_spell.set(round_1_data['2'].slot_num)
-        r1y3_slot.set(round_1_data['3'].page_num)
-        r1y3_spell.set(round_1_data['3'].slot_num)
-        r1y4_slot.set(round_1_data['4'].page_num)
-        r1y4_spell.set(round_1_data['4'].slot_num)
-
-        round_2_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '2'
-            )
-        }
-
-        r2y1_slot.set(round_2_data['1'].page_num)
-        r2y1_spell.set(round_2_data['1'].slot_num)
-        r2y2_slot.set(round_2_data['2'].page_num)
-        r2y2_spell.set(round_2_data['2'].slot_num)
-        r2y3_slot.set(round_2_data['3'].page_num)
-        r2y3_spell.set(round_2_data['3'].slot_num)
-        r2y4_slot.set(round_2_data['4'].page_num)
-        r2y4_spell.set(round_2_data['4'].slot_num)
-
-        round_3_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '3'
-            )
-        }
-
-        r3y1_slot.set(round_3_data['1'].page_num)
-        r3y1_spell.set(round_3_data['1'].slot_num)
-        r3y2_slot.set(round_3_data['2'].page_num)
-        r3y2_spell.set(round_3_data['2'].slot_num)
-        r3y3_slot.set(round_3_data['3'].page_num)
-        r3y3_spell.set(round_3_data['3'].slot_num)
-        r3y4_slot.set(round_3_data['4'].page_num)
-        r3y4_spell.set(round_3_data['4'].slot_num)
-
-        round_4_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '4'
-            )
-        }
-
-        r4y1_slot.set(round_4_data['1'].page_num)
-        r4y1_spell.set(round_4_data['1'].slot_num)
-        r4y2_slot.set(round_4_data['2'].page_num)
-        r4y2_spell.set(round_4_data['2'].slot_num)
-        r4y3_slot.set(round_4_data['3'].page_num)
-        r4y3_spell.set(round_4_data['3'].slot_num)
-        r4y4_slot.set(round_4_data['4'].page_num)
-        r4y4_spell.set(round_4_data['4'].slot_num)
-
-        round_5_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '5'
-            )
-        }
-
-        r5y1_slot.set(round_5_data['1'].page_num)
-        r5y1_spell.set(round_5_data['1'].slot_num)
-        r5y2_slot.set(round_5_data['2'].page_num)
-        r5y2_spell.set(round_5_data['2'].slot_num)
-        r5y3_slot.set(round_5_data['3'].page_num)
-        r5y3_spell.set(round_5_data['3'].slot_num)
-        r5y4_slot.set(round_5_data['4'].page_num)
-        r5y4_spell.set(round_5_data['4'].slot_num)
-
-        round_6_data = {
-            data.kick_num: data.slot_spell for data in spell_books if (
-                data.round_num == '6'
-            )
-        }
-
-        r6y1_slot.set(round_6_data['1'].page_num)
-        r6y1_spell.set(round_6_data['1'].slot_num)
-        r6y2_slot.set(round_6_data['2'].page_num)
-        r6y2_spell.set(round_6_data['2'].slot_num)
-        r6y3_slot.set(round_6_data['3'].page_num)
-        r6y3_spell.set(round_6_data['3'].slot_num)
-        r6y4_slot.set(round_6_data['4'].page_num)
-        r6y4_spell.set(round_6_data['4'].slot_num)
+        config_tk_preset_from_db_data(
+            preset=cy_preset,
+            spell_books=spell_books,
+        )
 
 
 def create_update_cy_preset() -> None:
@@ -1271,189 +1203,442 @@ def create_update_cy_preset() -> None:
     )
 
 
-farm_CY_preset = tk.Button(
+farm_CY_preset_button = tk.Button(
     app,
     text='ЦУ',
     bg='#FFF4DC',
     command=get_cy_preset,
 )
-farm_CY_preset.grid(
+farm_CY_preset_button.grid(
     row=4, column=9,
 )
 
 farm_CY_preset_upd = tk.Button(
     app,
     text='upd',
-    bg='#FFF4DC',
+    width=1,
+    bg="#ED9A3B",
     command=create_update_cy_preset,
 )
 farm_CY_preset_upd.grid(
     row=4, column=10,
 )
+# ----------------------------------------------------------------------------
 
 
+# Пресет Лаб------------------------------------------------------------------
+def get_maze_preset() -> None:
+    """Пресет для лабиринта."""
+    with sync_session_maker() as session:
+        cy_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Лаб',
+        )
+
+        if not cy_preset:
+            main_slot = SlotsPage._1
+            main_spell = Slot._1
+
+            main_slots_page.set(main_slot)
+            main_spell_slot.set(main_spell)
+
+            sync_with_main_spell()
+
+            r1y1_slot.set(SlotsPage._3)
+            r1y1_spell.set(Slot._1)
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=cy_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=cy_preset,
+            spell_books=spell_books,
+        )
+
+
+def create_update_maze_preset() -> None:
+    """Обработка кноки upd пресета Лаб."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='Лаб',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+maze_preset_button = tk.Button(
+    app,
+    text='Лаб',
+    width=3,
+    bg='#FFF4DC',
+    command=get_maze_preset,
+)
+maze_preset_button.grid(
+    row=4, column=11,
+)
+maze_preset_button_upd = tk.Button(
+    app,
+    text='upd',
+    width=1,
+    bg="#ED9A3B",
+    command=create_update_maze_preset,
+)
+maze_preset_button_upd.grid(
+    row=4, column=12,
+)
+# ----------------------------------------------------------------------------
+
+
+# Пресет Берег----------------------------------------------------------------
 def get_coast_preset() -> None:
     """Пресет для фарма побережья."""
-    main_slot = SlotsPage._1
-    main_spell = Slot._6
+    with sync_session_maker() as session:
+        coast_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Берег',
+        )
 
-    main_slots_page.set(main_slot)
-    main_spell_slot.set(main_spell)
+        if not coast_preset:
+            main_slot = SlotsPage._1
+            main_spell = Slot._6
 
-    sync_with_main_spell()
+            main_slots_page.set(main_slot)
+            main_spell_slot.set(main_spell)
 
-    r1y1_slot.set(SlotsPage._3)
-    r1y1_spell.set(Slot._1)
-    r1y2_slot.set(SlotsPage._3)
-    r1y2_spell.set(Slot._4)
-    r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Slot._1)
+            sync_with_main_spell()
 
-    r2y1_slot.set(SlotsPage._1)
-    r2y1_spell.set(Slot._3)
-    r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Slot._4)
-    r2y3_slot.set(SlotsPage._1)
-    r2y3_spell.set(Slot._2)
+            r1y1_slot.set(SlotsPage._2)
+            r1y1_spell.set(Slot._1)
+            r1y2_slot.set(SlotsPage._2)
+            r1y2_spell.set(Slot._1)
+            r1y3_slot.set(SlotsPage._2)
+            r1y3_spell.set(Slot._1)
+            r1y4_slot.set(SlotsPage._1)
+            r1y4_spell.set(Slot._1)
 
-    r3y1_slot.set(SlotsPage._1)
-    r3y1_spell.set(Slot._3)
-    r3y2_slot.set(SlotsPage._1)
-    r3y2_spell.set(Slot._4)
+            r2y1_slot.set(SlotsPage._3)
+            r2y1_spell.set(Slot._1)
+            r2y2_slot.set(SlotsPage._1)
+            r2y2_spell.set(Slot._1)
+            r2y3_slot.set(SlotsPage._1)
+            r2y3_spell.set(Slot._2)
 
-    r4y1_slot.set(SlotsPage._1)
-    r4y1_spell.set(Slot._3)
-    r4y2_slot.set(SlotsPage._1)
-    r4y2_spell.set(Slot._4)
+            r3y1_slot.set(SlotsPage._1)
+            r3y1_spell.set(Slot._2)
+            r3y2_slot.set(SlotsPage._1)
+            r3y2_spell.set(Slot._4)
+
+            r4y1_slot.set(SlotsPage._1)
+            r4y1_spell.set(Slot._3)
+            r4y2_slot.set(SlotsPage._1)
+            r4y2_spell.set(Slot._4)
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=coast_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=coast_preset,
+            spell_books=spell_books,
+        )
 
 
-farm_coast_preset = tk.Button(
+def create_update_coast_preset() -> None:
+    """Обработка кноки upd пресета Берег."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='Берег',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+coast_preset_button = tk.Button(
     app,
     text='Берег',
     bg='#FFF4DC',
     command=get_coast_preset,
 )
-farm_coast_preset.grid(
+coast_preset_button.grid(
     row=9, column=7,
 )
 
+coast_preset_upd_button = tk.Button(
+    app,
+    text='upd',
+    width=1,
+    bg='#ED9A3B',
+    command=create_update_coast_preset,
+)
+coast_preset_upd_button.grid(
+        row=9, column=8,
+)
+# ----------------------------------------------------------------------------
 
+
+# Пресет Берег2---------------------------------------------------------------
 def get_coast_preset_2() -> None:
-    """Пресет для фарма побережья с архангелами."""
-    main_slot = SlotsPage._1
-    main_spell = Slot._6
+    """Второй пресет для фарма побережья."""
+    with sync_session_maker() as session:
+        coast_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Берег2',
+        )
 
-    main_slots_page.set(main_slot)
-    main_spell_slot.set(main_spell)
+        if not coast_preset:
+            main_slot = SlotsPage._1
+            main_spell = Slot._6
 
-    sync_with_main_spell()
+            main_slots_page.set(main_slot)
+            main_spell_slot.set(main_spell)
 
-    r1y1_slot.set(SlotsPage._2)
-    r1y1_spell.set(Slot._1)
-    r1y2_slot.set(SlotsPage._2)
-    r1y2_spell.set(Slot._1)
-    r1y3_slot.set(SlotsPage._2)
-    r1y3_spell.set(Slot._1)
-    r1y4_slot.set(SlotsPage._1)
-    r1y4_spell.set(Slot._1)
+            sync_with_main_spell()
 
-    r2y1_slot.set(SlotsPage._3)
-    r2y1_spell.set(Slot._1)
-    r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Slot._1)
-    r2y3_slot.set(SlotsPage._1)
-    r2y3_spell.set(Slot._2)
+            r1y1_slot.set(SlotsPage._3)
+            r1y1_spell.set(Slot._1)
+            r1y2_slot.set(SlotsPage._3)
+            r1y2_spell.set(Slot._4)
+            r1y3_slot.set(SlotsPage._1)
+            r1y3_spell.set(Slot._1)
 
-    r3y1_slot.set(SlotsPage._1)
-    r3y1_spell.set(Slot._2)
-    r3y2_slot.set(SlotsPage._1)
-    r3y2_spell.set(Slot._4)
+            r2y1_slot.set(SlotsPage._1)
+            r2y1_spell.set(Slot._3)
+            r2y2_slot.set(SlotsPage._1)
+            r2y2_spell.set(Slot._4)
+            r2y3_slot.set(SlotsPage._1)
+            r2y3_spell.set(Slot._2)
 
-    r4y1_slot.set(SlotsPage._1)
-    r4y1_spell.set(Slot._3)
-    r4y2_slot.set(SlotsPage._1)
-    r4y2_spell.set(Slot._4)
+            r3y1_slot.set(SlotsPage._1)
+            r3y1_spell.set(Slot._3)
+            r3y2_slot.set(SlotsPage._1)
+            r3y2_spell.set(Slot._4)
+
+            r4y1_slot.set(SlotsPage._1)
+            r4y1_spell.set(Slot._3)
+            r4y2_slot.set(SlotsPage._1)
+            r4y2_spell.set(Slot._4)
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=coast_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=coast_preset,
+            spell_books=spell_books,
+        )
 
 
-farm_coast_preset_2 = tk.Button(
+def create_update_coast_preset_2() -> None:
+    """Обработка кноки upd второго пресета Берег."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='Берег2',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+coast_preset_button_2 = tk.Button(
     app,
     text='Берег 2',
     bg='#FFF4DC',
     command=get_coast_preset_2,
 )
-farm_coast_preset_2.grid(
-        row=9, column=8,
+coast_preset_button_2.grid(
+    row=14, column=7,
 )
 
+coast_preset_upd_button_2 = tk.Button(
+    app,
+    text='upd',
+    width=1,
+    bg='#ED9A3B',
+    command=create_update_coast_preset_2,
+)
+coast_preset_upd_button_2.grid(
+        row=14, column=8,
+)
+# ----------------------------------------------------------------------------
 
+
+# Пресет Лес -----------------------------------------------------------------
+def get_forest_preset() -> None:
+    """Пресет для леса."""
+    with sync_session_maker() as session:
+        forest_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Лес',
+        )
+
+        if not forest_preset:
+
+            main_slot = SlotsPage._p
+            main_spell = Slot._p
+
+            main_slots_page.set(main_slot)
+            main_spell_slot.set(main_spell)
+
+            sync_with_main_spell()
+
+            r1y1_slot.set(SlotsPage._2)
+            r1y1_spell.set(Slot._1)
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=forest_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=forest_preset,
+            spell_books=spell_books,
+        )
+
+
+def create_update_forest_preset() -> None:
+    """Обработка кноки upd пресета Лес."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='Лес',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+forest_preset_button = tk.Button(
+    app,
+    text='Леc',
+    width=3,
+    bg='#FFF4DC',
+    command=get_forest_preset,
+)
+forest_preset_button.grid(
+    row=9, column=9,
+)
+
+forest_preset_upd_button = tk.Button(
+    app,
+    text='upd',
+    width=1,
+    bg='#ED9A3B',
+    command=create_update_forest_preset,
+)
+forest_preset_upd_button.grid(
+    row=9, column=10,
+)
+# ----------------------------------------------------------------------------
+
+
+# Пресет ДЛ (детский лаб)-----------------------------------------------------
 def get_baby_maze_preset() -> None:
     """Пресет для детского лаба."""
-    main_slot = SlotsPage._1
-    main_spell = Slot._6
+    with sync_session_maker() as session:
+        baby_maze_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='ДЛ',
+        )
 
-    main_slots_page.set(main_slot)
-    main_spell_slot.set(main_spell)
+        if not baby_maze_preset:
+            main_slot = SlotsPage._1
+            main_spell = Slot._6
 
-    sync_with_main_spell()
+            main_slots_page.set(main_slot)
+            main_spell_slot.set(main_spell)
 
-    r1y1_slot.set(SlotsPage._3)
-    r1y1_spell.set(Slot._1)
-    r1y2_slot.set(SlotsPage._3)
-    r1y2_spell.set(Slot._2)
-    r1y3_slot.set(SlotsPage._1)
-    r1y3_spell.set(Slot._1)
+            sync_with_main_spell()
 
-    r2y1_slot.set(SlotsPage._3)
-    r2y1_spell.set(Slot._5)
-    r2y2_slot.set(SlotsPage._1)
-    r2y2_spell.set(Slot._1)
-    r2y3_slot.set(SlotsPage._1)
-    r2y3_spell.set(Slot._6)
+            r1y1_slot.set(SlotsPage._3)
+            r1y1_spell.set(Slot._1)
+            r1y2_slot.set(SlotsPage._3)
+            r1y2_spell.set(Slot._2)
+            r1y3_slot.set(SlotsPage._1)
+            r1y3_spell.set(Slot._1)
 
-    r3y1_slot.set(SlotsPage._3)
-    r3y1_spell.set(Slot._5)
+            r2y1_slot.set(SlotsPage._3)
+            r2y1_spell.set(Slot._5)
+            r2y2_slot.set(SlotsPage._1)
+            r2y2_spell.set(Slot._1)
+            r2y3_slot.set(SlotsPage._1)
+            r2y3_spell.set(Slot._6)
 
-    r4y1_slot.set(SlotsPage._3)
-    r4y1_spell.set(Slot._5)
+            r3y1_slot.set(SlotsPage._3)
+            r3y1_spell.set(Slot._5)
 
-    r5y1_slot.set(SlotsPage._3)
-    r5y1_spell.set(Slot._5)
+            r4y1_slot.set(SlotsPage._3)
+            r4y1_spell.set(Slot._5)
 
-    r6y1_slot.set(SlotsPage._3)
-    r6y1_spell.set(Slot._5)
+            r5y1_slot.set(SlotsPage._3)
+            r5y1_spell.set(Slot._5)
+
+            r6y1_slot.set(SlotsPage._3)
+            r6y1_spell.set(Slot._5)
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=baby_maze_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=baby_maze_preset,
+            spell_books=spell_books,
+        )
 
 
-baby_maze_preset = tk.Button(
+def create_update_baby_maze_preset() -> None:
+    """Обработка кноки upd пресета ДЛ."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='ДЛ',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+baby_maze_preset_button = tk.Button(
     app,
     text='ДЛ',
     bg='#FFF4DC',
     command=get_baby_maze_preset,
 )
-baby_maze_preset.grid(
+baby_maze_preset_button.grid(
+    row=9, column=11,
+)
+
+baby_maze_preset_upd_button = tk.Button(
+    app,
+    text='upd',
+    width=1,
+    bg='#ED9A3B',
+    command=create_update_baby_maze_preset,
+)
+baby_maze_preset_upd_button.grid(
     row=9, column=12,
 )
-
-
-def get_forest_nordman() -> None:
-    """Пресет для леса физом."""
-    main_slot = SlotsPage._p
-    main_spell = Slot._p
-
-    main_slots_page.set(main_slot)
-    main_spell_slot.set(main_spell)
-
-    sync_with_main_spell()
-
-    r1y1_slot.set(SlotsPage._2)
-    r1y1_spell.set(Slot._1)
-
-
-nordman_forest_preset = tk.Button(
-    app,
-    text='Лес физ',
-    bg='#FFF4DC',
-    command=get_forest_nordman,
-)
-nordman_forest_preset.grid(
-    row=9, column=10,
-)
+# ----------------------------------------------------------------------------
