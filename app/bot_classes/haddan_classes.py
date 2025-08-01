@@ -282,7 +282,7 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.check_for_slot_clear_alarm_message()
+        self.check_for_slot_clear_alarm_message()
 
         try:
 
@@ -1260,7 +1260,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
             try:
 
-                self.check_for_slot_clear_alarm_message()
+                # self.check_for_slot_clear_alarm_message()
 
                 if cheerfulness:
                     self.check_cheerfulnes_level(
