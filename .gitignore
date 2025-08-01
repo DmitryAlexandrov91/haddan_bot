@@ -33,7 +33,6 @@ info.txt
 # Ненужные для гита расширения
 *.exe
 *.spec
-*.ico
 *.html
 *.png
 
