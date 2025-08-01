@@ -1,5 +1,7 @@
+import functools
 import tkinter as tk
-from typing import Any
+from tkinter import messagebox
+from typing import Any, Callable
 
 from constants import (
     DEFAULT_SLOT,
@@ -1034,6 +1036,16 @@ def config_tk_preset_from_db_data(
     r6y3_spell.set(round_6_data['3'].slot_num)
     r6y4_slot.set(round_6_data['4'].page_num)
     r6y4_spell.set(round_6_data['4'].slot_num)
+
+
+def confirm_and_execute(
+        text: str,
+        func: Callable,
+) -> Any:
+    """Функция - обёртка для выдачи окна подтверждения."""
+    if messagebox.askyesno(message=text):
+        func()
+
 # ----------------------------------------------------------------------------
 
 
@@ -1148,7 +1160,10 @@ dragon_preset_upd = tk.Button(
     text='upd',
     width=1,
     bg="#ED9A3B",
-    command=create_update_dragon_preset,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет Дракон?',
+        func=functools.partial(create_update_dragon_preset),
+    ),
 )
 dragon_preset_upd.grid(
     row=4, column=8,
@@ -1218,7 +1233,10 @@ farm_CY_preset_upd = tk.Button(
     text='upd',
     width=1,
     bg="#ED9A3B",
-    command=create_update_cy_preset,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет ЦУ?',
+        func=functools.partial(create_update_cy_preset),
+    ),
 )
 farm_CY_preset_upd.grid(
     row=4, column=10,
@@ -1288,7 +1306,10 @@ maze_preset_button_upd = tk.Button(
     text='upd',
     width=1,
     bg="#ED9A3B",
-    command=create_update_maze_preset,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет Лаб?',
+        func=functools.partial(create_update_maze_preset),
+    ),
 )
 maze_preset_button_upd.grid(
     row=4, column=12,
@@ -1381,7 +1402,10 @@ coast_preset_upd_button = tk.Button(
     text='upd',
     width=1,
     bg='#ED9A3B',
-    command=create_update_coast_preset,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет Берег?',
+        func=functools.partial(create_update_coast_preset),
+    ),
 )
 coast_preset_upd_button.grid(
         row=9, column=8,
@@ -1471,7 +1495,10 @@ coast_preset_upd_button_2 = tk.Button(
     text='upd',
     width=1,
     bg='#ED9A3B',
-    command=create_update_coast_preset_2,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет Берег2?',
+        func=functools.partial(create_update_coast_preset_2),
+    ),
 )
 coast_preset_upd_button_2.grid(
         row=14, column=8,
@@ -1543,7 +1570,10 @@ forest_preset_upd_button = tk.Button(
     text='upd',
     width=1,
     bg='#ED9A3B',
-    command=create_update_forest_preset,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет Лес?',
+        func=functools.partial(create_update_forest_preset),
+    ),
 )
 forest_preset_upd_button.grid(
     row=9, column=10,
@@ -1636,7 +1666,10 @@ baby_maze_preset_upd_button = tk.Button(
     text='upd',
     width=1,
     bg='#ED9A3B',
-    command=create_update_baby_maze_preset,
+    command=lambda: confirm_and_execute(
+        text='Обновить пресет ДЛ?',
+        func=functools.partial(get_baby_maze_preset),
+    ),
 )
 baby_maze_preset_upd_button.grid(
     row=9, column=12,
