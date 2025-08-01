@@ -1162,7 +1162,7 @@ dragon_preset_button.grid(
 dragon_preset_upd = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=dragon_preset_button,
@@ -1235,7 +1235,7 @@ farm_CY_preset_button.grid(
 farm_CY_preset_upd = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=farm_CY_preset_button,
@@ -1308,7 +1308,7 @@ maze_preset_button.grid(
 maze_preset_button_upd = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=maze_preset_button,
@@ -1404,7 +1404,7 @@ coast_preset_button.grid(
 coast_preset_upd_button = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=coast_preset_button,
@@ -1497,7 +1497,7 @@ coast_preset_button_2.grid(
 coast_preset_upd_button_2 = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=coast_preset_button_2,
@@ -1572,7 +1572,7 @@ forest_preset_button.grid(
 forest_preset_upd_button = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=forest_preset_button,
@@ -1668,7 +1668,7 @@ baby_maze_preset_button.grid(
 baby_maze_preset_upd_button = tk.Button(
     app,
     text='upd',
-    width=1,
+    width=2,
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=baby_maze_preset_button,
