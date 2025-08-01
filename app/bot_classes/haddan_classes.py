@@ -400,7 +400,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.check_for_slot_clear_alarm_message()
+        self.check_for_slot_clear_alarm_message()
 
         if not self.check_come_back():
 
@@ -1674,7 +1674,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         )
 
                         self.try_to_switch_to_central_frame()
-                        sleep(1)
+                        # sleep(1)
 
                         passed_room = self.get_room_number()
                         self.passed_maze_rooms.add(passed_room)
