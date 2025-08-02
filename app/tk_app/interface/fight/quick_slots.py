@@ -1050,12 +1050,24 @@ def confirm_and_execute(
     if messagebox.askyesno(message=text):
         func()
 
+
+def get_preset_from_tk_and_create_or_update_in_db(preset_name: str) -> None:
+    """Загружает слоты из окна tkinter и обновляет/создаёт пресет в бд."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name=preset_name,
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
 # ----------------------------------------------------------------------------
 
 
 # Пресет Дракон --------------------------------------------------------------
 def get_dragon_preset() -> None:
-    """Пресет для фарма дракона маг ударами."""
+    """Загружает пресет Дракон из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         dragon_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1138,14 +1150,8 @@ def get_dragon_preset() -> None:
 
 def create_update_dragon_preset() -> None:
     """Обработка кнопки upd пресета Дракон."""
-    preset_data = get_preset_dataset_from_tk(
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='Дракон',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1177,7 +1183,7 @@ dragon_preset_upd.grid(
 
 # Пресет ЦУ-------------------------------------------------------------------
 def get_cy_preset() -> None:
-    """Пресет для кача в ЦУ."""
+    """Загружает пресет ЦУ из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         cy_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1211,14 +1217,8 @@ def get_cy_preset() -> None:
 
 def create_update_cy_preset() -> None:
     """Обработка кноки upd пресета ЦУ."""
-    preset_data = get_preset_dataset_from_tk(
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='ЦУ',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1250,7 +1250,7 @@ farm_CY_preset_upd.grid(
 
 # Пресет Лаб------------------------------------------------------------------
 def get_maze_preset() -> None:
-    """Пресет для лабиринта."""
+    """Загружает пресет Лаб из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         cy_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1284,14 +1284,8 @@ def get_maze_preset() -> None:
 
 def create_update_maze_preset() -> None:
     """Обработка кноки upd пресета Лаб."""
-    preset_data = get_preset_dataset_from_tk(
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='Лаб',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1323,7 +1317,7 @@ maze_preset_button_upd.grid(
 
 # Пресет Берег----------------------------------------------------------------
 def get_coast_preset() -> None:
-    """Пресет для фарма побережья."""
+    """Загружает пресет Берег из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         coast_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1380,14 +1374,8 @@ def get_coast_preset() -> None:
 
 def create_update_coast_preset() -> None:
     """Обработка кноки upd пресета Берег."""
-    preset_data = get_preset_dataset_from_tk(
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='Берег',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1419,7 +1407,7 @@ coast_preset_upd_button.grid(
 
 # Пресет Берег2---------------------------------------------------------------
 def get_coast_preset_2() -> None:
-    """Второй пресет для фарма побережья."""
+    """Загружает пресет Берег 2 из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         coast_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1473,14 +1461,8 @@ def get_coast_preset_2() -> None:
 
 def create_update_coast_preset_2() -> None:
     """Обработка кноки upd второго пресета Берег."""
-    preset_data = get_preset_dataset_from_tk(
-        preset_name='Берег2',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
+    get_preset_from_tk_and_create_or_update_in_db(
+        preset_name='Берег 2',
     )
 
 
@@ -1512,7 +1494,7 @@ coast_preset_upd_button_2.grid(
 
 # Пресет Лес -----------------------------------------------------------------
 def get_forest_preset() -> None:
-    """Пресет для леса."""
+    """Загружает пресет Лес из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         forest_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1547,14 +1529,8 @@ def get_forest_preset() -> None:
 
 def create_update_forest_preset() -> None:
     """Обработка кноки upd пресета Лес."""
-    preset_data = get_preset_dataset_from_tk(
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='Лес',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1587,7 +1563,7 @@ forest_preset_upd_button.grid(
 
 # Пресет ДЛ (детский лаб)-----------------------------------------------------
 def get_baby_maze_preset() -> None:
-    """Пресет для детского лаба."""
+    """Загружает пресет ДЛ из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         baby_maze_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1644,14 +1620,8 @@ def get_baby_maze_preset() -> None:
 
 def create_update_baby_maze_preset() -> None:
     """Обработка кноки upd пресета ДЛ."""
-    preset_data = get_preset_dataset_from_tk(
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='ДЛ',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1707,15 +1677,9 @@ def get_own_preset() -> None:
 
 
 def create_update_own_preset() -> None:
-    """Загружает слоты из окна tkinter и обновляет пресет в бд."""
-    preset_data = get_preset_dataset_from_tk(
+    """Обработка кнопки upd пресета Свой."""
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='Свой',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
@@ -1747,7 +1711,7 @@ own_preset_upd_button.grid(
 
 # Пресет Свой 2---------------------------------------------------------------
 def get_own_2_preset() -> None:
-    """Загружает пресет Свой из БД и настраивает слоты в окне tkinter."""
+    """Загружает пресет Свой 2 из БД и настраивает слоты в окне tkinter."""
     with sync_session_maker() as session:
         own_preset = preset_crud.get_single_filtered(
             session=session,
@@ -1771,21 +1735,15 @@ def get_own_2_preset() -> None:
 
 
 def create_update_own_2_preset() -> None:
-    """Загружает слоты из окна tkinter и обновляет пресет в бд."""
-    preset_data = get_preset_dataset_from_tk(
+    """Обработка кнопки upd пресета Свой 2."""
+    get_preset_from_tk_and_create_or_update_in_db(
         preset_name='Свой 2',
-    )
-
-    create_update_objects(
-        data=preset_data,
-        main_slots_page=main_slots_page,
-        main_spell_slot=main_spell_slot,
     )
 
 
 own_preset_2_button = tk.Button(
     app,
-    text='Свой2',
+    text='Свой 2',
     bg='#FFF4DC',
     command=get_own_2_preset,
 )
