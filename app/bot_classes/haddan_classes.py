@@ -1812,27 +1812,20 @@ class HaddanDriverManager(HaddanSpiritPlay):
         if not self.driver:
             raise InvalidSessionIdException
 
-        if cheerfulness and self.check_for_fight() is False:
-            self.check_cheerfulnes_level(
-                cheerfulnes_min=cheerfulness_min,
-                cheerfulnes_slot=cheerfulness_slot,
-                cheerfulnes_spell=cheerfulness_spell,
-            )
-
-        self.try_to_switch_to_central_frame()
-        sleep(0.5)
-
         self.check_kaptcha(
             message_to_tg=message_to_tg,
             telegram_id=telegram_id)
-
-        self.try_to_come_back_from_fight()
 
         if self.check_for_fight():
             self.fight(
                 spell_book=spell_book,
                 default_slot=slots,
                 default_spell=spell)
+
+        self.try_to_come_back_from_fight()
+
+        self.try_to_switch_to_central_frame()
+        sleep(0.5)
 
         self.play_with_poetry_spirit()
         self.play_with_gamble_spirit()
@@ -1866,6 +1859,13 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
             if come_back:
                 come_back[0].click()
+
+        if cheerfulness and self.check_for_fight() is False:
+            self.check_cheerfulnes_level(
+                cheerfulnes_min=cheerfulness_min,
+                cheerfulnes_slot=cheerfulness_slot,
+                cheerfulnes_spell=cheerfulness_spell,
+            )
 
         self.check_health(
             min_hp=min_hp,
