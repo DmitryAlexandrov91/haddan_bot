@@ -1777,7 +1777,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 if city_portal:
                     city_portal[0].click()
                     self.try_to_switch_to_dialog()
-                    come_back = come_back = self.driver.find_elements(
+                    come_back = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Телепортироваться.',
                         )
                     if come_back:
@@ -1847,6 +1847,25 @@ class HaddanDriverManager(HaddanSpiritPlay):
             )
 
         self.check_room_for_drop()
+
+        fountain = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[alt="Бодрящий фонтан"]',
+            )
+        if fountain:
+            fountain[0].click()
+            self.try_to_switch_to_dialog()
+            drink = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Выпить',
+                        )
+            if drink:
+                drink[0].click()
+
+            come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Отойти',
+                    )
+            if come_back:
+                come_back[0].click()
 
         self.check_health(
             min_hp=min_hp,
