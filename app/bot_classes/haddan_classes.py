@@ -140,10 +140,10 @@ class HaddanCommonDriver(DriverManager):
 
     def get_room_number(self) -> int | None:
         """Возвращает номер комнаты в лабе, в которой находится персонаж."""
-        self.try_to_switch_to_central_frame()
-
         if not self.driver:
             raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
 
         my_room = self.driver.find_elements(
                 By.CLASS_NAME, 'LOCATION_NAME',
@@ -1667,19 +1667,13 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 while path and self.cycle_is_running:
 
                     try:
+                        self.wait_until_transition_timeout(5)
+
                         message = (f'Осталось комнат: {len(path)}')
 
                         self.send_status_message(
                             text=message,
                         )
-
-                        self.try_to_switch_to_central_frame()
-                        # sleep(1)
-
-                        passed_room = self.get_room_number()
-                        self.passed_maze_rooms.add(passed_room)
-
-                        self.wait_until_transition_timeout(5)
 
                         self.default_maze_actions(
                             message_to_tg=message_to_tg,
@@ -1695,6 +1689,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             cheerfulness_spell=cheerfulness_spell,
                         )
 
+                        passed_room = self.get_room_number()
+                        if passed_room is None:
+                            continue
+                        self.passed_maze_rooms.add(passed_room)
+
                         if path[0] == 'запад':
                             if self.crossing_to_the_west():
                                 last_turn = path.pop(0)
@@ -1703,7 +1702,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 last_turn=last_turn,
                             )
 
-                        if path[0] == 'юг':
+                        elif path[0] == 'юг':
                             if self.crossing_to_the_south():
                                 last_turn = path.pop(0)
                                 continue
@@ -1711,7 +1710,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 last_turn=last_turn,
                             )
 
-                        if path[0] == 'север':
+                        elif path[0] == 'север':
                             if self.crossing_to_the_north():
                                 last_turn = path.pop(0)
                                 continue
@@ -1719,7 +1718,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 last_turn=last_turn,
                             )
 
-                        if path[0] == 'восток':
+                        elif path[0] == 'восток':
                             if self.crossing_to_the_east():
                                 last_turn = path.pop(0)
                                 continue
@@ -1778,7 +1777,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 if city_portal:
                     city_portal[0].click()
                     self.try_to_switch_to_dialog()
-                    come_back = come_back = self.driver.find_elements(
+                    come_back = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Телепортироваться.',
                         )
                     if come_back:
@@ -1848,6 +1847,25 @@ class HaddanDriverManager(HaddanSpiritPlay):
             )
 
         self.check_room_for_drop()
+
+        fountain = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[alt="Бодрящий фонтан"]',
+            )
+        if fountain:
+            fountain[0].click()
+            self.try_to_switch_to_dialog()
+            drink = self.driver.find_elements(
+                        By.PARTIAL_LINK_TEXT, 'Выпить',
+                        )
+            if drink:
+                drink[0].click()
+
+            come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Отойти',
+                    )
+            if come_back:
+                come_back[0].click()
 
         self.check_health(
             min_hp=min_hp,
