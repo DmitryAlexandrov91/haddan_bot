@@ -1679,3 +1679,131 @@ baby_maze_preset_upd_button.grid(
     row=9, column=12,
 )
 # ----------------------------------------------------------------------------
+
+
+# Пресет Свой ----------------------------------------------------------------
+def get_own_preset() -> None:
+    """Загружает пресет Свой из БД и настраивает слоты в окне tkinter."""
+    with sync_session_maker() as session:
+        own_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Свой',
+        )
+
+        if not own_preset:
+            sync_with_main_spell()
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=own_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=own_preset,
+            spell_books=spell_books,
+        )
+
+
+def create_update_own_preset() -> None:
+    """Загружает слоты из окна tkinter и обновляет пресет в бд."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='Свой',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+own_preset_button = tk.Button(
+    app,
+    text='Свой',
+    bg='#FFF4DC',
+    command=get_own_preset,
+)
+own_preset_button.grid(
+    row=14, column=9,
+)
+
+own_preset_upd_button = tk.Button(
+    app,
+    text='upd',
+    bg='#ED9A3B',
+    width=2,
+    command=lambda: confirm_and_execute(
+        preset_button=own_preset_button,
+        func=functools.partial(create_update_own_preset),
+    ),
+)
+own_preset_upd_button.grid(
+    row=14, column=10,
+)
+# ----------------------------------------------------------------------------
+
+
+# Пресет Свой 2---------------------------------------------------------------
+def get_own_2_preset() -> None:
+    """Загружает пресет Свой из БД и настраивает слоты в окне tkinter."""
+    with sync_session_maker() as session:
+        own_preset = preset_crud.get_single_filtered(
+            session=session,
+            name='Свой 2',
+        )
+
+        if not own_preset:
+            sync_with_main_spell()
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=own_preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=own_preset,
+            spell_books=spell_books,
+        )
+
+
+def create_update_own_2_preset() -> None:
+    """Загружает слоты из окна tkinter и обновляет пресет в бд."""
+    preset_data = get_preset_dataset_from_tk(
+        preset_name='Свой 2',
+    )
+
+    create_update_objects(
+        data=preset_data,
+        main_slots_page=main_slots_page,
+        main_spell_slot=main_spell_slot,
+    )
+
+
+own_preset_2_button = tk.Button(
+    app,
+    text='Свой2',
+    bg='#FFF4DC',
+    command=get_own_2_preset,
+)
+own_preset_2_button.grid(
+    row=14, column=11,
+)
+
+own_preset_2_upd_button = tk.Button(
+    app,
+    text='upd',
+    bg='#ED9A3B',
+    width=2,
+    command=lambda: confirm_and_execute(
+        preset_button=own_preset_2_button,
+        func=functools.partial(create_update_own_2_preset),
+    ),
+)
+own_preset_2_upd_button.grid(
+    row=14, column=12,
+)
+# ----------------------------------------------------------------------------
