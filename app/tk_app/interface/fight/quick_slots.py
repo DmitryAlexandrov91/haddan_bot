@@ -1051,6 +1051,36 @@ def confirm_and_execute(
         func()
 
 
+def get_preset_from_db_and_config_tk(
+        preset_name: str,
+        default_slots_func: Callable) -> None:
+    """Получает пресет из БД и настраивает слоты в tkinter.
+
+    :preset_name    Название пресета из БД
+    :default_slots_func    Функция, задающая дефолтный конфиг для слотов
+    """
+    with sync_session_maker() as session:
+        preset = preset_crud.get_single_filtered(
+            session=session,
+            name=preset_name,
+        )
+
+        if not preset:
+            default_slots_func()
+            return
+
+        spell_books = spell_book_crud.get_multi_filtered(
+            session=session,
+            preset_id=preset.id,
+
+        )
+
+        config_tk_preset_from_db_data(
+            preset=preset,
+            spell_books=spell_books,
+        )
+
+
 def get_preset_from_tk_and_create_or_update_in_db(preset_name: str) -> None:
     """Загружает слоты из окна tkinter и обновляет/создаёт пресет в бд."""
     preset_data = get_preset_dataset_from_tk(
@@ -1066,86 +1096,75 @@ def get_preset_from_tk_and_create_or_update_in_db(preset_name: str) -> None:
 
 
 # Пресет Дракон --------------------------------------------------------------
+def default_dragon_preset() -> None:
+    """Дефолтная настройка слотов для пресета Дракон."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._5
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    r1y1_slot.set(SlotsPage._1)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._1)
+    r1y2_spell.set(Slot._2)
+    r1y3_slot.set(SlotsPage._1)
+    r1y3_spell.set(Slot._3)
+    r1y4_slot.set(main_slot)
+    r1y4_spell.set(main_spell)
+
+    r2y1_slot.set(SlotsPage._1)
+    r2y1_spell.set(Slot._4)
+    r2y2_slot.set(main_slot)
+    r2y2_spell.set(main_spell)
+    r2y3_slot.set(main_slot)
+    r2y3_spell.set(main_spell)
+    r2y4_slot.set(main_slot)
+    r2y4_spell.set(main_spell)
+
+    r3y1_slot.set(main_slot)
+    r3y1_spell.set(main_spell)
+    r3y2_slot.set(main_slot)
+    r3y2_spell.set(main_spell)
+    r3y3_slot.set(main_slot)
+    r3y3_spell.set(main_spell)
+    r3y4_slot.set(main_slot)
+    r3y4_spell.set(main_spell)
+
+    r4y1_slot.set(main_slot)
+    r4y1_spell.set(main_spell)
+    r4y2_slot.set(main_slot)
+    r4y2_spell.set(main_spell)
+    r4y3_slot.set(main_slot)
+    r4y3_spell.set(main_spell)
+    r4y4_slot.set(main_slot)
+    r4y4_spell.set(main_spell)
+
+    r5y1_slot.set(main_slot)
+    r5y1_spell.set(main_spell)
+    r5y2_slot.set(main_slot)
+    r5y2_spell.set(main_spell)
+    r5y3_slot.set(main_slot)
+    r5y3_spell.set(main_spell)
+    r5y4_slot.set(main_slot)
+    r5y4_spell.set(main_spell)
+
+    r6y1_slot.set(SlotsPage._1)
+    r6y1_spell.set(Slot._1)
+    r6y2_slot.set(SlotsPage._1)
+    r6y2_spell.set(Slot._2)
+    r6y3_slot.set(SlotsPage._1)
+    r6y3_spell.set(Slot._3)
+    r6y4_slot.set(main_slot)
+    r6y4_spell.set(main_spell)
+
+
 def get_dragon_preset() -> None:
     """Загружает пресет Дракон из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        dragon_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Дракон',
-        )
-
-        if not dragon_preset:
-            main_slot = SlotsPage._1
-            main_spell = Slot._5
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            r1y1_slot.set(SlotsPage._1)
-            r1y1_spell.set(Slot._1)
-            r1y2_slot.set(SlotsPage._1)
-            r1y2_spell.set(Slot._2)
-            r1y3_slot.set(SlotsPage._1)
-            r1y3_spell.set(Slot._3)
-            r1y4_slot.set(main_slot)
-            r1y4_spell.set(main_spell)
-
-            r2y1_slot.set(SlotsPage._1)
-            r2y1_spell.set(Slot._4)
-            r2y2_slot.set(main_slot)
-            r2y2_spell.set(main_spell)
-            r2y3_slot.set(main_slot)
-            r2y3_spell.set(main_spell)
-            r2y4_slot.set(main_slot)
-            r2y4_spell.set(main_spell)
-
-            r3y1_slot.set(main_slot)
-            r3y1_spell.set(main_spell)
-            r3y2_slot.set(main_slot)
-            r3y2_spell.set(main_spell)
-            r3y3_slot.set(main_slot)
-            r3y3_spell.set(main_spell)
-            r3y4_slot.set(main_slot)
-            r3y4_spell.set(main_spell)
-
-            r4y1_slot.set(main_slot)
-            r4y1_spell.set(main_spell)
-            r4y2_slot.set(main_slot)
-            r4y2_spell.set(main_spell)
-            r4y3_slot.set(main_slot)
-            r4y3_spell.set(main_spell)
-            r4y4_slot.set(main_slot)
-            r4y4_spell.set(main_spell)
-
-            r5y1_slot.set(main_slot)
-            r5y1_spell.set(main_spell)
-            r5y2_slot.set(main_slot)
-            r5y2_spell.set(main_spell)
-            r5y3_slot.set(main_slot)
-            r5y3_spell.set(main_spell)
-            r5y4_slot.set(main_slot)
-            r5y4_spell.set(main_spell)
-
-            r6y1_slot.set(SlotsPage._1)
-            r6y1_spell.set(Slot._1)
-            r6y2_slot.set(SlotsPage._1)
-            r6y2_spell.set(Slot._2)
-            r6y3_slot.set(SlotsPage._1)
-            r6y3_spell.set(Slot._3)
-            r6y4_slot.set(main_slot)
-            r6y4_spell.set(main_spell)
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=dragon_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=dragon_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Дракон',
+        default_slots_func=default_dragon_preset,
+    )
 
 
 def create_update_dragon_preset() -> None:
@@ -1182,37 +1201,26 @@ dragon_preset_upd.grid(
 
 
 # Пресет ЦУ-------------------------------------------------------------------
+def default_cy_preset() -> None:
+    """Дефолтная настройка слотов для пресета ЦУ."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._1
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._3)
+    r1y1_spell.set(Slot._1)
+
+
 def get_cy_preset() -> None:
     """Загружает пресет ЦУ из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        cy_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='ЦУ',
-        )
-
-        if not cy_preset:
-            main_slot = SlotsPage._1
-            main_spell = Slot._1
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            sync_with_main_spell()
-
-            r1y1_slot.set(SlotsPage._3)
-            r1y1_spell.set(Slot._1)
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=cy_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=cy_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='ЦУ',
+        default_slots_func=default_cy_preset,
+    )
 
 
 def create_update_cy_preset() -> None:
@@ -1249,37 +1257,26 @@ farm_CY_preset_upd.grid(
 
 
 # Пресет Лаб------------------------------------------------------------------
+def default_maze_preset() -> None:
+    """Дефолтная настройка слотов для пресета Лаб."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._1
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._3)
+    r1y1_spell.set(Slot._1)
+
+
 def get_maze_preset() -> None:
     """Загружает пресет Лаб из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        cy_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Лаб',
-        )
-
-        if not cy_preset:
-            main_slot = SlotsPage._1
-            main_spell = Slot._1
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            sync_with_main_spell()
-
-            r1y1_slot.set(SlotsPage._3)
-            r1y1_spell.set(Slot._1)
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=cy_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=cy_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Лаб',
+        default_slots_func=default_maze_preset,
+    )
 
 
 def create_update_maze_preset() -> None:
@@ -1316,60 +1313,49 @@ maze_preset_button_upd.grid(
 
 
 # Пресет Берег----------------------------------------------------------------
+def default_coast_preset() -> None:
+    """Дефолтная настройка слотов для пресета Берег."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._6
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._2)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._2)
+    r1y2_spell.set(Slot._1)
+    r1y3_slot.set(SlotsPage._2)
+    r1y3_spell.set(Slot._1)
+    r1y4_slot.set(SlotsPage._1)
+    r1y4_spell.set(Slot._1)
+
+    r2y1_slot.set(SlotsPage._3)
+    r2y1_spell.set(Slot._1)
+    r2y2_slot.set(SlotsPage._1)
+    r2y2_spell.set(Slot._1)
+    r2y3_slot.set(SlotsPage._1)
+    r2y3_spell.set(Slot._2)
+
+    r3y1_slot.set(SlotsPage._1)
+    r3y1_spell.set(Slot._2)
+    r3y2_slot.set(SlotsPage._1)
+    r3y2_spell.set(Slot._4)
+
+    r4y1_slot.set(SlotsPage._1)
+    r4y1_spell.set(Slot._3)
+    r4y2_slot.set(SlotsPage._1)
+    r4y2_spell.set(Slot._4)
+
+
 def get_coast_preset() -> None:
     """Загружает пресет Берег из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        coast_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Берег',
-        )
-
-        if not coast_preset:
-            main_slot = SlotsPage._1
-            main_spell = Slot._6
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            sync_with_main_spell()
-
-            r1y1_slot.set(SlotsPage._2)
-            r1y1_spell.set(Slot._1)
-            r1y2_slot.set(SlotsPage._2)
-            r1y2_spell.set(Slot._1)
-            r1y3_slot.set(SlotsPage._2)
-            r1y3_spell.set(Slot._1)
-            r1y4_slot.set(SlotsPage._1)
-            r1y4_spell.set(Slot._1)
-
-            r2y1_slot.set(SlotsPage._3)
-            r2y1_spell.set(Slot._1)
-            r2y2_slot.set(SlotsPage._1)
-            r2y2_spell.set(Slot._1)
-            r2y3_slot.set(SlotsPage._1)
-            r2y3_spell.set(Slot._2)
-
-            r3y1_slot.set(SlotsPage._1)
-            r3y1_spell.set(Slot._2)
-            r3y2_slot.set(SlotsPage._1)
-            r3y2_spell.set(Slot._4)
-
-            r4y1_slot.set(SlotsPage._1)
-            r4y1_spell.set(Slot._3)
-            r4y2_slot.set(SlotsPage._1)
-            r4y2_spell.set(Slot._4)
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=coast_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=coast_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Берег',
+        default_slots_func=default_coast_preset,
+    )
 
 
 def create_update_coast_preset() -> None:
@@ -1406,57 +1392,47 @@ coast_preset_upd_button.grid(
 
 
 # Пресет Берег2---------------------------------------------------------------
+def default_coast_2_preset() -> None:
+    """Дефолтная настройка слотов для пресета Берег 2."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._6
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._3)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._3)
+    r1y2_spell.set(Slot._4)
+    r1y3_slot.set(SlotsPage._1)
+    r1y3_spell.set(Slot._1)
+
+    r2y1_slot.set(SlotsPage._1)
+    r2y1_spell.set(Slot._3)
+    r2y2_slot.set(SlotsPage._1)
+    r2y2_spell.set(Slot._4)
+    r2y3_slot.set(SlotsPage._1)
+    r2y3_spell.set(Slot._2)
+
+    r3y1_slot.set(SlotsPage._1)
+    r3y1_spell.set(Slot._3)
+    r3y2_slot.set(SlotsPage._1)
+    r3y2_spell.set(Slot._4)
+
+    r4y1_slot.set(SlotsPage._1)
+    r4y1_spell.set(Slot._3)
+    r4y2_slot.set(SlotsPage._1)
+    r4y2_spell.set(Slot._4)
+
+
 def get_coast_preset_2() -> None:
     """Загружает пресет Берег 2 из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        coast_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Берег2',
-        )
-
-        if not coast_preset:
-            main_slot = SlotsPage._1
-            main_spell = Slot._6
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            sync_with_main_spell()
-
-            r1y1_slot.set(SlotsPage._3)
-            r1y1_spell.set(Slot._1)
-            r1y2_slot.set(SlotsPage._3)
-            r1y2_spell.set(Slot._4)
-            r1y3_slot.set(SlotsPage._1)
-            r1y3_spell.set(Slot._1)
-
-            r2y1_slot.set(SlotsPage._1)
-            r2y1_spell.set(Slot._3)
-            r2y2_slot.set(SlotsPage._1)
-            r2y2_spell.set(Slot._4)
-            r2y3_slot.set(SlotsPage._1)
-            r2y3_spell.set(Slot._2)
-
-            r3y1_slot.set(SlotsPage._1)
-            r3y1_spell.set(Slot._3)
-            r3y2_slot.set(SlotsPage._1)
-            r3y2_spell.set(Slot._4)
-
-            r4y1_slot.set(SlotsPage._1)
-            r4y1_spell.set(Slot._3)
-            r4y2_slot.set(SlotsPage._1)
-            r4y2_spell.set(Slot._4)
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=coast_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=coast_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Берег 2',
+        default_slots_func=default_coast_2_preset,
+    )
 
 
 def create_update_coast_preset_2() -> None:
@@ -1493,38 +1469,26 @@ coast_preset_upd_button_2.grid(
 
 
 # Пресет Лес -----------------------------------------------------------------
+def default_forest_preset() -> None:
+    """Дефолтная настройка слотов для пресета Лес."""
+    main_slot = SlotsPage._p
+    main_spell = Slot._p
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._2)
+    r1y1_spell.set(Slot._1)
+
+
 def get_forest_preset() -> None:
     """Загружает пресет Лес из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        forest_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Лес',
-        )
-
-        if not forest_preset:
-
-            main_slot = SlotsPage._p
-            main_spell = Slot._p
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            sync_with_main_spell()
-
-            r1y1_slot.set(SlotsPage._2)
-            r1y1_spell.set(Slot._1)
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=forest_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=forest_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Лес',
+        default_slots_func=default_forest_preset,
+    )
 
 
 def create_update_forest_preset() -> None:
@@ -1562,60 +1526,49 @@ forest_preset_upd_button.grid(
 
 
 # Пресет ДЛ (детский лаб)-----------------------------------------------------
+def default_baby_maze_preset() -> None:
+    """Дефолтная настройка слотов для пресета ДЛ."""
+    main_slot = SlotsPage._1
+    main_spell = Slot._6
+
+    main_slots_page.set(main_slot)
+    main_spell_slot.set(main_spell)
+
+    sync_with_main_spell()
+
+    r1y1_slot.set(SlotsPage._3)
+    r1y1_spell.set(Slot._1)
+    r1y2_slot.set(SlotsPage._3)
+    r1y2_spell.set(Slot._2)
+    r1y3_slot.set(SlotsPage._1)
+    r1y3_spell.set(Slot._1)
+
+    r2y1_slot.set(SlotsPage._3)
+    r2y1_spell.set(Slot._5)
+    r2y2_slot.set(SlotsPage._1)
+    r2y2_spell.set(Slot._1)
+    r2y3_slot.set(SlotsPage._1)
+    r2y3_spell.set(Slot._6)
+
+    r3y1_slot.set(SlotsPage._3)
+    r3y1_spell.set(Slot._5)
+
+    r4y1_slot.set(SlotsPage._3)
+    r4y1_spell.set(Slot._5)
+
+    r5y1_slot.set(SlotsPage._3)
+    r5y1_spell.set(Slot._5)
+
+    r6y1_slot.set(SlotsPage._3)
+    r6y1_spell.set(Slot._5)
+
+
 def get_baby_maze_preset() -> None:
     """Загружает пресет ДЛ из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        baby_maze_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='ДЛ',
-        )
-
-        if not baby_maze_preset:
-            main_slot = SlotsPage._1
-            main_spell = Slot._6
-
-            main_slots_page.set(main_slot)
-            main_spell_slot.set(main_spell)
-
-            sync_with_main_spell()
-
-            r1y1_slot.set(SlotsPage._3)
-            r1y1_spell.set(Slot._1)
-            r1y2_slot.set(SlotsPage._3)
-            r1y2_spell.set(Slot._2)
-            r1y3_slot.set(SlotsPage._1)
-            r1y3_spell.set(Slot._1)
-
-            r2y1_slot.set(SlotsPage._3)
-            r2y1_spell.set(Slot._5)
-            r2y2_slot.set(SlotsPage._1)
-            r2y2_spell.set(Slot._1)
-            r2y3_slot.set(SlotsPage._1)
-            r2y3_spell.set(Slot._6)
-
-            r3y1_slot.set(SlotsPage._3)
-            r3y1_spell.set(Slot._5)
-
-            r4y1_slot.set(SlotsPage._3)
-            r4y1_spell.set(Slot._5)
-
-            r5y1_slot.set(SlotsPage._3)
-            r5y1_spell.set(Slot._5)
-
-            r6y1_slot.set(SlotsPage._3)
-            r6y1_spell.set(Slot._5)
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=baby_maze_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=baby_maze_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='ДЛ',
+        default_slots_func=default_baby_maze_preset,
+    )
 
 
 def create_update_baby_maze_preset() -> None:
@@ -1642,7 +1595,7 @@ baby_maze_preset_upd_button = tk.Button(
     bg='#ED9A3B',
     command=lambda: confirm_and_execute(
         preset_button=baby_maze_preset_button,
-        func=functools.partial(get_baby_maze_preset),
+        func=functools.partial(create_update_baby_maze_preset),
     ),
 )
 baby_maze_preset_upd_button.grid(
@@ -1654,26 +1607,10 @@ baby_maze_preset_upd_button.grid(
 # Пресет Свой ----------------------------------------------------------------
 def get_own_preset() -> None:
     """Загружает пресет Свой из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        own_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Свой',
-        )
-
-        if not own_preset:
-            sync_with_main_spell()
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=own_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=own_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Свой',
+        default_slots_func=sync_with_main_spell,
+    )
 
 
 def create_update_own_preset() -> None:
@@ -1712,26 +1649,10 @@ own_preset_upd_button.grid(
 # Пресет Свой 2---------------------------------------------------------------
 def get_own_2_preset() -> None:
     """Загружает пресет Свой 2 из БД и настраивает слоты в окне tkinter."""
-    with sync_session_maker() as session:
-        own_preset = preset_crud.get_single_filtered(
-            session=session,
-            name='Свой 2',
-        )
-
-        if not own_preset:
-            sync_with_main_spell()
-            return
-
-        spell_books = spell_book_crud.get_multi_filtered(
-            session=session,
-            preset_id=own_preset.id,
-
-        )
-
-        config_tk_preset_from_db_data(
-            preset=own_preset,
-            spell_books=spell_books,
-        )
+    get_preset_from_db_and_config_tk(
+        preset_name='Свой 2',
+        default_slots_func=sync_with_main_spell,
+    )
 
 
 def create_update_own_2_preset() -> None:
