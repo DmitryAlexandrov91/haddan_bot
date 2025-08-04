@@ -202,7 +202,10 @@ alembic upgrade head  # применить миграции Alembic, после 
 - развернуть оркестр для запуска приложения (бот, база, нейросеть)
 
 ## Скриншоты
-<img width="2031" height="820" alt="изображение" src="https://github.com/user-attachments/assets/4323b5cf-67aa-4e30-be9b-8831b67c8a10" />
+<img width="2035" height="820" alt="изображение" src="https://github.com/user-attachments/assets/f622d565-a550-4fac-955b-622ace1b6405" />
+
+
+
 
 
 ---
@@ -218,6 +221,7 @@ alembic upgrade head  # применить миграции Alembic, после 
 
 <u>Habr Career</u>
 - https://career.habr.com/aldmal
+
 
 
 
