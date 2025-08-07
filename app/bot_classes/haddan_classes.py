@@ -97,6 +97,15 @@ class HaddanUser:
             )
         submit_button.click()
 
+    def exit_from_game(self) -> None:
+        """Выходит из игры."""
+        exit_button = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[alt="ВЫХОД"]',
+        )
+        if exit_button:
+            exit_button[0].click()
+
 
 class HaddanCommonDriver(DriverManager):
     """Класс управления фреймами и общие методы."""
@@ -123,6 +132,19 @@ class HaddanCommonDriver(DriverManager):
 
             try:
                 self.driver.switch_to.frame("thedialog")
+
+            except Exception:
+                self.driver.switch_to.default_content()
+
+    def try_to_switch_to_upper(self) -> None:
+        """Переключается на фрейм upper с кнопкой выхода из игры."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if self.driver.execute_script("return window.name;") != 'frmupper':
+
+            try:
+                self.driver.switch_to.frame("frmupper")
 
             except Exception:
                 self.driver.switch_to.default_content()
@@ -801,6 +823,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
         self.maze_third_floor_map: list[list[Room]] | None = None
         self.baby_maze_first_floor_map: list[list[Room]] | None = None
         self.baby_maze_second_floor_map: list[list[Room]] | None = None
+        self.fight_counter: int = 0
+        self.domen: str | None = None
         self.kapthca_sent = False
 
     def _register_handlers(self) -> None:
@@ -1237,6 +1261,20 @@ class HaddanDriverManager(HaddanSpiritPlay):
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
+    def actions_with_fight_counter(
+            self,
+            fights: int,
+            ) -> None:
+        """"Действия с счётчиком боёв."""
+        self.fight_counter += 1
+        if self.user and self.fight_counter >= fights:
+            self.try_to_switch_to_upper()
+            self.user.exit_from_game()
+            self.user.login_to_game(
+                domen=self.domen,
+            )
+            self.fight_counter = 0
+
     def farm(
             self,
             slots: SlotsPage = SlotsPage._1,
@@ -1251,6 +1289,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             cheerfulness: bool = False,
             cheerfulness_min: int | None = None,
             cheerfulness_slot: SlotsPage = SlotsPage._0,
+            fight_counter: int = 20,
             cheerfulness_spell: Slot = Slot._1) -> None:
         """Фарм с проведением боя."""
         if not self.driver:
@@ -1282,6 +1321,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         default_slot=slots,
                         default_spell=spell)
 
+                    self.actions_with_fight_counter(
+                        fights=fight_counter,
+                    )
+
                 else:
                     self.wait_until_transition_timeout(5)
 
@@ -1294,6 +1337,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 spell_book=spell_book,
                                 default_slot=slots,
                                 default_spell=spell)
+
+                            self.actions_with_fight_counter(
+                                fights=fight_counter,
+                            )
 
                     if left_right_move:
                         if not self.crossing_to_the_west():

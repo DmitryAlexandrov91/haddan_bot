@@ -67,6 +67,9 @@ def start_farm() -> None:
             cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
             cheerfulness_slot=cheerfulness_slot.get(),
             cheerfulness_spell=cheerfulness_spell.get(),
+            fight_counter=int(
+                fight_counter_field.get(),
+            ) if fight_counter_field.get() else 20,
         )
 
     except (
@@ -154,6 +157,12 @@ fight_stop_btn.grid(
     row=2, column=6,
 )
 #  --------------------------------------------------------------------
+fight_counter_field = tk.Entry(
+    app, width=3, justify='center',
+)
+fight_counter_field.grid(
+    row=2, column=4, sticky='e',
+)
 
 
 #  Чек боксы  ---------------------------------------------------------
