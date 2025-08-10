@@ -9,7 +9,7 @@ from typing import Optional
 import undetected_chromedriver as uc
 from aiogram import Bot
 from config import configure_logging
-from constants import CHROME_PATH
+from constants import CHROME_PATH, PAGE_LOAD_TIMEOUT, SCRIPT_TIMEOUT
 from selenium import webdriver
 from selenium.common.exceptions import (
     InvalidSessionIdException,
@@ -34,7 +34,6 @@ class DriverManager:
             cycle_thread: Optional[threading.Thread] = None,
             event: threading.Event = threading.Event(),
             errors_count: int = 0,
-            wait_timeout: int = 30,
             alarm_label: Optional[tk.Label] = None,
             info_label: Optional[tk.Label] = None,
             status_label: Optional[tk.Label] = None,
@@ -48,7 +47,6 @@ class DriverManager:
         self.bot = bot
         self.event = event
         self.errors_count = errors_count
-        self.wait_timeout = wait_timeout
         self.alarm_label = alarm_label
         self.info_label = info_label
         self.status_label = status_label
@@ -151,8 +149,8 @@ class DriverManager:
                     options=self.options,
                 )
 
-                self.driver.set_page_load_timeout(self.wait_timeout)
-                self.driver.set_script_timeout(self.wait_timeout)
+                self.driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
+                self.driver.set_script_timeout(SCRIPT_TIMEOUT)
 
             except Exception as e:
                 configure_logging()

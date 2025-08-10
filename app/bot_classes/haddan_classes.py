@@ -14,6 +14,7 @@ from aiogram import Bot, Dispatcher, F, Router, types
 from config import configure_logging
 from constants import (
     BASE_DIR,
+    BEETS_TIMEOUT,
     FIELD_PRICES,
     GAMBLE_SPIRIT_RIGHT_ANSWERS,
     HADDAN_URL,
@@ -296,15 +297,15 @@ class HaddanCommonDriver(DriverManager):
 
     def actions_after_exception(self, exception: Exception) -> None:
         """Общее действие обработки исключения."""
-        logging.error(
-            f'\nВозникло исключение {str(exception)}\n',
-            stack_info=False,
-        )
-
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.check_for_slot_clear_alarm_message()
+        logging.error(
+            f'\nВозникло исключение {str(exception)}\n',
+            stack_info=True,
+        )
+
+        self.check_for_slot_clear_alarm_message()
 
         try:
 
@@ -422,8 +423,6 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
-        self.check_for_slot_clear_alarm_message()
-
         if not self.check_come_back():
 
             if slots_page == 'p' == slot:
@@ -498,7 +497,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
-        self.check_for_slot_clear_alarm_message()
+        # self.check_for_slot_clear_alarm_message() не здесь
 
         current_round = self.get_round_number()
         kick = self.get_hit_number()
@@ -525,7 +524,6 @@ class HaddanFightDriver(HaddanCommonDriver):
                         slot=default_spell)
 
             except Exception:
-                # self.check_for_slot_clear_alarm_message()
                 self.open_slot_and_choise_spell(
                     slots_page=default_slot,
                     slot=default_spell)
@@ -536,20 +534,18 @@ class HaddanFightDriver(HaddanCommonDriver):
                         By.PARTIAL_LINK_TEXT, 'Вернуться')
             if come_back:
                 come_back[0].click()
-                self.send_alarm_message(
-                    text='Бой завершён',
-                )
 
             else:
 
                 try:
+
                     element = self.driver.execute_script(
                         '''
                         touchFight();
                         return document.activeElement;
                         ''',
                     )
-                    sleep(float(os.getenv('BEETS_DELAY', 0.2)))
+                    sleep(BEETS_TIMEOUT)
                     # WebDriverWait(self.driver, 30).until_not(
                     #         ec.presence_of_element_located((
                     #             By.XPATH,
@@ -565,6 +561,9 @@ class HaddanFightDriver(HaddanCommonDriver):
 
                 except Exception as e:
                     self.actions_after_exception(e)
+
+                if not self.check_for_fight:
+                    return
 
                 self.fight(
                     spell_book=spell_book,
@@ -1298,7 +1297,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
         while self.cycle_is_running:
 
             try:
-                self.check_for_slot_clear_alarm_message()
 
                 if cheerfulness:
                     self.check_cheerfulnes_level(
@@ -1351,6 +1349,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 spell_book=spell_book,
                                 default_slot=slots,
                                 default_spell=spell)
+
+                # self.check_for_slot_clear_alarm_message()
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
