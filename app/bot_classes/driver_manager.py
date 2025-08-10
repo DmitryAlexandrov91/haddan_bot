@@ -34,7 +34,7 @@ class DriverManager:
             cycle_thread: Optional[threading.Thread] = None,
             event: threading.Event = threading.Event(),
             errors_count: int = 0,
-            wait_timeout: int = 30,
+            wait_timeout: int = 2,
             alarm_label: Optional[tk.Label] = None,
             info_label: Optional[tk.Label] = None,
             status_label: Optional[tk.Label] = None,

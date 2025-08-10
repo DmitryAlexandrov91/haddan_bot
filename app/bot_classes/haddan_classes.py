@@ -296,15 +296,15 @@ class HaddanCommonDriver(DriverManager):
 
     def actions_after_exception(self, exception: Exception) -> None:
         """Общее действие обработки исключения."""
-        logging.error(
-            f'\nВозникло исключение {str(exception)}\n',
-            stack_info=False,
-        )
-
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.check_for_slot_clear_alarm_message()
+        logging.error(
+            f'\nВозникло исключение {str(exception)}\n',
+            stack_info=True,
+        )
+
+        self.check_for_slot_clear_alarm_message()
 
         try:
 
@@ -422,7 +422,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
-        self.check_for_slot_clear_alarm_message()
+        # self.check_for_slot_clear_alarm_message()
 
         if not self.check_come_back():
 
@@ -498,7 +498,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
-        self.check_for_slot_clear_alarm_message()
+        # self.check_for_slot_clear_alarm_message() не здесь
 
         current_round = self.get_round_number()
         kick = self.get_hit_number()
@@ -1298,7 +1298,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
         while self.cycle_is_running:
 
             try:
-                self.check_for_slot_clear_alarm_message()
 
                 if cheerfulness:
                     self.check_cheerfulnes_level(
@@ -1351,6 +1350,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 spell_book=spell_book,
                                 default_slot=slots,
                                 default_spell=spell)
+
+                # self.check_for_slot_clear_alarm_message()
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()

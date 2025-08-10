@@ -1,3 +1,4 @@
+import os
 import threading
 import tkinter as tk
 
@@ -253,7 +254,9 @@ cheerfulness_drink_field = tk.Entry(
 cheerfulness_drink_field.grid(
     row=7, column=4,
 )
-cheerfulness_drink_field.insert(0, '96')
+cheerfulness_drink_field.insert(
+    0, os.getenv('DEFAULT_CHEERFULNESS_MIN', '96'),
+)
 
 cheerfulness_slot = tk.StringVar(app)
 cheerfulness_slot.set(
