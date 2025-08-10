@@ -14,6 +14,7 @@ from aiogram import Bot, Dispatcher, F, Router, types
 from config import configure_logging
 from constants import (
     BASE_DIR,
+    BEETS_TIMEOUT,
     FIELD_PRICES,
     GAMBLE_SPIRIT_RIGHT_ANSWERS,
     HADDAN_URL,
@@ -422,8 +423,6 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.check_for_slot_clear_alarm_message()
-
         if not self.check_come_back():
 
             if slots_page == 'p' == slot:
@@ -525,7 +524,6 @@ class HaddanFightDriver(HaddanCommonDriver):
                         slot=default_spell)
 
             except Exception:
-                # self.check_for_slot_clear_alarm_message()
                 self.open_slot_and_choise_spell(
                     slots_page=default_slot,
                     slot=default_spell)
@@ -543,13 +541,16 @@ class HaddanFightDriver(HaddanCommonDriver):
             else:
 
                 try:
+                    if not self.check_for_fight:
+                        return
+
                     element = self.driver.execute_script(
                         '''
                         touchFight();
                         return document.activeElement;
                         ''',
                     )
-                    sleep(float(os.getenv('BEETS_DELAY', 0.2)))
+                    sleep(BEETS_TIMEOUT)
                     # WebDriverWait(self.driver, 30).until_not(
                     #         ec.presence_of_element_located((
                     #             By.XPATH,
