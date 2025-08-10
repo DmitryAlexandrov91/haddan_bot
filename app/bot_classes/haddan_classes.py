@@ -534,9 +534,6 @@ class HaddanFightDriver(HaddanCommonDriver):
                         By.PARTIAL_LINK_TEXT, 'Вернуться')
             if come_back:
                 come_back[0].click()
-                self.send_alarm_message(
-                    text='Бой завершён',
-                )
 
             else:
 
