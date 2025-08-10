@@ -541,8 +541,6 @@ class HaddanFightDriver(HaddanCommonDriver):
             else:
 
                 try:
-                    if not self.check_for_fight:
-                        return
 
                     element = self.driver.execute_script(
                         '''
@@ -566,6 +564,9 @@ class HaddanFightDriver(HaddanCommonDriver):
 
                 except Exception as e:
                     self.actions_after_exception(e)
+
+                if not self.check_for_fight:
+                    return
 
                 self.fight(
                     spell_book=spell_book,
