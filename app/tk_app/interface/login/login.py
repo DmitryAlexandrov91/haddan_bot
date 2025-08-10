@@ -4,7 +4,7 @@ import threading
 import tkinter as tk
 from datetime import datetime
 
-from bot_classes import DriverManager, HaddanUser
+from bot_classes import HaddanDriverManager, HaddanUser
 from config import configure_logging
 from constants import CHARS, CHARS_ACCESS, DOMENS, DT_FORMAT
 
@@ -18,7 +18,7 @@ def start_login_thread() -> None:
     manager.thread.start()
 
 
-def start_game(manager: DriverManager = manager) -> None:
+def start_game(manager: HaddanDriverManager = manager) -> None:
     """Запускает игру."""
     try:
         char = username.get().strip()
@@ -40,7 +40,7 @@ def start_game(manager: DriverManager = manager) -> None:
             text=f'Заходим в игру персонажем {char}',
         )
 
-        domen = DOMENS[domen_url.get()]
+        manager.domen = DOMENS[domen_url.get()]
 
         if char and password:
             manager.start_driver()
@@ -49,7 +49,7 @@ def start_game(manager: DriverManager = manager) -> None:
                 password=password,
                 driver=manager.driver)
             manager.user.login_to_game(
-                domen=domen,
+                domen=manager.domen,
             )
             login_to_game.configure(foreground='green')
             manager.clean_label_messages()
@@ -62,7 +62,7 @@ def start_game(manager: DriverManager = manager) -> None:
         )
 
 
-def stop_bot(manager: DriverManager = manager) -> None:
+def stop_bot(manager: HaddanDriverManager = manager) -> None:
     """Останавливает цикл."""
     manager.event.clear()
     manager.close_driver()

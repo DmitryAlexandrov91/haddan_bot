@@ -90,6 +90,9 @@ DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
     'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1',
 )
 DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', '1')
+BEETS_TIMEOUT = float(os.getenv('BEETS_DELAY', 0.2))
+PAGE_LOAD_TIMEOUT = float(os.getenv('PAGE_LOAD_TIMEOUT', 2))
+SCRIPT_TIMEOUT = float(os.getenv('SCRIPT_TIMEOUT', 2))
 
 # Цена ресурсов поляны
 FIELD_PRICES = {
@@ -199,7 +202,9 @@ CHARS_ACCESS = {
     'фантазёрка': '2033-06-27 23:59:59',
     'выдра полевая': '2033-06-27 23:59:59',
     'sauron77': '2033-06-27 23:59:59',
-
+    'Joker13': '2033-06-27 23:59:59',
+    'Dark Messia': '2033-06-27 23:59:59',
+    '-Смертник-': '2033-06-27 23:59:59',
 }
 
 DT_FORMAT = '%Y-%m-%d %H:%M:%S'

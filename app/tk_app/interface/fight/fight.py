@@ -1,3 +1,4 @@
+import os
 import threading
 import tkinter as tk
 
@@ -67,6 +68,9 @@ def start_farm() -> None:
             cheerfulness_min=int(cheerfulness_drink_field.get().strip()),
             cheerfulness_slot=cheerfulness_slot.get(),
             cheerfulness_spell=cheerfulness_spell.get(),
+            fight_counter=int(
+                fight_counter_field.get(),
+            ) if fight_counter_field.get() else 20,
         )
 
     except (
@@ -154,6 +158,12 @@ fight_stop_btn.grid(
     row=2, column=6,
 )
 #  --------------------------------------------------------------------
+fight_counter_field = tk.Entry(
+    app, width=3, justify='center',
+)
+fight_counter_field.grid(
+    row=2, column=4, sticky='e',
+)
 
 
 #  Чек боксы  ---------------------------------------------------------
@@ -244,7 +254,9 @@ cheerfulness_drink_field = tk.Entry(
 cheerfulness_drink_field.grid(
     row=7, column=4,
 )
-cheerfulness_drink_field.insert(0, '96')
+cheerfulness_drink_field.insert(
+    0, os.getenv('DEFAULT_CHEERFULNESS_MIN', '96'),
+)
 
 cheerfulness_slot = tk.StringVar(app)
 cheerfulness_slot.set(
