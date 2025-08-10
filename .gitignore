@@ -7,7 +7,7 @@ chromedriver-linux64/
 chrome-win/
 
 # Системные файлы
-.env*
+.env
 .env/
 *.pyc
 
