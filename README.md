@@ -206,6 +206,14 @@ Ubuntu 24.04.2 LTS
 
 <img width="2035" height="820" alt="изображение" src="https://github.com/user-attachments/assets/f622d565-a550-4fac-955b-622ace1b6405" />
 
+
+WIndows 11
+
+<img width="1355" height="618" alt="image" src="https://github.com/user-attachments/assets/55242c65-d53e-40b7-8814-542a97017b8c" />
+
+
+
+
 ---
 ▌ Автор 📝
 
@@ -219,6 +227,7 @@ Ubuntu 24.04.2 LTS
 
 <u>Habr Career</u>
 - https://career.habr.com/aldmal
+
 
 
 
