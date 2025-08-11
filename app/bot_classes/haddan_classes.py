@@ -277,6 +277,30 @@ class HaddanCommonDriver(DriverManager):
         except TimeoutException:
             self.wait_until_alert_present(time=time)
 
+    def wait_until_browser_test(self, time: int) -> None:
+        """Ждёт time секунд пока идёт проверка браузера.
+
+        По истечению времени ожидания перезагружает окно.
+        """
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if not self.cycle_is_running:
+            exit()
+
+        try:
+            WebDriverWait(
+                self.driver, timeout=time,
+            ).until_not(
+                ec.presence_of_element_located((
+                    By.XPATH,
+                    "//*[contains(text(),"
+                    "'Проверка браузера')]",
+                    )),
+            )
+        except TimeoutException:
+            self.driver.refresh()
+
     def try_to_click_to_glade_fairy(self) -> None:
         """Ищет фею поляны и щёлкает на неё."""
         if not self.driver:
@@ -423,31 +447,27 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.driver:
             raise InvalidSessionIdException
 
-        if not self.check_come_back():
+        if slots_page == 'p' == slot:
+            self.try_to_switch_to_central_frame()
+            kick = self.driver.find_elements(
+                By.CSS_SELECTOR, 'img[src="/@!images/fight/knife.gif"]',
+            )
+            if kick:
+                kick[0].click()
 
-            if slots_page == 'p' == slot:
-                self.try_to_switch_to_central_frame()
-                kick = self.driver.find_elements(
-                    By.CSS_SELECTOR, 'img[src="/@!images/fight/knife.gif"]',
+        else:
+            active_spell = self.get_active_spell()
+            spell_to_cast = self.get_spell_to_cast(
+                spell_number=slot,
+                slot_number=slots_page,
+            )
+            if spell_to_cast != active_spell:
+                self.driver.execute_script(
+                    f'slotsShow({int(slots_page) - 1})',
                 )
-                if kick:
-                    kick[0].click()
-
-            else:
-                active_spell = self.get_active_spell()
-                spell_to_cast = self.get_spell_to_cast(
-                    spell_number=slot,
-                    slot_number=slots_page,
+                self.driver.execute_script(
+                    f'return qs_onClickSlot(event,{int(slot) - 1})',
                 )
-                if spell_to_cast != active_spell and (
-                    not self.check_come_back()
-                ):
-                    self.driver.execute_script(
-                        f'slotsShow({int(slots_page) - 1})',
-                    )
-                    self.driver.execute_script(
-                        f'return qs_onClickSlot(event,{int(slot) - 1})',
-                    )
 
     def get_hit_number(self) -> Optional[str]:
         """Возвращает номер удара в бою."""
@@ -497,7 +517,8 @@ class HaddanFightDriver(HaddanCommonDriver):
         if not self.cycle_is_running:
             exit()
 
-        # self.check_for_slot_clear_alarm_message() не здесь
+        if self.check_for_fight() is False:
+            return
 
         current_round = self.get_round_number()
         kick = self.get_hit_number()
@@ -507,68 +528,74 @@ class HaddanFightDriver(HaddanCommonDriver):
             self.send_info_message(
                 text='Бой завершён',
             )
+            return
 
-        else:
-            self.send_info_message(
-                text='Проводим бой',
-            )
-            try:
-                if spell_book:
-                    self.open_slot_and_choise_spell(
-                        slots_page=spell_book[current_round][kick]['slot'],
-                        slot=spell_book[current_round][kick]['spell'])
+        self.send_info_message(
+            text='Проводим бой',
+        )
 
-                else:
-                    self.open_slot_and_choise_spell(
-                        slots_page=default_slot,
-                        slot=default_spell)
+        try:
 
-            except Exception:
+            if spell_book:
+                self.open_slot_and_choise_spell(
+                    slots_page=spell_book[current_round][kick]['slot'],
+                    slot=spell_book[current_round][kick]['spell'])
+
+            else:
                 self.open_slot_and_choise_spell(
                     slots_page=default_slot,
                     slot=default_spell)
 
-            self.try_to_switch_to_central_frame()
+        except Exception:
+            if self.check_for_fight() is False:
+                return
 
-            come_back = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, 'Вернуться')
-            if come_back:
-                come_back[0].click()
+            self.open_slot_and_choise_spell(
+                slots_page=default_slot,
+                slot=default_spell)
 
-            else:
+        self.try_to_switch_to_central_frame()
 
-                try:
+        come_back = self.driver.find_elements(
+                    By.PARTIAL_LINK_TEXT, 'Вернуться')
+        if come_back:
+            come_back[0].click()
 
-                    element = self.driver.execute_script(
-                        '''
-                        touchFight();
-                        return document.activeElement;
-                        ''',
-                    )
-                    sleep(BEETS_TIMEOUT)
-                    # WebDriverWait(self.driver, 30).until_not(
-                    #         ec.presence_of_element_located((
-                    #             By.XPATH,
-                    #             "//*[contains(text(),"
-                    #             "'Пожалуйста, подождите')]",
-                    #             )),
-                    #     )
-                    try:
-                        if element:
-                            element.send_keys(Keys.TAB)
-                    except Exception:
-                        pass
+        if self.check_for_fight() is False:
+            return
 
-                except Exception as e:
-                    self.actions_after_exception(e)
+        try:
 
-                if not self.check_for_fight:
-                    return
+            element = self.driver.execute_script(
+                '''
+                touchFight();
+                return document.activeElement;
+                ''',
+            )
+            sleep(BEETS_TIMEOUT)
+            # WebDriverWait(self.driver, 30).until_not(
+            #         ec.presence_of_element_located((
+            #             By.XPATH,
+            #             "//*[contains(text(),"
+            #             "'Пожалуйста, подождите')]",
+            #             )),
+            #     )
+            try:
+                if element:
+                    element.send_keys(Keys.TAB)
+            except Exception:
+                pass
 
-                self.fight(
-                    spell_book=spell_book,
-                    default_slot=default_slot,
-                    default_spell=default_spell)
+            if not self.check_for_fight:
+                return
+
+            self.fight(
+                spell_book=spell_book,
+                default_slot=default_slot,
+                default_spell=default_spell)
+
+        except Exception as e:
+            self.actions_after_exception(e)
 
 
 class HaddanSpiritPlay(HaddanFightDriver):
@@ -1265,6 +1292,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
             fights: int,
             ) -> None:
         """"Действия с счётчиком боёв."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
         self.fight_counter += 1
         if self.user and self.fight_counter >= fights:
             self.try_to_switch_to_upper()
@@ -1272,6 +1302,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.user.login_to_game(
                 domen=self.domen,
             )
+
+            self.wait_until_browser_test(time=10)
+
             self.fight_counter = 0
 
     def farm(
@@ -1349,6 +1382,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 spell_book=spell_book,
                                 default_slot=slots,
                                 default_spell=spell)
+
+                            self.actions_with_fight_counter(
+                                fights=fight_counter,
+                            )
 
                 # self.check_for_slot_clear_alarm_message()
 
@@ -1495,32 +1532,34 @@ class HaddanDriverManager(HaddanSpiritPlay):
         if not self.driver:
             raise InvalidSessionIdException
 
-        if self.check_for_fight() is False:
-            self.driver.switch_to.default_content()
-            cheerfulnes_level = self.driver.find_elements(
-                By.CLASS_NAME, 'current-bf')
-            if cheerfulnes_level:
-                cheerfulnes = int(cheerfulnes_level[0].text)
+        if self.check_for_fight() is True:
+            return
 
-                if cheerfulnes_min:
+        self.driver.switch_to.default_content()
+        cheerfulnes_level = self.driver.find_elements(
+            By.CLASS_NAME, 'current-bf')
+        if cheerfulnes_level:
+            cheerfulnes = int(cheerfulnes_level[0].text)
 
-                    while cheerfulnes < cheerfulnes_min and (
-                        self.check_for_fight() is False
-                    ):
+            if cheerfulnes_min:
 
-                        self.open_slot_and_choise_spell(
-                            slots_page=cheerfulnes_slot,
-                            slot=cheerfulnes_spell,
-                        )
+                while cheerfulnes < cheerfulnes_min and (
+                    self.check_for_fight() is False
+                ):
 
-                        sleep(1)
+                    self.open_slot_and_choise_spell(
+                        slots_page=cheerfulnes_slot,
+                        slot=cheerfulnes_spell,
+                    )
 
-                        cheerfulnes_level = self.driver.find_elements(
-                            By.CLASS_NAME, 'current-bf')
-                        if cheerfulnes_level:
-                            cheerfulnes = int(cheerfulnes_level[0].text)
-                        else:
-                            break
+                    sleep(1)
+
+                    cheerfulnes_level = self.driver.find_elements(
+                        By.CLASS_NAME, 'current-bf')
+                    if cheerfulnes_level:
+                        cheerfulnes = int(cheerfulnes_level[0].text)
+                    else:
+                        break
 
     def maze_passing(
         self,
@@ -1871,7 +1910,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
         self.try_to_come_back_from_fight()
 
         self.try_to_switch_to_central_frame()
-        sleep(0.5)
+        # sleep(0.5)
 
         self.play_with_poetry_spirit()
         self.play_with_gamble_spirit()
@@ -1949,7 +1988,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
             if drop:
                 drop[0].click()
-                sleep(1)
+                sleep(0.5)
                 self.send_info_message(message)
                 self.check_room_for_drop()
 
