@@ -191,36 +191,47 @@ class DriverManager:
             file.write(page_source)
 
     def start_event(self) -> None:
-        """Устанавливает флаг в положение True."""
+        """Устанавливает флаг цикла в положение True."""
         self.event.set()
 
     def stop_event(self) -> None:
-        """Устанавливает флаг в положение False."""
+        """Устанавливает флаг цикла в положение False."""
         self.event.clear()
 
     def wait_while_element_will_be_clickable(
-            self, element: WebElement) -> None:
-        """Ждёт пока элемент станет кликабельным."""
-        if self.driver:
-            WebDriverWait(self.driver, 5).until(
+            self,
+            element: WebElement,
+            time: int) -> None:
+        """Ждёт time секунд элемент станет кликабельным."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+            WebDriverWait(self.driver, timeout=time).until(
                 ec.element_to_be_clickable(element))
+        except Exception:
+            pass
 
     def scroll_to_element(self, element: WebElement) -> None:
         """Прокручивает до нужного жлемента."""
-        if self.driver:
-            self.driver.execute_script(
-                "arguments[0].scrollIntoView();",
-                element,
-            )
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView();",
+            element,
+        )
 
     def click_to_element_with_actionchains(self, element: WebElement) -> None:
         """Щёлкает по элементу методом click класса ActionChains.
 
         Максимальная эмуляция реального нажатия мышкой*
         """
-        if self.driver:
-            ActionChains(self.driver).move_to_element(
-                    element).click().perform()
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        ActionChains(self.driver).move_to_element(
+                element).click().perform()
 
     def send_alarm_message(
             self,
