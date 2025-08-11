@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import os
 import random
 import re
@@ -27,6 +26,7 @@ from constants import (
 )
 from dao.crud import event_crud
 from dao.database import sync_session_maker
+from loguru import logger
 from maze_utils import (
     find_path_via_boxes_with_directions,
     find_path_with_directions,
@@ -157,9 +157,9 @@ class HaddanCommonDriver(DriverManager):
 
         frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
         if frames:
-            logging.info([frame.get_attribute('name') for frame in frames])
+            logger.info([frame.get_attribute('name') for frame in frames])
         else:
-            logging.info('iframe на странице не найдены')
+            logger.info('iframe на странице не найдены')
 
     def get_room_number(self) -> int | None:
         """Возвращает номер комнаты в лабе, в которой находится персонаж."""
@@ -324,7 +324,7 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        logging.error(
+        logger.error(
             f'\nВозникло исключение {str(exception)}\n',
             stack_info=True,
         )
@@ -335,7 +335,7 @@ class HaddanCommonDriver(DriverManager):
 
             self.driver.switch_to.default_content()
             self.errors_count += 1
-            logging.info(f'Текущее количество ошибок - {self.errors_count}')
+            logger.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
                 self.driver.refresh()
                 self.errors_count = 0
@@ -634,7 +634,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                 gamble_spirit[0].click()
                 sleep(1)
 
-                logging.info('Играем с духом азарта.')
+                logger.info('Играем с духом азарта.')
                 self.send_info_message(
                     text='Пойманы духом азарта',
                 )
@@ -693,7 +693,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     sleep(0.5)
 
         except Exception as e:
-            logging.error(
+            logger.error(
                 'При игре с духом азарта возникла ошибка: ',
                 str(e),
             )
@@ -724,7 +724,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                 self.send_info_message(
                     text='Пойманы духом поэзии',
                 )
-                logging.info('Играем с духом поэзии.')
+                logger.info('Играем с духом поэзии.')
                 self.try_to_switch_to_dialog()
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
@@ -737,7 +737,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     )
                     sleep(0.5)
             except Exception as e:
-                logging.error(
+                logger.error(
                     'При игре с духом поэзии возникла ошибка: ',
                     str(e),
                 )
@@ -766,7 +766,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                 mind_spirit[0].click()
                 sleep(0.5)
 
-                logging.info('Играем с духом ума')
+                logger.info('Играем с духом ума')
                 self.send_info_message(
                     text='Пойманы духом ума',
                 )
@@ -798,7 +798,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     sleep(0.5)
 
             except Exception as e:
-                logging.error(
+                logger.error(
                     'При игре с духом ума возникла ошибка: ',
                     str(e),
                 )
@@ -896,11 +896,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             if os.path.exists(source_file):
                                 os.rename(source_file, dest_file)
                             else:
-                                logging.warning(
+                                logger.warning(
                                     f"⚠️ Файл не найден: {source_file}",
                                 )
                         except Exception as e:
-                            logging.error(
+                            logger.error(
                                 f"⛔ Ошибка при обработке файла: {e}",
                             )
 
@@ -956,7 +956,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 )
 
             except Exception as e:
-                logging.error(f"Ошибка при старте поллинга {str(e)}.")
+                logger.error(f"Ошибка при старте поллинга {str(e)}.")
 
     async def stop_polling(self) -> None:
         """Асинхронная остановка поллинга бота."""
@@ -965,7 +965,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.polling_started.clear()
                 await self.dp.stop_polling()
             except Exception as e:
-                logging.error(f"Ошибка при остановке поллинга {str(e)}")
+                logger.error(f"Ошибка при остановке поллинга {str(e)}")
 
     def sync_send_message(self, text: str, telegram_id: int) -> None:
         """Синхронная отправка сообщения."""
@@ -1036,7 +1036,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.sync_send_message(
                     text='Обнаружена капча!',
                     telegram_id=telegram_id)
-                logging.info('Обнаружена капча!')
+                logger.info('Обнаружена капча!')
 
                 if not self.kapthca_sent:
                     self.sync_send_kaptcha(telegram_id=telegram_id)
@@ -1086,7 +1086,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             if health:
                 hp = int(health[0].text)
                 if hp < min_hp:
-                    logging.info('Мало хп, спим 30 секунд!')
+                    logger.info('Мало хп, спим 30 секунд!')
                     if self.bot and message_to_tg and telegram_id:
                         self.sync_send_message(
                             telegram_id=telegram_id,
@@ -1617,7 +1617,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     message = (
                         f'Двигаемся по прямой в комнату {to_the_room} '
                     )
-                    logging.info(message)
+                    logger.info(message)
                     self.send_info_message(
                         text=message,
                     )
@@ -1634,7 +1634,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room} '
                     )
-                    logging.info(message)
+                    logger.info(message)
                     self.send_info_message(
                         text=message,
                     )

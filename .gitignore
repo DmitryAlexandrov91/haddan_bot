@@ -221,3 +221,5 @@ cython_debug/
 
 /tf
 *kaptcha
+
+log.txt
