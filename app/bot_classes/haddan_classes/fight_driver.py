@@ -173,7 +173,7 @@ class HaddanFightDriver(HaddanCommonDriver):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         if self.check_for_fight() is False:
             return

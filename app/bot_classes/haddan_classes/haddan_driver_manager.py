@@ -249,7 +249,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]',
@@ -316,7 +316,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         if min_hp:
 

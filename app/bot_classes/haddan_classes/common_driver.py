@@ -98,7 +98,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         try:
 
@@ -135,7 +135,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         try:
 
@@ -156,7 +156,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         try:
 
@@ -176,7 +176,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         try:
 
@@ -196,7 +196,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         try:
             WebDriverWait(
