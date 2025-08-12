@@ -2,6 +2,7 @@
 import tkinter as tk
 
 from PIL import Image, ImageTk
+from config import configure_logging
 from constants import (  # noqa
     FIRST_CHAR,
     MIN_HP_VALUE,
@@ -38,6 +39,7 @@ from tk_app.interface.events import *  # noqa
 
 def start_app() -> None:
     """Запуск основного окна tkinter."""
+    configure_logging()
     # username.insert(  # noqa
     #     0, FIRST_CHAR
     # ) if FIRST_CHAR else None
