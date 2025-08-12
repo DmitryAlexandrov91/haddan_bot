@@ -101,14 +101,14 @@ def stop_farm() -> None:
         manager.send_status_message('Останавливаем фарм')
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
-        logger.info(
-            'Фарм остановлен',
-        )
         manager.send_alarm_message()
         manager.send_status_message(
             'Бот готов к работе',
         ) if manager.driver else manager.send_alarm_message(
             'Игра не запущена',
+        )
+    logger.info(
+            'Фарм остановлен',
         )
     fight_start_btn.configure(foreground='black')
 

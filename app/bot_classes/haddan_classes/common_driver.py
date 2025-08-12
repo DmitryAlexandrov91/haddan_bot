@@ -235,8 +235,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         logger.error(
-            f'\nВозникло исключение {exception}\n',
-            stack_info=False,
+            f'Возникла ошибка - {exception}',
         )
 
         self.check_for_slot_clear_alarm_message()
@@ -269,7 +268,24 @@ class HaddanCommonDriver(DriverManager):
                 By.CSS_SELECTOR,
                 'input[id="talkModalButtonID_CANCEL"]')
         if alarm_window:
+            logger.warning(
+                'Вылезло окно c вопросом очистить слот',
+            )
             alarm_window[0].click()
+
+        information_window = self.driver.find_elements(
+            By.PARTIAL_LINK_TEXT, 'Выбрано недостаточно зон удара',
+        )
+        if information_window:
+            window = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'input[id="talkModalButtonID_OK"]')
+            if window:
+                logger.warning(
+                    'Вылезло окно что не выбрана зона удара',
+                )
+                window[0].click()
+
         self.try_to_switch_to_central_frame()
 
     def check_room_for_drop(self) -> None:
