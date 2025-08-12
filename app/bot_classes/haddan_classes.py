@@ -338,6 +338,7 @@ class HaddanCommonDriver(DriverManager):
             logger.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
                 self.driver.refresh()
+                logger.info("Перезагрузка страницы")
                 self.errors_count = 0
                 self.sleep_while_event_is_true(5)
 
@@ -1301,6 +1302,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.user.exit_from_game()
             self.user.login_to_game(
                 domen=self.domen,
+            )
+
+            logger.info(
+                f"Перелогин персонажа {self.user.char}",
             )
 
             self.wait_until_browser_test(time=10)

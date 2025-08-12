@@ -1,12 +1,11 @@
 """Вход в игру и закрытие бота."""
-import logging
 import threading
 import tkinter as tk
 from datetime import datetime
 
 from bot_classes import HaddanDriverManager, HaddanUser
-from config import configure_logging
 from constants import CHARS, CHARS_ACCESS, DOMENS, DT_FORMAT
+from loguru import logger
 
 from tk_app.core import app
 from tk_app.driver_manager import manager
@@ -51,20 +50,26 @@ def start_game(manager: HaddanDriverManager = manager) -> None:
             manager.user.login_to_game(
                 domen=manager.domen,
             )
+            logger.info(
+                f"Персонаж {char} зашёл в игру",
+            )
             login_to_game.configure(foreground='green')
             manager.clean_label_messages()
             manager.send_status_message('Бот готов к работе')
     except Exception as e:
-        configure_logging()
-        logging.exception(
+        logger.error(
             f'\nВозникло исключение {str(e)}\n',
-            stack_info=True,
+            stack_info=False,
         )
 
 
 def stop_bot(manager: HaddanDriverManager = manager) -> None:
     """Останавливает цикл."""
     manager.event.clear()
+    manager.user.exit_from_game()
+    logger.info(
+        f"Персонаж {manager.user.char} вышел из игры",
+    )
     manager.close_driver()
     login_to_game.configure(foreground='black')
     manager.clean_label_messages()
