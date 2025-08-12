@@ -112,6 +112,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             telegram_id=message.chat.id,
                             text='Ответ принят.',
                         )
+                        logger.info('Получен ответ на капчу через telegram')
                         self.kapthca_sent = False
 
                         try:
@@ -186,15 +187,25 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     handle_signals=False,
                 )
 
+                logger.info(
+                    f'Запущен поллинг бота c id {self.bot.id}',
+                )
+
             except Exception as e:
                 logger.error(f"Ошибка при старте поллинга {str(e)}.")
 
     async def stop_polling(self) -> None:
         """Асинхронная остановка поллинга бота."""
+        if not self.bot:
+            return
+
         if self.polling_started.is_set():
             try:
                 self.polling_started.clear()
                 await self.dp.stop_polling()
+                logger.info(
+                    f'Остановлен поллинг бота с id {self.bot.id} ',
+                )
             except Exception as e:
                 logger.error(f"Ошибка при остановке поллинга {str(e)}")
 
@@ -267,7 +278,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.sync_send_message(
                     text='Обнаружена капча!',
                     telegram_id=telegram_id)
-                logger.info('Обнаружена капча!')
+                logger.info('Обнаружена капча')
 
                 if not self.kapthca_sent:
                     self.sync_send_kaptcha(telegram_id=telegram_id)
@@ -1164,12 +1175,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             self.forest_button.configure(fg='black')
 
                         self.send_info_message('Лес пройден')
+                        logger.info(
+                            'Лес пройден',
+                        )
 
                         with sync_session_maker() as session:
 
                             event_crud.create(
                                 session=session,
-                                event_name="Пройден лес",
+                                event_name='Пройден лес',
                             )
 
                         break
@@ -1205,7 +1219,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             return
 
         logger.info(
-            "Пойманы духом ума",
+            'Пойманы духом ума',
         )
 
         if self.bot and message_to_tg and telegram_id:

@@ -235,8 +235,8 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         logger.error(
-            f'\nВозникло исключение {str(exception)}\n',
-            stack_info=True,
+            f'\nВозникло исключение {exception}\n',
+            stack_info=False,
         )
 
         self.check_for_slot_clear_alarm_message()
@@ -248,7 +248,7 @@ class HaddanCommonDriver(DriverManager):
             logger.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
                 self.driver.refresh()
-                logger.info("Перезагрузка страницы")
+                logger.info('Перезагрузка страницы')
                 self.errors_count = 0
                 self.sleep_while_event_is_true(5)
 

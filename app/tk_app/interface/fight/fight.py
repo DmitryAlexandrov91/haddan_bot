@@ -9,6 +9,7 @@ from constants import (
     MIND_SPIRIT_PLAY,
     SLOT_VALUES,
 )
+from loguru import logger
 from selenium.common.exceptions import (
     InvalidSessionIdException,
     NoSuchWindowException,
@@ -23,8 +24,6 @@ from tk_app.interface.login import (
     stop_bot,
     tg_id_field,
 )
-
-from loguru import logger
 
 from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
@@ -103,7 +102,7 @@ def stop_farm() -> None:
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
         logger.info(
-            'Фарм остановлен'
+            'Фарм остановлен',
         )
         manager.send_alarm_message()
         manager.send_status_message(

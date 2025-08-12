@@ -2,6 +2,7 @@
 import tkinter as tk
 
 from PIL import Image, ImageTk
+from config import configure_logging
 from constants import (  # noqa
     FIRST_CHAR,
     MIN_HP_VALUE,
@@ -11,8 +12,6 @@ from constants import (  # noqa
     USER_CHAR_ID,
     USER_PASSWORD,
 )
-
-from config import configure_logging
 
 from .utils import keys
 
