@@ -1,6 +1,5 @@
 
 """Всё что связано с конкретным игроком."""
-from config import configure_logging
 from constants import (
     HADDAN_URL,
 )
@@ -8,8 +7,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-
-configure_logging()
 
 
 class HaddanUser:

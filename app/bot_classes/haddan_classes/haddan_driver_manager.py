@@ -8,7 +8,6 @@ from time import sleep
 import requests
 from PIL import Image
 from aiogram import Bot, Dispatcher, F, Router, types
-from config import configure_logging
 from constants import (
     BASE_DIR,
     FIELD_PRICES,
@@ -43,8 +42,6 @@ from bot_classes.services import make_transition
 
 from .spirit_play import HaddanSpiritPlay
 from .user import HaddanUser
-
-configure_logging()
 
 
 class HaddanDriverManager(HaddanSpiritPlay):

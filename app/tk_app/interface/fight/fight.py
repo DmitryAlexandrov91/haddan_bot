@@ -24,6 +24,8 @@ from tk_app.interface.login import (
     tg_id_field,
 )
 
+from loguru import logger
+
 from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 
@@ -35,7 +37,7 @@ def start_farm() -> None:
             'Сначала войдите в игру!')
         exit()
 
-    print('Начинаю фарм')
+    logger.info('Запущен фарм')
     fight_start_btn.configure(foreground='green')
     manager.send_alarm_message()
 
@@ -100,6 +102,9 @@ def stop_farm() -> None:
         manager.send_status_message('Останавливаем фарм')
         manager.send_alarm_message('Дождитесь завершения цикла')
     else:
+        logger.info(
+            'Фарм остановлен'
+        )
         manager.send_alarm_message()
         manager.send_status_message(
             'Бот готов к работе',

@@ -2,7 +2,6 @@
 import re
 from time import sleep
 
-from config import configure_logging
 from constants import (
     NPCImgTags,
 )
@@ -18,8 +17,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from bot_classes.driver_manager import DriverManager
 
-configure_logging()
-
 
 class HaddanCommonDriver(DriverManager):
     """Класс управления фреймами и общие независимые от HaddanDriver методы."""
@@ -29,10 +26,10 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        if self.driver.execute_script("return window.name;") != 'frmcentral':
+        if self.driver.execute_script('return window.name;') != 'frmcentral':
 
             try:
-                self.driver.switch_to.frame("frmcentral")
+                self.driver.switch_to.frame('frmcentral')
 
             except Exception:
                 self.driver.switch_to.default_content()
@@ -42,10 +39,10 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        if self.driver.execute_script("return window.name;") != 'thedialog':
+        if self.driver.execute_script('return window.name;') != 'thedialog':
 
             try:
-                self.driver.switch_to.frame("thedialog")
+                self.driver.switch_to.frame('thedialog')
 
             except Exception:
                 self.driver.switch_to.default_content()
@@ -55,7 +52,7 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        if self.driver.execute_script("return window.name;") != 'frmupper':
+        if self.driver.execute_script('return window.name;') != 'frmupper':
 
             try:
                 self.driver.switch_to.frame("frmupper")

@@ -2,7 +2,6 @@
 import random
 from time import sleep
 
-from config import configure_logging
 from constants import (
     GAMBLE_SPIRIT_RIGHT_ANSWERS,
     POETRY_SPIRIT_RIGHT_ANSWERS,
@@ -18,8 +17,6 @@ from utils import (
 )
 
 from .fight_driver import HaddanFightDriver
-
-configure_logging()
 
 
 class HaddanSpiritPlay(HaddanFightDriver):
