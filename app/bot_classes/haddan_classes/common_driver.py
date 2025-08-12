@@ -209,6 +209,9 @@ class HaddanCommonDriver(DriverManager):
                     )),
             )
         except TimeoutException:
+            logger.warning(
+                'Игра зависла на проверке браузера при перелогине',
+            )
             self.driver.refresh()
 
     def try_to_click_to_glade_fairy(self) -> None:
@@ -234,10 +237,17 @@ class HaddanCommonDriver(DriverManager):
         if not self.driver:
             raise InvalidSessionIdException
 
-        logger.error(
-            f'\nВозникло исключение {exception}\n',
-            stack_info=False,
-        )
+        if isinstance(
+            exception,
+            (TimeoutException, StaleElementReferenceException),
+        ):
+            logger.error(
+                f'Возникла ошибка - {exception.__class__.__name__}',
+            )
+        else:
+            logger.exception(
+                f'Возникла ошибка - {exception.__class__.__name__}',
+                )
 
         self.check_for_slot_clear_alarm_message()
 
@@ -245,7 +255,7 @@ class HaddanCommonDriver(DriverManager):
 
             self.driver.switch_to.default_content()
             self.errors_count += 1
-            logger.info(f'Текущее количество ошибок - {self.errors_count}')
+            # logger.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
                 self.driver.refresh()
                 logger.info('Перезагрузка страницы')
@@ -269,7 +279,27 @@ class HaddanCommonDriver(DriverManager):
                 By.CSS_SELECTOR,
                 'input[id="talkModalButtonID_CANCEL"]')
         if alarm_window:
+            logger.warning(
+                'Обнаружено окно c вопросом очистить слот',
+            )
             alarm_window[0].click()
+
+        information_window = self.driver.find_elements(
+            By.PARTIAL_LINK_TEXT, 'Выбрано недостаточно зон удара',
+        )
+        if information_window:
+            logger.warning(
+                    'Обнаружено окно с сообщением, что не выбрана зона удара',
+                )
+            window = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'input[id="talkModalButtonID_OK"]')
+            if window:
+                logger.debug(
+                    'Найден тег input[id="talkModalButtonID_OK"]',
+                )
+                window[0].click()
+
         self.try_to_switch_to_central_frame()
 
     def check_room_for_drop(self) -> None:

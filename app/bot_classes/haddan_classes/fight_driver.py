@@ -9,6 +9,7 @@ from constants import (
 )
 from selenium.common.exceptions import (
     InvalidSessionIdException,
+    StaleElementReferenceException,
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -137,7 +138,7 @@ class HaddanFightDriver(HaddanCommonDriver):
         except Exception:
             return None
 
-    def get_round_number(self) -> str | None:
+    def get_round_number(self) -> str:
         """Возвращает номер раунда.
 
         В формате 'Раунд 1', 'Раунд 2' и т.д.
@@ -153,9 +154,12 @@ class HaddanFightDriver(HaddanCommonDriver):
                 By.CLASS_NAME, 'sys_time',
             )
             if last_round:
-                current_round = last_round[0].text.rstrip().split()
-                current_round[-1] = str(int(current_round[-1]) + 1)
-                return f'{current_round[0]} {current_round[1]}'
+                try:
+                    current_round = last_round[0].text.rstrip().split()
+                    current_round[-1] = str(int(current_round[-1]) + 1)
+                    return f'{current_round[0]} {current_round[1]}'
+                except StaleElementReferenceException:
+                    self.get_round_number()
 
         return 'Раунд 1'
 
