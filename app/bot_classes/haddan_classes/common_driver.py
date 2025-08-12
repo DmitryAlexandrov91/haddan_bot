@@ -1,4 +1,6 @@
+"""Общие методы, независимые от интерфейса tkinter."""
 import re
+from time import sleep
 
 from config import configure_logging
 from constants import (
@@ -7,6 +9,7 @@ from constants import (
 from loguru import logger
 from selenium.common.exceptions import (
     InvalidSessionIdException,
+    StaleElementReferenceException,
     TimeoutException,
 )
 from selenium.webdriver.common.by import By
@@ -19,7 +22,7 @@ configure_logging()
 
 
 class HaddanCommonDriver(DriverManager):
-    """Класс управления фреймами и общие методы."""
+    """Класс управления фреймами и общие независимые от HaddanDriver методы."""
 
     def try_to_switch_to_central_frame(self) -> None:
         """Переключается на центральный фрейм окна."""
@@ -271,3 +274,173 @@ class HaddanCommonDriver(DriverManager):
         if alarm_window:
             alarm_window[0].click()
         self.try_to_switch_to_central_frame()
+
+    def check_room_for_drop(self) -> None:
+        """Проверяет наличие дропа к комнате лабиринта."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        sleep(0.5)
+
+        try:
+
+            drop = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[alt="Гора Черепов"]',
+            )
+            message = 'Найдена гора черепов'
+            if not drop:
+                drop = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[alt="Сундук"]',
+                )
+                message = 'Найден сундук'
+            if not drop:
+                message = 'Найден окованный сундук'
+                drop = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    'img[alt="Окованный Cундук"]',
+                )
+
+            if drop:
+                drop[0].click()
+                sleep(0.5)
+                self.send_info_message(message)
+                self.check_room_for_drop()
+
+        except StaleElementReferenceException:
+            self.check_room_for_drop()
+
+    def check_room_for_stash_and_herd(self) -> None:
+        """Проверяет комнату в лесу на наличие тайника."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        sleep(0.5)
+
+        drop = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[alt="Тайник"]',
+        )
+        if not drop:
+            drop = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[alt="Табун"]',
+            )
+        if drop:
+            self.click_to_element_with_actionchains(drop[0])
+            # drop[0].click()
+            sleep(0.5)
+
+    def crossing_to_the_north(self) -> bool:
+        """Переходит на север."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        north = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На север"]')
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К берегу"]')
+
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К спуску"]')
+
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К Спуску"]')
+
+        if north:
+            self.click_to_element_with_actionchains(north[0])
+            # north[0].click()
+            return True
+        return False
+
+    def crossing_to_the_south(self) -> bool | None:
+        """Переходит на юг.
+
+        Если переход произошёл, возвращает True
+        """
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        south = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На юг"]')
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К побережью"]')
+
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К спуску"]')
+
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К Берегу"]')
+
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="К Мостику"]')
+
+        if south:
+
+            self.click_to_element_with_actionchains(south[0])
+
+            return True
+        return False
+
+    def crossing_to_the_west(self) -> bool:
+        """Переходит на запад."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        west = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На запад"]')
+        if west:
+            self.click_to_element_with_actionchains(west[0])
+            # west[0].click()
+            return True
+        return False
+
+    def crossing_to_the_east(self) -> bool:
+        """Переходит на восток."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        east = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            'img[title="На восток"]')
+        if east:
+            self.click_to_element_with_actionchains(east[0])
+            # east[0].click()
+            return True
+        return False
+
+    def return_back_to_previous_room(
+            self,
+            last_turn: str,
+    ) -> None:
+        """"Действие возврата в предыдущую комнату."""
+        match last_turn:
+            case 'запад': self.crossing_to_the_east()
+            case 'восток': self.crossing_to_the_west()
+            case 'север': self.crossing_to_the_south()
+            case 'юг': self.crossing_to_the_north()
+            case _: pass

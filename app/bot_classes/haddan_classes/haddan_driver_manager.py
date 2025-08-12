@@ -1,3 +1,4 @@
+"""Основные циклы приложения, завязаные на интерфейсе окна tkinter."""
 import asyncio
 import os
 import threading
@@ -28,7 +29,6 @@ from maze_utils import (
 )
 from selenium.common.exceptions import (
     InvalidSessionIdException,
-    StaleElementReferenceException,
     UnexpectedAlertPresentException,
 )
 from selenium.webdriver.common.alert import Alert
@@ -40,6 +40,7 @@ from utils import (
 )
 
 from bot_classes.services import make_transition
+
 from .spirit_play import HaddanSpiritPlay
 from .user import HaddanUser
 
@@ -332,105 +333,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         message_to_tg=message_to_tg,
                         telegram_id=telegram_id,
                     )
-
-    def crossing_to_the_north(self) -> bool:
-        """Переходит на север."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        north = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На север"]')
-        if not north:
-            north = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К берегу"]')
-
-        if not north:
-            north = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К спуску"]')
-
-        if not north:
-            north = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К Спуску"]')
-
-        if north:
-            self.click_to_element_with_actionchains(north[0])
-            # north[0].click()
-            return True
-        return False
-
-    def crossing_to_the_south(self) -> bool | None:
-        """Переходит на юг.
-
-        Если переход произошёл, возвращает True
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        south = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На юг"]')
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К побережью"]')
-
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К спуску"]')
-
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К Берегу"]')
-
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К Мостику"]')
-
-        if south:
-
-            self.click_to_element_with_actionchains(south[0])
-
-            return True
-        return False
-
-    def crossing_to_the_west(self) -> bool:
-        """Переходит на запад."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        west = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На запад"]')
-        if west:
-            self.click_to_element_with_actionchains(west[0])
-            # west[0].click()
-            return True
-        return False
-
-    def crossing_to_the_east(self) -> bool:
-        """Переходит на восток."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        east = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На восток"]')
-        if east:
-            self.click_to_element_with_actionchains(east[0])
-            # east[0].click()
-            return True
-        return False
 
     def glade_farm(
             self,
@@ -1195,77 +1097,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
             telegram_id=telegram_id,
         )
 
-    def check_room_for_drop(self) -> None:
-        """Проверяет наличие дропа к комнате лабиринта."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        sleep(0.5)
-
-        try:
-
-            drop = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[alt="Гора Черепов"]',
-            )
-            message = 'Найдена гора черепов'
-            if not drop:
-                drop = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'img[alt="Сундук"]',
-                )
-                message = 'Найден сундук'
-            if not drop:
-                message = 'Найден окованный сундук'
-                drop = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'img[alt="Окованный Cундук"]',
-                )
-
-            if drop:
-                drop[0].click()
-                sleep(0.5)
-                self.send_info_message(message)
-                self.check_room_for_drop()
-
-        except StaleElementReferenceException:
-            self.check_room_for_drop()
-
-    def check_room_for_stash_and_herd(self) -> None:
-        """Проверяет комнату в лесу на наличие тайника."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        sleep(0.5)
-
-        drop = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[alt="Тайник"]',
-        )
-        if not drop:
-            drop = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[alt="Табун"]',
-            )
-        if drop:
-            self.click_to_element_with_actionchains(drop[0])
-            # drop[0].click()
-            sleep(0.5)
-
-    def return_back_to_previous_room(
-            self,
-            last_turn: str,
-    ) -> None:
-        """"Действие возврата в предыдущую комнату."""
-        match last_turn:
-            case 'запад': self.crossing_to_the_east()
-            case 'восток': self.crossing_to_the_west()
-            case 'север': self.crossing_to_the_south()
-            case 'юг': self.crossing_to_the_north()
-            case _: pass
-
     def forest_passing(
         self,
         message_to_tg: bool = False,
@@ -1373,21 +1204,23 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     NPCImgTags.mind_spirit,
                 )
 
-        if mind_spirit:
-            self.send_info_message(
-                'Пойманы духом ума',
+        if not mind_spirit:
+            return
+
+        logger.info(
+            "Пойманы духом ума",
+        )
+
+        if self.bot and message_to_tg and telegram_id:
+            self.sync_send_message(
+                telegram_id=telegram_id,
+                text='Обнаружен дух ума!',
             )
+            self.wait_until_mind_spirit_on_page(5)
 
-            if self.bot and message_to_tg and telegram_id:
-                self.sync_send_message(
-                    telegram_id=telegram_id,
-                    text='Обнаружен дух ума!',
-                )
-                self.wait_until_mind_spirit_on_page(5)
-
-            else:
-                self.driver.execute_script(
-                    'window.alert("Обнаружен дух ума!");',
-                )
-                self.wait_until_alert_present(30)
-                self.wait_until_mind_spirit_on_page(5)
+        else:
+            self.driver.execute_script(
+                'window.alert("Обнаружен дух ума!");',
+            )
+            self.wait_until_alert_present(30)
+            self.wait_until_mind_spirit_on_page(5)

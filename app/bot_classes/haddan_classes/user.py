@@ -1,4 +1,5 @@
 
+"""Всё что связано с конкретным игроком."""
 from config import configure_logging
 from constants import (
     HADDAN_URL,

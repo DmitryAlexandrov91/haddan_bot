@@ -1,3 +1,4 @@
+"""Код, который как-то связан с боевыми действиями."""
 from time import sleep
 from typing import Optional
 

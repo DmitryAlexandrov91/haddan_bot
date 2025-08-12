@@ -1,3 +1,4 @@
+"""Кд упраления игры с духами в лабиринте."""
 import random
 from time import sleep
 
