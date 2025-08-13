@@ -1001,11 +1001,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 message = f'Путь до комнаты {to_the_room} пройден!'
 
                 self.try_to_switch_to_central_frame()
+                sleep(1)
                 city_portal = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[alt="Портал в город"]',
                     )
-
                 if city_portal:
                     city_portal[0].click()
                     self.try_to_switch_to_dialog()
