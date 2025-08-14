@@ -985,6 +985,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             )
                         continue
 
+                sleep(1)
+
                 self.default_maze_actions(
                             message_to_tg=message_to_tg,
                             telegram_id=telegram_id,

@@ -1,4 +1,3 @@
-import logging
 import platform
 import re
 import threading
@@ -8,8 +7,8 @@ from typing import Optional
 
 import undetected_chromedriver as uc
 from aiogram import Bot
-from config import configure_logging
 from constants import CHROME_PATH, PAGE_LOAD_TIMEOUT, SCRIPT_TIMEOUT
+from loguru import logger
 from selenium import webdriver
 from selenium.common.exceptions import (
     InvalidSessionIdException,
@@ -153,10 +152,8 @@ class DriverManager:
                 self.driver.set_script_timeout(SCRIPT_TIMEOUT)
 
             except Exception as e:
-                configure_logging()
-                logging.exception(
+                logger.error(
                     f'\nВозникло исключение {str(e)}\n',
-                    stack_info=False,
                 )
 
     def close_driver(self) -> None:
@@ -165,10 +162,8 @@ class DriverManager:
             try:
                 self.driver.quit()
             except Exception as e:
-                configure_logging()
-                logging.exception(
+                logger.error(
                     f'\nВозникло исключение {str(e)}\n',
-                    stack_info=False,
                 )
             finally:
                 self.driver = None
