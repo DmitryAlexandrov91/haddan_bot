@@ -284,22 +284,6 @@ class HaddanCommonDriver(DriverManager):
             )
             alarm_window[0].click()
 
-        information_window = self.driver.find_elements(
-            By.PARTIAL_LINK_TEXT, 'Выбрано недостаточно зон удара',
-        )
-        if information_window:
-            logger.warning(
-                    'Обнаружено окно с сообщением, что не выбрана зона удара',
-                )
-            window = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'input[id="talkModalButtonID_OK"]')
-            if window:
-                logger.debug(
-                    'Найден тег input[id="talkModalButtonID_OK"]',
-                )
-                window[0].click()
-
         self.try_to_switch_to_central_frame()
 
     def check_room_for_drop(self) -> None:
