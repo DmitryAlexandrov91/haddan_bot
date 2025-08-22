@@ -2,6 +2,7 @@
 import asyncio
 import os
 import threading
+import time
 from datetime import datetime
 from time import sleep
 
@@ -474,6 +475,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
         if not self.driver:
             return
 
+        self.time_stamp = time.time()
+        refresh_ttl = float(os.getenv("MIN_TO_REFRESH", 5))
+
         while self.cycle_is_running:
 
             try:
@@ -553,6 +557,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id,
                 )
+
+                if time.time() - self.time_stamp > refresh_ttl * 60:
+                    self.time_stamp = time.time()
+                    self.full_refresh()
 
             except Exception as e:
                 self.actions_after_exception(exception=e)
@@ -1237,3 +1245,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
             )
             self.wait_until_alert_present(30)
             self.wait_until_mind_spirit_on_page(5)
+
+    def full_refresh(self) -> None:
+        """Метод полной перезагрузки страницы (в случае ошибок сервера)."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        # self.driver.delete_all_cookies()
+        # self.driver.execute_script("window.localStorage.clear();")
+        # self.driver.execute_script("window.sessionStorage.clear();")
+        self.driver.refresh()
+        self.driver.get(self.domen + 'main.php')
+        logger.info('Плановая перезагрузка окна')
