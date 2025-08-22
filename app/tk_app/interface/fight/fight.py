@@ -9,6 +9,7 @@ from constants import (
     MIND_SPIRIT_PLAY,
     SLOT_VALUES,
 )
+from loguru import logger
 from selenium.common.exceptions import (
     InvalidSessionIdException,
     NoSuchWindowException,
@@ -35,7 +36,7 @@ def start_farm() -> None:
             'Сначала войдите в игру!')
         exit()
 
-    print('Начинаю фарм')
+    logger.info('Запущен фарм')
     fight_start_btn.configure(foreground='green')
     manager.send_alarm_message()
 
@@ -105,6 +106,9 @@ def stop_farm() -> None:
             'Бот готов к работе',
         ) if manager.driver else manager.send_alarm_message(
             'Игра не запущена',
+        )
+    logger.info(
+            'Фарм остановлен',
         )
     fight_start_btn.configure(foreground='black')
 

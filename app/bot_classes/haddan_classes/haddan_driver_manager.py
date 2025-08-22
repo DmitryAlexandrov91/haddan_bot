@@ -1,25 +1,18 @@
+"""Основные циклы приложения, завязаные на интерфейсе окна tkinter."""
 import asyncio
-import logging
 import os
-import random
-import re
 import threading
+import time
 from datetime import datetime
 from time import sleep
-from typing import Optional
 
 import requests
 from PIL import Image
 from aiogram import Bot, Dispatcher, F, Router, types
-from config import configure_logging
 from constants import (
     BASE_DIR,
-    BEETS_TIMEOUT,
     FIELD_PRICES,
-    GAMBLE_SPIRIT_RIGHT_ANSWERS,
-    HADDAN_URL,
     LICH_ROOM,
-    POETRY_SPIRIT_RIGHT_ANSWERS,
     NPCImgTags,
     Room,
     Slot,
@@ -27,790 +20,29 @@ from constants import (
 )
 from dao.crud import event_crud
 from dao.database import sync_session_maker
+from loguru import logger
 from maze_utils import (
     find_path_via_boxes_with_directions,
     find_path_with_directions,
     get_sity_portal_room_number,
     get_upper_portal_room_number,
 )
-from selenium import webdriver
 from selenium.common.exceptions import (
     InvalidSessionIdException,
-    StaleElementReferenceException,
-    TimeoutException,
     UnexpectedAlertPresentException,
 )
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import WebDriverWait
 from utils import (
     get_dragon_time_wait,
-    get_intimidation_and_next_room,
     price_counter,
     time_extractor,
 )
 
-from .driver_manager import DriverManager
-from .services import make_transition
+from bot_classes.services import make_transition
 
-configure_logging()
-
-
-class HaddanUser:
-
-    """Бот класс управления действиями персонажа.
-
-    Принимает два обязательных аргумента при инициализации:
-    :char: никнейм персонажа,
-    :driver: объект класса webdriver.Chrome.
-
-    """
-
-    def __init__(
-            self,
-            char: str,
-            driver: webdriver.Chrome,
-            password: str,
-    ) -> None:
-        """Инициализация класса HaddanUser."""
-        self.driver = driver
-        self.char = char
-        self.password = password
-        self.login_url: str = HADDAN_URL
-
-    def login_to_game(self, domen: str) -> None:
-        """Заходит в игру под заданным именем char."""
-        self.driver.get(domen)
-        username_field = self.driver.find_element(
-            By.NAME, 'username')
-        username_field.send_keys(self.char)
-        password_field = self.driver.find_element(
-            By.NAME, 'passwd')
-        password_field.send_keys(self.password)
-        submit_button = self.driver.find_element(
-            By.CSS_SELECTOR,
-            '[href="javascript:void(enterHaddan())"]')
-        WebDriverWait(self.driver, 10).until(
-            ec.element_to_be_clickable(
-                submit_button),
-            )
-        submit_button.click()
-
-    def exit_from_game(self) -> None:
-        """Выходит из игры."""
-        exit_button = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[alt="ВЫХОД"]',
-        )
-        if exit_button:
-            exit_button[0].click()
-
-
-class HaddanCommonDriver(DriverManager):
-    """Класс управления фреймами и общие методы."""
-
-    def try_to_switch_to_central_frame(self) -> None:
-        """Переключается на центральный фрейм окна."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if self.driver.execute_script("return window.name;") != 'frmcentral':
-
-            try:
-                self.driver.switch_to.frame("frmcentral")
-
-            except Exception:
-                self.driver.switch_to.default_content()
-
-    def try_to_switch_to_dialog(self) -> None:
-        """Переключается на фрейм диалога."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if self.driver.execute_script("return window.name;") != 'thedialog':
-
-            try:
-                self.driver.switch_to.frame("thedialog")
-
-            except Exception:
-                self.driver.switch_to.default_content()
-
-    def try_to_switch_to_upper(self) -> None:
-        """Переключается на фрейм upper с кнопкой выхода из игры."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if self.driver.execute_script("return window.name;") != 'frmupper':
-
-            try:
-                self.driver.switch_to.frame("frmupper")
-
-            except Exception:
-                self.driver.switch_to.default_content()
-
-    def find_all_iframes(self) -> None:
-        """Выводит в терминал список всех iframe егов на странице."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        frames = self.driver.find_elements(By.TAG_NAME, 'iframe')
-        if frames:
-            logging.info([frame.get_attribute('name') for frame in frames])
-        else:
-            logging.info('iframe на странице не найдены')
-
-    def get_room_number(self) -> int | None:
-        """Возвращает номер комнаты в лабе, в которой находится персонаж."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-
-        my_room = self.driver.find_elements(
-                By.CLASS_NAME, 'LOCATION_NAME',
-            )
-        if my_room:
-            text = my_room[0].text
-            pattern = r'№(\d+)'
-
-            result = re.search(pattern, text)
-
-            if result:
-                return int(result.group(1))
-
-        return None
-
-    def wait_until_kaptcha_on_page(self, time: int) -> None:
-        """Ждёт до time секунд пор пока каптча на странице."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until_not(
-                ec.presence_of_element_located((
-                    By.CSS_SELECTOR,
-                    'img[src="/inner/img/bc.php"]',
-                    )),
-            )
-
-        except TimeoutException:
-            self.wait_until_kaptcha_on_page(time=time)
-
-    def wait_until_kaptcha_after_tg_message(self, time: int) -> None:
-        """Ждёт пока каптча на странице после отправки фото капчи в тг."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        try:
-
-            WebDriverWait(self.driver, time).until_not(
-                ec.presence_of_element_located((
-                    By.CSS_SELECTOR,
-                    'img[src="/inner/img/bc.php"]',
-                    )),
-            )
-
-        except TimeoutException:
-            pass
-
-    def wait_until_mind_spirit_on_page(self, time: int) -> None:
-        """Ждёт до time секунд пока дух ума на странице."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until_not(
-                    ec.presence_of_element_located((
-                        By.CSS_SELECTOR,
-                        NPCImgTags.mind_spirit,
-                        ),
-                    ),
-                )
-
-        except TimeoutException:
-            self.wait_until_mind_spirit_on_page(time=time)
-
-    def wait_until_transition_timeout(self, time: int) -> None:
-        """Ждёт до time секунд перехода в другую локацию."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until_not(
-                ec.presence_of_element_located((
-                    By.XPATH,
-                    "//*[contains(text(),'Вы можете попасть')]",
-                    )),
-            )
-
-        except TimeoutException:
-            self.wait_until_transition_timeout(time=time)
-
-    def wait_until_alert_present(self, time: int) -> None:
-        """Ждёт по time секунд пока на странице есть уведомление."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-
-            WebDriverWait(self.driver, time).until(
-                lambda driver: not self.is_alert_present(),
-            )
-
-        except TimeoutException:
-            self.wait_until_alert_present(time=time)
-
-    def wait_until_browser_test(self, time: int) -> None:
-        """Ждёт time секунд пока идёт проверка браузера.
-
-        По истечению времени ожидания перезагружает окно.
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        try:
-            WebDriverWait(
-                self.driver, timeout=time,
-            ).until_not(
-                ec.presence_of_element_located((
-                    By.XPATH,
-                    "//*[contains(text(),"
-                    "'Проверка браузера')]",
-                    )),
-            )
-        except TimeoutException:
-            self.driver.refresh()
-
-    def try_to_click_to_glade_fairy(self) -> None:
-        """Ищет фею поляны и щёлкает на неё."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        glade_fairy = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.distans_fairy,
-                    )
-        if not glade_fairy:
-            glade_fairy = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.distans_fairy,
-                    )
-
-        if glade_fairy:
-            self.click_to_element_with_actionchains(glade_fairy[0])
-
-    def actions_after_exception(self, exception: Exception) -> None:
-        """Общее действие обработки исключения."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        logging.error(
-            f'\nВозникло исключение {str(exception)}\n',
-            stack_info=True,
-        )
-
-        self.check_for_slot_clear_alarm_message()
-
-        try:
-
-            self.driver.switch_to.default_content()
-            self.errors_count += 1
-            logging.info(f'Текущее количество ошибок - {self.errors_count}')
-            if self.errors_count >= 10:
-                self.driver.refresh()
-                self.errors_count = 0
-                self.sleep_while_event_is_true(5)
-
-        except AttributeError:
-            self.clean_label_messages()
-            self.send_alarm_message(
-                'Сначала войдите в игру!',
-            )
-            self.stop_event()
-
-    def check_for_slot_clear_alarm_message(self) -> None:
-        """Проверяет на наличие окна, спрашивающего об очистке слота."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.driver.switch_to.default_content()
-        alarm_window = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'input[id="talkModalButtonID_CANCEL"]')
-        if alarm_window:
-            alarm_window[0].click()
-        self.try_to_switch_to_central_frame()
-
-
-class HaddanFightDriver(HaddanCommonDriver):
-    """Всё что связано с логикой проведения боя."""
-
-    def check_for_fight(self) -> bool:
-        """Если идёт бой, возвращает True."""
-        self.try_to_switch_to_central_frame()
-
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        hits = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[onclick="touchFight();"]',
-        )
-        return bool(hits)
-
-    def try_to_come_back_from_fight(self) -> None:
-        """"Если бой закончен, нажимает 'вернуться'."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        if come_back:
-            self.click_to_element_with_actionchains(come_back[0])
-
-    def check_come_back(self) -> bool:
-        """Если бой закончен, возвращает True."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        return bool(come_back)
-
-    def get_active_spell(self) -> Optional[str]:
-        """Возвращает название заклинания, которое используется в бою."""
-        self.try_to_switch_to_central_frame()
-
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        spell = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'a[href="javascript:fight_goAndShowSlots(true)"]',
-        )
-
-        if spell:
-            return self.get_attr_from_element(
-                spell[0],
-                'title',
-            )
-        return None
-
-    def get_spell_to_cast(
-            self,
-            spell_number: str,
-            slot_number: str) -> Optional[str]:
-        """Возвращает название заклинания, которое нужно использовать."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.driver.switch_to.default_content()
-        self.driver.execute_script(
-                f'slotsShow({int(slot_number) - 1})',
-            )
-        spell_to_cast = self.driver.find_elements(
-            By.ID, f'lSlot{spell_number}',
-        )
-        if spell_to_cast:
-            return self.get_attr_from_element(
-                spell_to_cast[0],
-                'title',
-            )
-        return None
-
-    def open_slot_and_choise_spell(
-            self,
-            slots_page: SlotsPage,
-            slot: Slot) -> None:
-        """Открывает меню быстрых слотов и выбирает знужный закл."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if slots_page == 'p' == slot:
-            self.try_to_switch_to_central_frame()
-            kick = self.driver.find_elements(
-                By.CSS_SELECTOR, 'img[src="/@!images/fight/knife.gif"]',
-            )
-            if kick:
-                kick[0].click()
-
-        else:
-            active_spell = self.get_active_spell()
-            spell_to_cast = self.get_spell_to_cast(
-                spell_number=slot,
-                slot_number=slots_page,
-            )
-            if spell_to_cast != active_spell:
-                self.driver.execute_script(
-                    f'slotsShow({int(slots_page) - 1})',
-                )
-                self.driver.execute_script(
-                    f'return qs_onClickSlot(event,{int(slot) - 1})',
-                )
-
-    def get_hit_number(self) -> Optional[str]:
-        """Возвращает номер удара в бою."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        try:
-            hit_number = self.driver.find_element(
-                By.CSS_SELECTOR,
-                'a[href="javascript:void(submitMove())"]',
-            )
-            return hit_number.text
-        except Exception:
-            return None
-
-    def get_round_number(self) -> str | None:
-        """Возвращает номер раунда.
-
-        В формате 'Раунд 1', 'Раунд 2' и т.д.
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        rounds = self.driver.find_elements(
-            By.CSS_SELECTOR, '#divlog p',
-        )
-        if rounds:
-            last_round = rounds[0].find_elements(
-                By.CLASS_NAME, 'sys_time',
-            )
-            if last_round:
-                current_round = last_round[0].text.rstrip().split()
-                current_round[-1] = str(int(current_round[-1]) + 1)
-                return f'{current_round[0]} {current_round[1]}'
-
-        return 'Раунд 1'
-
-    def fight(
-            self,
-            spell_book: dict | None,
-            default_slot: SlotsPage = SlotsPage._1,
-            default_spell: Slot = Slot._1) -> None:
-        """Проводит бой."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        if not self.cycle_is_running:
-            exit()
-
-        if self.check_for_fight() is False:
-            return
-
-        current_round = self.get_round_number()
-        kick = self.get_hit_number()
-
-        if not kick:
-            self.try_to_come_back_from_fight()
-            self.send_info_message(
-                text='Бой завершён',
-            )
-            return
-
-        self.send_info_message(
-            text='Проводим бой',
-        )
-
-        try:
-
-            if spell_book:
-                self.open_slot_and_choise_spell(
-                    slots_page=spell_book[current_round][kick]['slot'],
-                    slot=spell_book[current_round][kick]['spell'])
-
-            else:
-                self.open_slot_and_choise_spell(
-                    slots_page=default_slot,
-                    slot=default_spell)
-
-        except Exception:
-            if self.check_for_fight() is False:
-                return
-
-            self.open_slot_and_choise_spell(
-                slots_page=default_slot,
-                slot=default_spell)
-
-        self.try_to_switch_to_central_frame()
-
-        come_back = self.driver.find_elements(
-                    By.PARTIAL_LINK_TEXT, 'Вернуться')
-        if come_back:
-            come_back[0].click()
-
-        if self.check_for_fight() is False:
-            return
-
-        try:
-
-            element = self.driver.execute_script(
-                '''
-                touchFight();
-                return document.activeElement;
-                ''',
-            )
-            sleep(BEETS_TIMEOUT)
-            # WebDriverWait(self.driver, 30).until_not(
-            #         ec.presence_of_element_located((
-            #             By.XPATH,
-            #             "//*[contains(text(),"
-            #             "'Пожалуйста, подождите')]",
-            #             )),
-            #     )
-            try:
-                if element:
-                    element.send_keys(Keys.TAB)
-            except Exception:
-                pass
-
-            if not self.check_for_fight:
-                return
-
-            self.fight(
-                spell_book=spell_book,
-                default_slot=default_slot,
-                default_spell=default_spell)
-
-        except Exception as e:
-            self.actions_after_exception(e)
-
-
-class HaddanSpiritPlay(HaddanFightDriver):
-    """Класс игры с духами."""
-
-    def right_answers_choise(self, right_answers: set) -> None:
-        """Проходит циклом по правильным ответам.
-
-        Если такой ответ есть, нажимает на него.
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        for answer in right_answers:
-            right_choise = self.driver.find_elements(
-                        By.PARTIAL_LINK_TEXT, answer)
-            if right_choise:
-                self.click_to_element_with_actionchains(
-                    right_choise[0],
-                )
-
-    def play_with_gamble_spirit(self) -> None:
-        """Игра с духом азарта."""
-        if not self.driver:
-            return
-
-        try:
-            self.try_to_switch_to_central_frame()
-
-            gamble_spirit = self.driver.find_elements(
-                            By.CSS_SELECTOR,
-                            NPCImgTags.gamble_spirit,
-                        )
-
-            if gamble_spirit:
-                gamble_spirit[0].click()
-                sleep(1)
-
-                logging.info('Играем с духом азарта.')
-                self.send_info_message(
-                    text='Пойманы духом азарта',
-                )
-                self.try_to_switch_to_dialog()
-                spirit_answers = self.driver.find_elements(
-                    By.CLASS_NAME,
-                    'talksayTak')
-
-                while spirit_answers:
-
-                    spirit_text = self.driver.find_elements(
-                        By.CLASS_NAME,
-                        'talksayBIG')
-
-                    if spirit_text and 'Параметры' in spirit_text[0].text:
-                        intimidation, next_room = (
-                            get_intimidation_and_next_room(
-                                spirit_text[0].text)
-                        )
-
-                        if next_room >= intimidation:
-                            right_choise = self.driver.find_elements(
-                                By.PARTIAL_LINK_TEXT, 'Довольно')
-                            self.click_to_element_with_actionchains(
-                                right_choise[0],
-                            )
-                        else:
-                            right_choise = self.driver.find_elements(
-                                By.PARTIAL_LINK_TEXT, 'Дальше!')
-                            if not right_choise:
-                                right_choise = self.driver.find_elements(
-                                    By.PARTIAL_LINK_TEXT,
-                                    'Пробуем снова')
-                            if not right_choise:
-                                right_choise = self.driver.find_elements(
-                                    By.PARTIAL_LINK_TEXT,
-                                    'Телепортироваться')
-                            if right_choise:
-                                self.click_to_element_with_actionchains(
-                                    right_choise[0],
-                                )
-
-                        spirit_answers = self.driver.find_elements(
-                            By.CLASS_NAME,
-                            'talksayTak',
-                        )
-                        sleep(0.5)
-                        continue
-
-                    self.right_answers_choise(GAMBLE_SPIRIT_RIGHT_ANSWERS)
-
-                    spirit_answers = self.driver.find_elements(
-                        By.CLASS_NAME,
-                        'talksayTak',
-                    )
-                    sleep(0.5)
-
-        except Exception as e:
-            logging.error(
-                'При игре с духом азарта возникла ошибка: ',
-                str(e),
-            )
-            self.try_to_switch_to_central_frame()
-
-            gamble_spirit = self.driver.find_elements(
-                            By.CSS_SELECTOR,
-                            NPCImgTags.gamble_spirit,
-                        )
-
-            if gamble_spirit:
-                self.play_with_gamble_spirit()
-            pass
-
-    def play_with_poetry_spirit(self) -> None:
-        """Игра с духом поэзии."""
-        if not self.driver:
-            raise
-
-        poetry_spirit = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.poetry_spirit)
-        if poetry_spirit:
-            try:
-                poetry_spirit[0].click()
-                sleep(1)
-
-                self.send_info_message(
-                    text='Пойманы духом поэзии',
-                )
-                logging.info('Играем с духом поэзии.')
-                self.try_to_switch_to_dialog()
-                spirit_answers = self.driver.find_elements(
-                    By.CLASS_NAME,
-                    'talksayTak0')
-                while spirit_answers:
-                    self.right_answers_choise(POETRY_SPIRIT_RIGHT_ANSWERS)
-                    spirit_answers = self.driver.find_elements(
-                        By.CLASS_NAME,
-                        'talksayTak0',
-                    )
-                    sleep(0.5)
-            except Exception as e:
-                logging.error(
-                    'При игре с духом поэзии возникла ошибка: ',
-                    str(e),
-                )
-                self.try_to_switch_to_central_frame()
-
-                poetry_spirit = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.poetry_spirit,
-                    )
-                if poetry_spirit:
-                    self.play_with_poetry_spirit()
-                pass
-
-    def play_with_mind_spirit(self) -> None:
-        """Игра с духом ума."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        mind_spirit = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.mind_spirit,
-                    )
-
-        if mind_spirit:
-            try:
-                mind_spirit[0].click()
-                sleep(0.5)
-
-                logging.info('Играем с духом ума')
-                self.send_info_message(
-                    text='Пойманы духом ума',
-                )
-                self.try_to_switch_to_dialog()
-
-                spirit_answers = self.driver.find_elements(
-                    By.CLASS_NAME,
-                    'talksayTak0')
-                while spirit_answers:
-                    right_choise = self.driver.find_elements(
-                            By.PARTIAL_LINK_TEXT, 'Легко')
-                    if right_choise:
-                        right_choise[0].click()
-
-                    random_play = self.driver.find_elements(
-                            By.PARTIAL_LINK_TEXT, 'Сходить')
-
-                    if random_play:
-                        random_play[random.choice([0, 1])].click()
-
-                    right_choise = self.driver.find_elements(
-                            By.PARTIAL_LINK_TEXT, 'Телепортироваться')
-                    if right_choise:
-                        right_choise[0].click()
-
-                    spirit_answers = self.driver.find_elements(
-                        By.CLASS_NAME,
-                        'talksayTak0')
-                    sleep(0.5)
-
-            except Exception as e:
-                logging.error(
-                    'При игре с духом ума возникла ошибка: ',
-                    str(e),
-                )
-                self.try_to_switch_to_central_frame()
-
-                mind_spirit = self.driver.find_elements(
-                        By.CSS_SELECTOR,
-                        NPCImgTags.mind_spirit,
-                    )
-                if mind_spirit:
-                    self.play_with_mind_spirit()
-                pass
+from .spirit_play import HaddanSpiritPlay
+from .user import HaddanUser
 
 
 class HaddanDriverManager(HaddanSpiritPlay):
@@ -881,6 +113,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             telegram_id=message.chat.id,
                             text='Ответ принят.',
                         )
+                        logger.info('Получен ответ на капчу через telegram')
                         self.kapthca_sent = False
 
                         try:
@@ -896,11 +129,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             if os.path.exists(source_file):
                                 os.rename(source_file, dest_file)
                             else:
-                                logging.warning(
+                                logger.warning(
                                     f"⚠️ Файл не найден: {source_file}",
                                 )
                         except Exception as e:
-                            logging.error(
+                            logger.error(
                                 f"⛔ Ошибка при обработке файла: {e}",
                             )
 
@@ -955,17 +188,27 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     handle_signals=False,
                 )
 
+                logger.info(
+                    f'Запущен поллинг бота c id {self.bot.id}',
+                )
+
             except Exception as e:
-                logging.error(f"Ошибка при старте поллинга {str(e)}.")
+                logger.error(f"Ошибка при старте поллинга {str(e)}.")
 
     async def stop_polling(self) -> None:
         """Асинхронная остановка поллинга бота."""
+        if not self.bot:
+            return
+
         if self.polling_started.is_set():
             try:
                 self.polling_started.clear()
                 await self.dp.stop_polling()
+                logger.info(
+                    f'Остановлен поллинг бота с id {self.bot.id} ',
+                )
             except Exception as e:
-                logging.error(f"Ошибка при остановке поллинга {str(e)}")
+                logger.error(f"Ошибка при остановке поллинга {str(e)}")
 
     def sync_send_message(self, text: str, telegram_id: int) -> None:
         """Синхронная отправка сообщения."""
@@ -1007,7 +250,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
         kaptcha = self.driver.find_elements(
                     By.CSS_SELECTOR,
                     'img[src="/inner/img/bc.php"]',
@@ -1036,7 +279,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.sync_send_message(
                     text='Обнаружена капча!',
                     telegram_id=telegram_id)
-                logging.info('Обнаружена капча!')
+                logger.info('Обнаружена капча')
 
                 if not self.kapthca_sent:
                     self.sync_send_kaptcha(telegram_id=telegram_id)
@@ -1074,7 +317,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             raise InvalidSessionIdException
 
         if not self.cycle_is_running:
-            exit()
+            return
 
         if min_hp:
 
@@ -1086,7 +329,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             if health:
                 hp = int(health[0].text)
                 if hp < min_hp:
-                    logging.info('Мало хп, спим 30 секунд!')
+                    logger.info('Мало хп, спим 30 секунд!')
                     if self.bot and message_to_tg and telegram_id:
                         self.sync_send_message(
                             telegram_id=telegram_id,
@@ -1099,105 +342,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         message_to_tg=message_to_tg,
                         telegram_id=telegram_id,
                     )
-
-    def crossing_to_the_north(self) -> bool:
-        """Переходит на север."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        north = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На север"]')
-        if not north:
-            north = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К берегу"]')
-
-        if not north:
-            north = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К спуску"]')
-
-        if not north:
-            north = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К Спуску"]')
-
-        if north:
-            self.click_to_element_with_actionchains(north[0])
-            # north[0].click()
-            return True
-        return False
-
-    def crossing_to_the_south(self) -> bool | None:
-        """Переходит на юг.
-
-        Если переход произошёл, возвращает True
-        """
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        south = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На юг"]')
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К побережью"]')
-
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К спуску"]')
-
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К Берегу"]')
-
-        if not south:
-            south = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[title="К Мостику"]')
-
-        if south:
-
-            self.click_to_element_with_actionchains(south[0])
-
-            return True
-        return False
-
-    def crossing_to_the_west(self) -> bool:
-        """Переходит на запад."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        west = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На запад"]')
-        if west:
-            self.click_to_element_with_actionchains(west[0])
-            # west[0].click()
-            return True
-        return False
-
-    def crossing_to_the_east(self) -> bool:
-        """Переходит на восток."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        east = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[title="На восток"]')
-        if east:
-            self.click_to_element_with_actionchains(east[0])
-            # east[0].click()
-            return True
-        return False
 
     def glade_farm(
             self,
@@ -1303,6 +447,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 domen=self.domen,
             )
 
+            logger.info(
+                f"Перелогин персонажа {self.user.char}",
+            )
+
             self.wait_until_browser_test(time=10)
 
             self.fight_counter = 0
@@ -1326,6 +474,9 @@ class HaddanDriverManager(HaddanSpiritPlay):
         """Фарм с проведением боя."""
         if not self.driver:
             return
+
+        self.time_stamp = time.time()
+        refresh_ttl = float(os.getenv("MIN_TO_REFRESH", 5))
 
         while self.cycle_is_running:
 
@@ -1406,6 +557,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     message_to_tg=message_to_tg,
                     telegram_id=telegram_id,
                 )
+
+                if time.time() - self.time_stamp > refresh_ttl * 60:
+                    self.time_stamp = time.time()
+                    self.full_refresh()
 
             except Exception as e:
                 self.actions_after_exception(exception=e)
@@ -1617,7 +772,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     message = (
                         f'Двигаемся по прямой в комнату {to_the_room} '
                     )
-                    logging.info(message)
+                    logger.info(message)
                     self.send_info_message(
                         text=message,
                     )
@@ -1634,7 +789,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     message = (
                         f'Двигаемся через весь дроп в комнату {to_the_room} '
                     )
-                    logging.info(message)
+                    logger.info(message)
                     self.send_info_message(
                         text=message,
                     )
@@ -1838,6 +993,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             )
                         continue
 
+                sleep(1)
+
                 self.default_maze_actions(
                             message_to_tg=message_to_tg,
                             telegram_id=telegram_id,
@@ -1854,11 +1011,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 message = f'Путь до комнаты {to_the_room} пройден!'
 
                 self.try_to_switch_to_central_frame()
+                sleep(1)
                 city_portal = self.driver.find_elements(
                         By.CSS_SELECTOR,
                         'img[alt="Портал в город"]',
                     )
-
                 if city_portal:
                     city_portal[0].click()
                     self.try_to_switch_to_dialog()
@@ -1958,77 +1115,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
             telegram_id=telegram_id,
         )
 
-    def check_room_for_drop(self) -> None:
-        """Проверяет наличие дропа к комнате лабиринта."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        sleep(0.5)
-
-        try:
-
-            drop = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[alt="Гора Черепов"]',
-            )
-            message = 'Найдена гора черепов'
-            if not drop:
-                drop = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'img[alt="Сундук"]',
-                )
-                message = 'Найден сундук'
-            if not drop:
-                message = 'Найден окованный сундук'
-                drop = self.driver.find_elements(
-                    By.CSS_SELECTOR,
-                    'img[alt="Окованный Cундук"]',
-                )
-
-            if drop:
-                drop[0].click()
-                sleep(0.5)
-                self.send_info_message(message)
-                self.check_room_for_drop()
-
-        except StaleElementReferenceException:
-            self.check_room_for_drop()
-
-    def check_room_for_stash_and_herd(self) -> None:
-        """Проверяет комнату в лесу на наличие тайника."""
-        if not self.driver:
-            raise InvalidSessionIdException
-
-        self.try_to_switch_to_central_frame()
-        sleep(0.5)
-
-        drop = self.driver.find_elements(
-            By.CSS_SELECTOR,
-            'img[alt="Тайник"]',
-        )
-        if not drop:
-            drop = self.driver.find_elements(
-                By.CSS_SELECTOR,
-                'img[alt="Табун"]',
-            )
-        if drop:
-            self.click_to_element_with_actionchains(drop[0])
-            # drop[0].click()
-            sleep(0.5)
-
-    def return_back_to_previous_room(
-            self,
-            last_turn: str,
-    ) -> None:
-        """"Действие возврата в предыдущую комнату."""
-        match last_turn:
-            case 'запад': self.crossing_to_the_east()
-            case 'восток': self.crossing_to_the_west()
-            case 'север': self.crossing_to_the_south()
-            case 'юг': self.crossing_to_the_north()
-            case _: pass
-
     def forest_passing(
         self,
         message_to_tg: bool = False,
@@ -2099,12 +1185,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             self.forest_button.configure(fg='black')
 
                         self.send_info_message('Лес пройден')
+                        logger.info(
+                            'Лес пройден',
+                        )
 
                         with sync_session_maker() as session:
 
                             event_crud.create(
                                 session=session,
-                                event_name="Пройден лес",
+                                event_name='Пройден лес',
                             )
 
                         break
@@ -2136,21 +1225,35 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     NPCImgTags.mind_spirit,
                 )
 
-        if mind_spirit:
-            self.send_info_message(
-                'Пойманы духом ума',
+        if not mind_spirit:
+            return
+
+        logger.info(
+            'Пойманы духом ума',
+        )
+
+        if self.bot and message_to_tg and telegram_id:
+            self.sync_send_message(
+                telegram_id=telegram_id,
+                text='Обнаружен дух ума!',
             )
+            self.wait_until_mind_spirit_on_page(5)
 
-            if self.bot and message_to_tg and telegram_id:
-                self.sync_send_message(
-                    telegram_id=telegram_id,
-                    text='Обнаружен дух ума!',
-                )
-                self.wait_until_mind_spirit_on_page(5)
+        else:
+            self.driver.execute_script(
+                'window.alert("Обнаружен дух ума!");',
+            )
+            self.wait_until_alert_present(30)
+            self.wait_until_mind_spirit_on_page(5)
 
-            else:
-                self.driver.execute_script(
-                    'window.alert("Обнаружен дух ума!");',
-                )
-                self.wait_until_alert_present(30)
-                self.wait_until_mind_spirit_on_page(5)
+    def full_refresh(self) -> None:
+        """Метод полной перезагрузки страницы (в случае ошибок сервера)."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        # self.driver.delete_all_cookies()
+        # self.driver.execute_script("window.localStorage.clear();")
+        # self.driver.execute_script("window.sessionStorage.clear();")
+        self.driver.refresh()
+        self.driver.get(self.domen + 'main.php')
+        logger.info('Плановая перезагрузка окна')

@@ -2,6 +2,7 @@
 import tkinter as tk
 
 from PIL import Image, ImageTk
+from config import configure_logging
 from constants import (  # noqa
     FIRST_CHAR,
     MIN_HP_VALUE,
@@ -38,6 +39,7 @@ from tk_app.interface.events import *  # noqa
 
 def start_app() -> None:
     """Запуск основного окна tkinter."""
+    configure_logging()
     # username.insert(  # noqa
     #     0, FIRST_CHAR
     # ) if FIRST_CHAR else None
@@ -50,9 +52,6 @@ def start_app() -> None:
     min_hp_field.insert(  # noqa
         0, MIN_HP_VALUE,
     ) if MIN_HP_VALUE else 0
-    # username_field.insert(0, USER_CHAR)  # noqa
-    # password_field.insert(0, USER_PASSWORD)  # noqa
-    # tg_id_field.insert(0, USER_CHAR_ID)  # noqa
     manager.alarm_label = alarm_label  # noqa
     manager.status_label = status_label  # noqa
     manager.info_label = info_label  # noqa
