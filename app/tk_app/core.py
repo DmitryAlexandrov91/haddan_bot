@@ -52,9 +52,6 @@ def start_app() -> None:
     min_hp_field.insert(  # noqa
         0, MIN_HP_VALUE,
     ) if MIN_HP_VALUE else 0
-    # username_field.insert(0, USER_CHAR)  # noqa
-    # password_field.insert(0, USER_PASSWORD)  # noqa
-    # tg_id_field.insert(0, USER_CHAR_ID)  # noqa
     manager.alarm_label = alarm_label  # noqa
     manager.status_label = status_label  # noqa
     manager.info_label = info_label  # noqa
