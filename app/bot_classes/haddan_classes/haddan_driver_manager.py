@@ -1247,13 +1247,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.wait_until_mind_spirit_on_page(5)
 
     def full_refresh(self) -> None:
-        """Метод полной перезагрузки страницы (в случае ошибок сервера)."""
+        """Метод перезагрузки игры (в случае ошибок сервера и интернета)."""
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.driver.delete_all_cookies()
-        # self.driver.execute_script("window.localStorage.clear();")
-        # self.driver.execute_script("window.sessionStorage.clear();")
         self.driver.refresh()
-        self.driver.get(self.domen + 'main.php')
-        logger.info('Плановая перезагрузка окна')
+        # self.driver.get(self.domen + 'main.php')
+
+        self.user.login_to_game(
+            domen=self.domen,
+        )
+
+        logger.info('Плановая перезагрузка игры')
