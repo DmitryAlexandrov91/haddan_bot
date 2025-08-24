@@ -1158,55 +1158,54 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         default_slot=slots,
                         default_spell=spell)
 
-                else:
-                    self.check_room_for_stash_and_herd()
+                self.check_room_for_stash_and_herd()
 
-                    self.wait_until_transition_timeout(15)
+                self.wait_until_transition_timeout(5)
 
-                    room_number = self.get_room_number()
+                self.check_room_for_stash_and_herd()
 
-                    if room_number is None:
-                        continue
+                room_number = self.get_room_number()
 
-                    if room_number == 89:
+                if room_number is None:
+                    continue
 
-                        back_from_forest = self.driver.find_elements(
-                            By.CSS_SELECTOR,
-                            'a[href="/room/room.php?id=19529728"]',
-                        )
-                        if back_from_forest:
-                            self.click_to_element_with_actionchains(
-                                back_from_forest[0],
-                            )
-                        Alert(self.driver).accept()
-                        self.stop_event()
+                if room_number == 89:
 
-                        if self.forest_button:
-                            self.forest_button.configure(fg='black')
-
-                        self.send_info_message('Лес пройден')
-                        logger.info(
-                            'Лес пройден',
-                        )
-
-                        with sync_session_maker() as session:
-
-                            event_crud.create(
-                                session=session,
-                                event_name='Пройден лес',
-                            )
-
-                        break
-
-                    make_transition(
-                        room_number=room_number,
-                        right=self.crossing_to_the_east,
-                        left=self.crossing_to_the_west,
-                        up=self.crossing_to_the_north,
-                        down=self.crossing_to_the_south,
-                        passed_rooms=self.passed_forest_rooms,
+                    back_from_forest = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'a[href="/room/room.php?id=19529728"]',
                     )
-                    self.check_room_for_stash_and_herd()
+                    if back_from_forest:
+                        self.click_to_element_with_actionchains(
+                            back_from_forest[0],
+                        )
+                    Alert(self.driver).accept()
+                    self.stop_event()
+
+                    if self.forest_button:
+                        self.forest_button.configure(fg='black')
+
+                    self.send_info_message('Лес пройден')
+                    logger.info(
+                        'Лес пройден',
+                    )
+
+                    with sync_session_maker() as session:
+
+                        event_crud.create(
+                            session=session,
+                            event_name='Пройден лес',
+                        )
+
+                make_transition(
+                    room_number=room_number,
+                    right=self.crossing_to_the_east,
+                    left=self.crossing_to_the_west,
+                    up=self.crossing_to_the_north,
+                    down=self.crossing_to_the_south,
+                    passed_rooms=self.passed_forest_rooms,
+                )
+                self.check_room_for_stash_and_herd()
 
             except Exception as e:
                 self.actions_after_exception(e)

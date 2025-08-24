@@ -329,7 +329,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         self.try_to_switch_to_central_frame()
-        sleep(0.5)
+        # sleep(0.5)
 
         drop = self.driver.find_elements(
             By.CSS_SELECTOR,
@@ -342,8 +342,7 @@ class HaddanCommonDriver(DriverManager):
             )
         if drop:
             self.click_to_element_with_actionchains(drop[0])
-            # drop[0].click()
-            sleep(0.5)
+            # sleep(0.5)
 
     def crossing_to_the_north(self) -> bool:
         """Переходит на север."""
