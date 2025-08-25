@@ -1,6 +1,5 @@
 """Кд упраления игры с духами в лабиринте."""
 import random
-from time import sleep
 
 from constants import (
     GAMBLE_SPIRIT_RIGHT_ANSWERS,
@@ -56,7 +55,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
         try:
 
             gamble_spirit[0].click()
-            sleep(1)
+            # sleep(1)
 
             logger.info('Играем с духом азарта.')
             self.send_info_message(
@@ -105,7 +104,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                         By.CLASS_NAME,
                         'talksayTak',
                     )
-                    sleep(0.5)
+                    # sleep(0.5)
                     continue
 
                 self.right_answers_choise(GAMBLE_SPIRIT_RIGHT_ANSWERS)
@@ -114,7 +113,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     By.CLASS_NAME,
                     'talksayTak',
                 )
-                sleep(0.5)
+                # sleep(0.5)
 
         except Exception as e:
             logger.error(
@@ -139,7 +138,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
         try:
             poetry_spirit[0].click()
-            sleep(1)
+            # sleep(1)
 
             self.send_info_message(
                 text='Пойманы духом поэзии',
@@ -155,7 +154,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                     By.CLASS_NAME,
                     'talksayTak0',
                 )
-                sleep(0.5)
+                # sleep(0.5)
         except Exception as e:
             logger.error(
                 'При игре с духом поэзии возникла ошибка: ',
@@ -181,7 +180,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
 
         try:
             mind_spirit[0].click()
-            sleep(0.5)
+            # sleep(0.5)
 
             logger.info('Играем с духом ума')
             self.send_info_message(
@@ -212,7 +211,7 @@ class HaddanSpiritPlay(HaddanFightDriver):
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,
                     'talksayTak0')
-                sleep(0.5)
+                # sleep(0.5)
 
         except Exception as e:
             logger.error(

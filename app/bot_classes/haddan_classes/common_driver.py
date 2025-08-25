@@ -292,7 +292,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         self.try_to_switch_to_central_frame()
-        sleep(0.5)
+        # sleep(0.5)
 
         try:
 

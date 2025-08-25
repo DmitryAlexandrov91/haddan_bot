@@ -581,7 +581,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             try:
 
                 self.try_to_switch_to_central_frame()
-                sleep(1)
+                # sleep(1)
 
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
@@ -613,7 +613,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     self.click_to_element_with_actionchains(dragon[0])
 
                 self.try_to_switch_to_dialog()
-                sleep(1)
+                # sleep(1)
 
                 dragon_answers = self.driver.find_elements(
                     By.CLASS_NAME,
@@ -621,7 +621,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 )
                 if dragon_answers:
                     for answer in dragon_answers:
-                        sleep(1)
+                        # sleep(1)
 
                         if 'Напасть' in answer.text or (
                            'Продолжить' in answer.text):
@@ -657,7 +657,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 continue
 
                 self.try_to_switch_to_central_frame()
-                sleep(1)
+                # sleep(1)
 
                 if self.check_for_fight():
                     self.fight(
@@ -667,7 +667,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
 
                 self.driver.switch_to.default_content()
-                sleep(1)
+                # sleep(1)
 
             except Exception as e:
                 self.actions_after_exception(e)
@@ -1135,13 +1135,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
             try:
 
-                if cheerfulness:
-
-                    self.check_cheerfulnes_level(
-                        cheerfulnes_min=cheerfulness_min,
-                        cheerfulnes_slot=cheerfulness_slot,
-                        cheerfulnes_spell=cheerfulness_spell,
-                    )
+                self.wait_until_transition_timeout(5)
 
                 self.check_room_for_stash_and_herd()
 
@@ -1150,17 +1144,13 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     telegram_id=telegram_id,
                 )
 
-                self.try_to_come_back_from_fight()
-
                 if self.check_for_fight():
                     self.fight(
                         spell_book=spell_book,
                         default_slot=slots,
                         default_spell=spell)
 
-                self.check_room_for_stash_and_herd()
-
-                self.wait_until_transition_timeout(5)
+                self.try_to_come_back_from_fight()
 
                 self.check_room_for_stash_and_herd()
 
@@ -1196,6 +1186,14 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             session=session,
                             event_name='Пройден лес',
                         )
+
+                if cheerfulness:
+
+                    self.check_cheerfulnes_level(
+                        cheerfulnes_min=cheerfulness_min,
+                        cheerfulnes_slot=cheerfulness_slot,
+                        cheerfulnes_spell=cheerfulness_spell,
+                    )
 
                 make_transition(
                     room_number=room_number,
