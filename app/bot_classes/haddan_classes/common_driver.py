@@ -257,10 +257,9 @@ class HaddanCommonDriver(DriverManager):
             self.errors_count += 1
             # logger.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
-                self.driver.refresh()
-                logger.info('Перезагрузка страницы')
+                self.driver.execute_script("window.location.reload();")
+                logger.info('Обновление страницы после 10 ошибок.')
                 self.errors_count = 0
-                self.sleep_while_event_is_true(5)
 
         except AttributeError:
             self.clean_label_messages()
