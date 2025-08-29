@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 
+from constants import Slot, SlotsPage
 from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,11 +20,11 @@ class Settings(BaseSettings):
     MIN_HP_VALUE: str = '0'
     MIND_SPIRIT_PLAY: bool = True
     CHEERFULNESS: bool = False
-    DEFAULT_SLOTS_PAGE: str
-    DEFAULT_SLOT: str
-    DEFAULT_CHEERFULNESS_SLOTS_PAGE: str
-    DEFAULT_CHEERFULNESS_SLOT: str
-    DEFAULT_CHEERFULNESS_MIN: int
+    DEFAULT_SLOTS_PAGE: str = SlotsPage._1
+    DEFAULT_SLOT: str = Slot._1
+    DEFAULT_CHEERFULNESS_SLOTS_PAGE: str = SlotsPage._0
+    DEFAULT_CHEERFULNESS_SLOT: str = Slot._1
+    DEFAULT_CHEERFULNESS_MIN: int = 96
 
     BEETS_DELAY: int | float = 0.2
     PAGE_LOAD_TIMEOUT: int = 2

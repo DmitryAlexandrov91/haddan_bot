@@ -19,3 +19,4 @@ dependencies = [
     "webdriver-manager>=4.0.2",
     "punq (>=0.7.0,<0.8.0)",
 ]
+package-mode = false
