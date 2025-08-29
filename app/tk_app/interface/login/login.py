@@ -4,7 +4,8 @@ import tkinter as tk
 from datetime import datetime
 
 from bot_classes import HaddanDriverManager, HaddanUser
-from constants import CHARS, CHARS_ACCESS, DOMENS, DT_FORMAT
+from config import settings
+from constants import CHARS_ACCESS, DOMENS, DT_FORMAT
 from loguru import logger
 
 from tk_app.core import app
@@ -82,11 +83,11 @@ username_label.grid(row=0, column=0, sticky='e')
 # username_field.grid(row=0, column=1)
 
 username = tk.StringVar(app)
-username.set(CHARS[0])
+username.set(settings.chars_list[0])
 
 
 username_l = tk.OptionMenu(
-    app, username, *CHARS,
+    app, username, *settings.chars_list,
 )
 username_l.configure(
     bg='#FFF4DC',

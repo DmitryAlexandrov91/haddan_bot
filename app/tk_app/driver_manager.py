@@ -4,24 +4,27 @@ import platform
 
 from aiogram import Bot
 from bot_classes import HaddanDriverManager
-from constants import (
-    LINUX_PROFILE_DIR,
-    TELEGRAM_BOT_TOKEN,
-    WINDOWS_PROFILE_DIR,
-)
+from config import settings
+from di import resolve
 
-if TELEGRAM_BOT_TOKEN:
+if settings.TELEGRAM_BOT_TOKEN:
     manager = HaddanDriverManager(
-        bot=Bot(token=TELEGRAM_BOT_TOKEN),
+        bot=resolve(Bot),
     )
 else:
     manager = HaddanDriverManager()
 
 
 if platform.system() == 'Windows':
-    profile_dir = os.path.join(os.getcwd(), WINDOWS_PROFILE_DIR)
+    profile_dir = os.path.join(
+        os.getcwd(),
+        settings.WINDOWS_PROFILE_DIR,
+    )
 else:
-    profile_dir = os.path.join(os.getcwd(), LINUX_PROFILE_DIR)
+    profile_dir = os.path.join(
+        os.getcwd(),
+        settings.LINUX_PROFILE_DIR,
+    )
 
 os.makedirs(profile_dir, exist_ok=True)
 

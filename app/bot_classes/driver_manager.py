@@ -7,7 +7,8 @@ from typing import Optional
 
 import undetected_chromedriver as uc
 from aiogram import Bot
-from constants import CHROME_PATH, PAGE_LOAD_TIMEOUT, SCRIPT_TIMEOUT
+from config import settings
+from constants import CHROME_PATH
 from loguru import logger
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -148,8 +149,8 @@ class DriverManager:
                     options=self.options,
                 )
 
-                self.driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
-                self.driver.set_script_timeout(SCRIPT_TIMEOUT)
+                self.driver.set_page_load_timeout(settings.PAGE_LOAD_TIMEOUT)
+                self.driver.set_script_timeout(settings.SCRIPT_TIMEOUT)
 
             except Exception as e:
                 logger.error(
