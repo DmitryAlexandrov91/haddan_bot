@@ -366,6 +366,10 @@ class HaddanCommonDriver(DriverManager):
             north = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[title="К Спуску"]')
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="Прямо"]')
 
         if north:
             self.click_to_element_with_actionchains(north[0])
@@ -404,6 +408,10 @@ class HaddanCommonDriver(DriverManager):
             south = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[title="К Мостику"]')
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="Назад"]')
 
         if south:
 
