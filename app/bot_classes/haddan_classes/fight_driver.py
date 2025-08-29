@@ -2,8 +2,8 @@
 from time import sleep
 from typing import Optional
 
+from config import settings
 from constants import (
-    BEETS_TIMEOUT,
     Slot,
     SlotsPage,
 )
@@ -230,7 +230,7 @@ class HaddanFightDriver(HaddanCommonDriver):
                 return document.activeElement;
                 ''',
             )
-            sleep(BEETS_TIMEOUT)
+            sleep(settings.BEETS_DELAY)
             # WebDriverWait(self.driver, 30).until_not(
             #         ec.presence_of_element_located((
             #             By.XPATH,

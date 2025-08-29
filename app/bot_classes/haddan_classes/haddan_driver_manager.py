@@ -9,6 +9,7 @@ from time import sleep
 import requests
 from PIL import Image
 from aiogram import Bot, Dispatcher, F, Router, types
+from config import settings
 from constants import (
     BASE_DIR,
     FIELD_PRICES,
@@ -475,8 +476,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
         if not self.driver:
             return
 
-        self.time_stamp = time.time()
-        refresh_ttl = float(os.getenv("MIN_TO_REFRESH", 5))
+        self.timer = time.perf_counter
+        self.reload_time_stamp = self.timer()
+        self.refresh_time_stamp = self.timer()
+        reload_ttl = settings.MIN_TO_RElOAD * 60
+        refresh_ttl = settings.MIN_TO_REFRESH * 60
 
         while self.cycle_is_running:
 
@@ -558,12 +562,17 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     telegram_id=telegram_id,
                 )
 
-                if time.time() - self.time_stamp > refresh_ttl * 60:
-                    self.time_stamp = time.time()
-                    self.full_refresh()
-
             except Exception as e:
                 self.actions_after_exception(exception=e)
+
+            finally:
+                if self.timer() - self.reload_time_stamp > reload_ttl:
+                    self.reload_time_stamp = self.timer()
+                    self.reload_game()
+
+                if self.timer() - self.refresh_time_stamp > refresh_ttl:
+                    self.refresh_time_stamp = self.timer()
+                    self.refresh_page()
 
     def dragon_farm(
             self,
@@ -581,7 +590,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             try:
 
                 self.try_to_switch_to_central_frame()
-                sleep(1)
+                # sleep(1)
 
                 self.check_kaptcha(
                     message_to_tg=message_to_tg,
@@ -613,7 +622,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     self.click_to_element_with_actionchains(dragon[0])
 
                 self.try_to_switch_to_dialog()
-                sleep(1)
+                # sleep(1)
 
                 dragon_answers = self.driver.find_elements(
                     By.CLASS_NAME,
@@ -621,7 +630,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 )
                 if dragon_answers:
                     for answer in dragon_answers:
-                        sleep(1)
+                        # sleep(1)
 
                         if 'Напасть' in answer.text or (
                            'Продолжить' in answer.text):
@@ -657,7 +666,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 continue
 
                 self.try_to_switch_to_central_frame()
-                sleep(1)
+                # sleep(1)
 
                 if self.check_for_fight():
                     self.fight(
@@ -667,7 +676,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
 
                 self.driver.switch_to.default_content()
-                sleep(1)
+                # sleep(1)
 
             except Exception as e:
                 self.actions_after_exception(e)
@@ -1135,13 +1144,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
             try:
 
-                if cheerfulness:
-
-                    self.check_cheerfulnes_level(
-                        cheerfulnes_min=cheerfulness_min,
-                        cheerfulnes_slot=cheerfulness_slot,
-                        cheerfulnes_spell=cheerfulness_spell,
-                    )
+                self.wait_until_transition_timeout(5)
 
                 self.check_room_for_stash_and_herd()
 
@@ -1150,63 +1153,66 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     telegram_id=telegram_id,
                 )
 
-                self.try_to_come_back_from_fight()
-
                 if self.check_for_fight():
                     self.fight(
                         spell_book=spell_book,
                         default_slot=slots,
                         default_spell=spell)
 
-                else:
-                    self.check_room_for_stash_and_herd()
+                self.try_to_come_back_from_fight()
 
-                    self.wait_until_transition_timeout(15)
+                self.check_room_for_stash_and_herd()
 
-                    room_number = self.get_room_number()
+                room_number = self.get_room_number()
 
-                    if room_number is None:
-                        continue
+                if room_number is None:
+                    continue
 
-                    if room_number == 89:
+                if room_number == 89:
 
-                        back_from_forest = self.driver.find_elements(
-                            By.CSS_SELECTOR,
-                            'a[href="/room/room.php?id=19529728"]',
-                        )
-                        if back_from_forest:
-                            self.click_to_element_with_actionchains(
-                                back_from_forest[0],
-                            )
-                        Alert(self.driver).accept()
-                        self.stop_event()
-
-                        if self.forest_button:
-                            self.forest_button.configure(fg='black')
-
-                        self.send_info_message('Лес пройден')
-                        logger.info(
-                            'Лес пройден',
-                        )
-
-                        with sync_session_maker() as session:
-
-                            event_crud.create(
-                                session=session,
-                                event_name='Пройден лес',
-                            )
-
-                        break
-
-                    make_transition(
-                        room_number=room_number,
-                        right=self.crossing_to_the_east,
-                        left=self.crossing_to_the_west,
-                        up=self.crossing_to_the_north,
-                        down=self.crossing_to_the_south,
-                        passed_rooms=self.passed_forest_rooms,
+                    back_from_forest = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        'a[href="/room/room.php?id=19529728"]',
                     )
-                    self.check_room_for_stash_and_herd()
+                    if back_from_forest:
+                        self.click_to_element_with_actionchains(
+                            back_from_forest[0],
+                        )
+                    Alert(self.driver).accept()
+                    self.stop_event()
+
+                    if self.forest_button:
+                        self.forest_button.configure(fg='black')
+
+                    self.send_info_message('Лес пройден')
+                    logger.info(
+                        'Лес пройден',
+                    )
+
+                    with sync_session_maker() as session:
+
+                        event_crud.create(
+                            session=session,
+                            event_name='Пройден лес',
+                        )
+
+                if cheerfulness:
+
+                    self.check_cheerfulnes_level(
+                        cheerfulnes_min=cheerfulness_min,
+                        cheerfulnes_slot=cheerfulness_slot,
+                        cheerfulnes_spell=cheerfulness_spell,
+                    )
+
+                make_transition(
+                    room_number=room_number,
+                    right=self.crossing_to_the_east,
+                    left=self.crossing_to_the_west,
+                    up=self.crossing_to_the_north,
+                    down=self.crossing_to_the_south,
+                    passed_rooms=self.passed_forest_rooms,
+                )
+                self.check_room_for_stash_and_herd()
 
             except Exception as e:
                 self.actions_after_exception(e)
@@ -1246,14 +1252,27 @@ class HaddanDriverManager(HaddanSpiritPlay):
             self.wait_until_alert_present(30)
             self.wait_until_mind_spirit_on_page(5)
 
-    def full_refresh(self) -> None:
-        """Метод полной перезагрузки страницы (в случае ошибок сервера)."""
+    def reload_game(self) -> None:
+        """Метод перезагрузки игры (в случае ошибок сервера и интернета)."""
         if not self.driver:
             raise InvalidSessionIdException
 
-        # self.driver.delete_all_cookies()
-        # self.driver.execute_script("window.localStorage.clear();")
-        # self.driver.execute_script("window.sessionStorage.clear();")
-        self.driver.refresh()
-        self.driver.get(self.domen + 'main.php')
-        logger.info('Плановая перезагрузка окна')
+        # self.driver.refresh()
+        # self.driver.get(self.domen + 'main.php')
+
+        self.user.login_to_game(
+            domen=self.domen,
+        )
+
+        logger.info('Плановая перезагрузка игры')
+
+    def refresh_page(self) -> None:
+        """Метод перезагрузки страницы."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        try:
+            self.driver.execute_script("window.location.reload();")
+            logger.info('Плановое обновление страницы')
+        except Exception:
+            pass

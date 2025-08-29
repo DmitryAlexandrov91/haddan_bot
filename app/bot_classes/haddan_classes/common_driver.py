@@ -257,10 +257,9 @@ class HaddanCommonDriver(DriverManager):
             self.errors_count += 1
             # logger.info(f'Текущее количество ошибок - {self.errors_count}')
             if self.errors_count >= 10:
-                self.driver.refresh()
-                logger.info('Перезагрузка страницы')
+                self.driver.execute_script("window.location.reload();")
+                logger.info('Обновление страницы после 10 ошибок.')
                 self.errors_count = 0
-                self.sleep_while_event_is_true(5)
 
         except AttributeError:
             self.clean_label_messages()
@@ -292,7 +291,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         self.try_to_switch_to_central_frame()
-        sleep(0.5)
+        # sleep(0.5)
 
         try:
 
@@ -329,7 +328,7 @@ class HaddanCommonDriver(DriverManager):
             raise InvalidSessionIdException
 
         self.try_to_switch_to_central_frame()
-        sleep(0.5)
+        # sleep(0.5)
 
         drop = self.driver.find_elements(
             By.CSS_SELECTOR,
@@ -342,8 +341,7 @@ class HaddanCommonDriver(DriverManager):
             )
         if drop:
             self.click_to_element_with_actionchains(drop[0])
-            # drop[0].click()
-            sleep(0.5)
+            # sleep(0.5)
 
     def crossing_to_the_north(self) -> bool:
         """Переходит на север."""
