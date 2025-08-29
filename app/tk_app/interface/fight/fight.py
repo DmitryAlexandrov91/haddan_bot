@@ -2,13 +2,8 @@ import os
 import threading
 import tkinter as tk
 
-from constants import (
-    CHEERFULNESS,
-    DEFAULT_CHEERFULNESS_SLOT,
-    DEFAULT_CHEERFULNESS_SLOTS_PAGE,
-    MIND_SPIRIT_PLAY,
-    SLOT_VALUES,
-)
+from config import settings
+from constants import SLOT_VALUES
 from loguru import logger
 from selenium.common.exceptions import (
     InvalidSessionIdException,
@@ -174,10 +169,10 @@ fight_counter_field.grid(
 left_right_checkbox_value = tk.BooleanVar(value=False)
 up_down_checkbox_value = tk.BooleanVar(value=False)
 mind_spirit_checkbox_value = tk.BooleanVar(
-    value=MIND_SPIRIT_PLAY,
+    value=settings.MIND_SPIRIT_PLAY,
 )
 cheerfulness_drink_checkbox_value = tk.BooleanVar(
-    value=CHEERFULNESS,
+    value=settings.CHEERFULNESS,
 )
 
 
@@ -264,11 +259,11 @@ cheerfulness_drink_field.insert(
 
 cheerfulness_slot = tk.StringVar(app)
 cheerfulness_slot.set(
-    DEFAULT_CHEERFULNESS_SLOTS_PAGE)
+    settings.DEFAULT_CHEERFULNESS_SLOTS_PAGE)
 
 cheerfulness_spell = tk.StringVar(app)
 cheerfulness_spell.set(
-    DEFAULT_CHEERFULNESS_SLOT,
+    settings.DEFAULT_CHEERFULNESS_SLOT,
 )
 
 cheerfulness_slot_label = tk.OptionMenu(

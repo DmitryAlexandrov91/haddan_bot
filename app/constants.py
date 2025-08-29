@@ -1,44 +1,13 @@
-import os
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 from typing import Optional
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-
-def get_bool_param_from_env(variable: str | bool) -> bool:
-    """Вытаскивает булево значение из строчной переменной .env."""
-    if isinstance(variable, bool):
-        return variable
-    if variable.lower() == 'false':
-        return False
-    return True
-
-
 # Константы для директорий/путей.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DOWNLOADS_DIR_NAME = os.path.join(BASE_DIR, 'temp')
-KAPCHA_NAME = 'kapcha.png'
-SCREENSHOT_NAME = 'screenshot.png'
-PAGE_SOURCE_NAME = 'page_source.html'
-GLADE_FARM_LOG = 'glade_farm.txt'
-KAPCHA_PATH = os.path.join(DOWNLOADS_DIR_NAME, KAPCHA_NAME)
-PAGE_SOURCE_PATH = os.path.join(DOWNLOADS_DIR_NAME, PAGE_SOURCE_NAME)
-SCREENSHOT_PATH = os.path.join(DOWNLOADS_DIR_NAME, SCREENSHOT_NAME)
-CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
-# Константы логгера
-LOGS_DIR_PATH = os.path.join(BASE_DIR, 'logs')
-LOG_FILE_NAME = 'haddan.log'
-LOG_FILE_PATH = os.path.join(LOGS_DIR_PATH, LOG_FILE_NAME)
-MAX_LOG_SIZE = 10 ** 6
-MAX_LOGS_COUNT = 3
-DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
-LOG_FORMAT = '"%(asctime)s - [%(levelname)s] - %(message)s"'
+CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
 # константы адресов.
 HADDAN_URL = 'https://haddan.ru/'
@@ -54,45 +23,7 @@ DOMENS = {
     'ru.haddan': 'https://ru.haddan.ru/',
 }
 
-
-# Переменные окружения.
-FIRST_CHAR = os.getenv('FIRST_CHAR', None)
-SECOND_CHAR = os.getenv('SECOND_CHAR', None)
-THIRD_CHAR = os.getenv('THIRD_CHAR', None)
-PASSWORD = os.getenv('HADDAN_PASSWORD', None)
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', None)
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', None)
-
-CHARS = [
-    FIRST_CHAR,
-    SECOND_CHAR,
-    THIRD_CHAR,
-]
-
-
-# Заказные данные
-USER_CHAR = 'фантазёрка'
-USER_PASSWORD = 'пароль игрока'
-USER_CHAR_ID = 'тг id игрока'
-
-# Настройки программы.
-PAUSE_DURATION_SECONDS = 50
-TIME_FORMAT = '%d.%m.%Y %H:%M:%S'
-MIN_HP_VALUE = os.getenv('MIN_HP_VALUE', 0)
 LICH_ROOM = 76
-MIND_SPIRIT_PLAY = get_bool_param_from_env(
-    os.getenv('MIND_SPIRIT_PLAY', True))
-CHEERFULNESS = get_bool_param_from_env(
-    os.getenv('CHEERFULNESS', False))
-DEFAULT_SLOTS_PAGE = os.getenv('DEFAULT_SLOTS_PAGE', '2')
-DEFAULT_SLOT = os.getenv('DEFAULT_SLOT', '1')
-DEFAULT_CHEERFULNESS_SLOTS_PAGE = os.getenv(
-    'DEFAULT_CHEERFULNESS_SLOTS_PAGE', '1',
-)
-DEFAULT_CHEERFULNESS_SLOT = os.getenv('DEFAULT_CHEERFULNESS_SLOT', '1')
-BEETS_TIMEOUT = float(os.getenv('BEETS_DELAY', 0.2))
-PAGE_LOAD_TIMEOUT = float(os.getenv('PAGE_LOAD_TIMEOUT', 2))
-SCRIPT_TIMEOUT = float(os.getenv('SCRIPT_TIMEOUT', 2))
 
 # Цена ресурсов поляны
 FIELD_PRICES = {

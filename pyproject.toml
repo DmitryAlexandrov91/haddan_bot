@@ -17,4 +17,5 @@ dependencies = [
     "sqlalchemy>=2.0.43",
     "undetected-chromedriver>=3.5.5",
     "webdriver-manager>=4.0.2",
+    "punq (>=0.7.0,<0.8.0)",
 ]

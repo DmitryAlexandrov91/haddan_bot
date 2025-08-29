@@ -2,16 +2,7 @@
 import tkinter as tk
 
 from PIL import Image, ImageTk
-from config import configure_logging
-from constants import (  # noqa
-    FIRST_CHAR,
-    MIN_HP_VALUE,
-    PASSWORD,
-    TELEGRAM_CHAT_ID,
-    USER_CHAR,
-    USER_CHAR_ID,
-    USER_PASSWORD,
-)
+from config import configure_logging, settings
 
 from .utils import keys
 
@@ -40,18 +31,16 @@ from tk_app.interface.events import *  # noqa
 def start_app() -> None:
     """Запуск основного окна tkinter."""
     configure_logging()
-    # username.insert(  # noqa
-    #     0, FIRST_CHAR
-    # ) if FIRST_CHAR else None
+
     password_field.insert(  # noqa
-        0, PASSWORD,
-    ) if PASSWORD else None
+        0, settings.HADDAN_PASSWORD,
+    )
     tg_id_field.insert(  # noqa
-        0, TELEGRAM_CHAT_ID,
-    ) if TELEGRAM_CHAT_ID else None
+        0, settings.TELEGRAM_CHAT_ID,
+    )
     min_hp_field.insert(  # noqa
-        0, MIN_HP_VALUE,
-    ) if MIN_HP_VALUE else 0
+        0, settings.MIN_HP_VALUE,
+    )
     manager.alarm_label = alarm_label  # noqa
     manager.status_label = status_label  # noqa
     manager.info_label = info_label  # noqa

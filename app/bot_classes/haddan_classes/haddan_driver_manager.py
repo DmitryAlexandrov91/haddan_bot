@@ -9,6 +9,7 @@ from time import sleep
 import requests
 from PIL import Image
 from aiogram import Bot, Dispatcher, F, Router, types
+from config import settings
 from constants import (
     BASE_DIR,
     FIELD_PRICES,
@@ -478,8 +479,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
         self.timer = time.perf_counter
         self.reload_time_stamp = self.timer()
         self.refresh_time_stamp = self.timer()
-        reload_ttl = float(os.getenv("MIN_TO_RELOAD", 15))
-        refresh_ttl = float(os.getenv("MIN_TO_REFRESH", 5))
+        reload_ttl = settings.MIN_TO_RElOAD * 60
+        refresh_ttl = settings.MIN_TO_REFRESH * 60
 
         while self.cycle_is_running:
 
@@ -565,11 +566,11 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 self.actions_after_exception(exception=e)
 
             finally:
-                if self.timer() - self.reload_time_stamp > reload_ttl * 60:
+                if self.timer() - self.reload_time_stamp > reload_ttl:
                     self.reload_time_stamp = self.timer()
                     self.reload_game()
 
-                if self.timer() - self.refresh_time_stamp > refresh_ttl * 60:
+                if self.timer() - self.refresh_time_stamp > refresh_ttl:
                     self.refresh_time_stamp = self.timer()
                     self.refresh_page()
 
