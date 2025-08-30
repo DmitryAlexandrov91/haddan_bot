@@ -145,3 +145,26 @@ def get_dragon_time_wait(text: str) -> int:
     delta = wait_time - current_time
 
     return int(delta.total_seconds())
+
+
+def get_assistant_time_wait(text: str) -> int:
+    """Извлекает время начала защиты ('С ДД-MM-YY чч:мм:сс') из текста вида.
+
+       "Вы не можете нападать... Позднее. (С XX-XX-XX XX:XX:XX)"
+    Затем вычисляет разницу с текущим моментом и возвращает её в секундах.
+    """
+    pattern = r"\d{2}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}"
+    match = re.search(pattern, text)
+
+    if not match:
+        return 0
+
+    cooldown_start_str = match.group()
+
+    cooldown_start = datetime.strptime(cooldown_start_str, '%d-%m-%y %H:%M:%S')
+
+    now = datetime.now()
+
+    delta = cooldown_start - now
+
+    return int(delta.total_seconds())

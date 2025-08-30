@@ -60,6 +60,19 @@ class HaddanCommonDriver(DriverManager):
             except Exception:
                 self.driver.switch_to.default_content()
 
+    def try_to_switch_to_chat(self) -> None:
+        """Переключается на фрейм чата."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if self.driver.execute_script('return window.name;') != 'frmtalkset':
+            try:
+                self.driver.switch_to.frame("frmtalkset")
+                self.driver.switch_to.frame("frmtalk")
+
+            except Exception:
+                self.driver.switch_to.default_content()
+
     def find_all_iframes(self) -> None:
         """Выводит в терминал список всех iframe егов на странице."""
         if not self.driver:

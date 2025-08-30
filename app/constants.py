@@ -59,6 +59,9 @@ GAMBLE_SPIRIT_RIGHT_ANSWERS = {
 
 SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7', 'p')
 
+COAST_LOCATIONS = {'Пирс', 'Мостик', 'Спуск', 'Берег'}
+RADIOACTIVE_FOREST_LOCATIONS = {'Радиоактивный Лес', 'Радиоактивная Опушка'}
+
 
 class SlotsPage(StrEnum):
     """Класс констант с номерами страниц слотов."""
