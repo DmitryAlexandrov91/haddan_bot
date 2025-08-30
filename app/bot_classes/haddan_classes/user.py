@@ -33,21 +33,25 @@ class HaddanUser:
 
     def login_to_game(self, domen: str) -> None:
         """Заходит в игру под заданным именем char."""
-        self.driver.get(domen)
-        username_field = self.driver.find_element(
-            By.NAME, 'username')
-        username_field.send_keys(self.char)
-        password_field = self.driver.find_element(
-            By.NAME, 'passwd')
-        password_field.send_keys(self.password)
-        submit_button = self.driver.find_element(
-            By.CSS_SELECTOR,
-            '[href="javascript:void(enterHaddan())"]')
-        WebDriverWait(self.driver, 10).until(
-            ec.element_to_be_clickable(
-                submit_button),
-            )
-        submit_button.click()
+        try:
+            self.driver.get(domen)
+            username_field = self.driver.find_element(
+                By.NAME, 'username')
+            username_field.send_keys(self.char)
+            password_field = self.driver.find_element(
+                By.NAME, 'passwd')
+            password_field.send_keys(self.password)
+            submit_button = self.driver.find_element(
+                By.CSS_SELECTOR,
+                '[href="javascript:void(enterHaddan())"]')
+            WebDriverWait(self.driver, 10).until(
+                ec.element_to_be_clickable(
+                    submit_button),
+                )
+        except Exception:
+            self.login_to_game(domen=domen)
+        finally:
+            submit_button.click()
 
     def exit_from_game(self) -> None:
         """Выходит из игры."""
