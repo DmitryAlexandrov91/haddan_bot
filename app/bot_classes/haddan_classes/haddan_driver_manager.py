@@ -35,6 +35,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from utils import (
+    get_assistant_time_wait,
     get_dragon_time_wait,
     price_counter,
     time_extractor,
@@ -482,6 +483,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
         reload_ttl = settings.MIN_TO_RElOAD * 60
         refresh_ttl = settings.MIN_TO_REFRESH * 60
 
+        self.current_location = self.get_current_location()
+
         while self.cycle_is_running:
 
             try:
@@ -515,8 +518,17 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     self.wait_until_transition_timeout(5)
 
                     if up_down_move:
+                        # if self.current_location in COAST_LOCATIONS:
                         if not self.crossing_to_the_north():
                             self.crossing_to_the_south()
+                        # if self.current_location in (
+                        #     RADIOACTIVE_FOREST_LOCATIONS
+                        # ):
+                        #     if not self.crossing_to_the_south():
+                        #         self.crossing_to_the_north()
+                        # else:
+                            # if not self.crossing_to_the_south():
+                            #     self.crossing_to_the_north()
 
                         if self.check_for_fight():
                             self.fight(
@@ -542,8 +554,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
                                 fights=fight_counter,
                             )
 
-                # self.check_for_slot_clear_alarm_message()
-
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
 
@@ -562,17 +572,21 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     telegram_id=telegram_id,
                 )
 
+                if not up_down_move and not left_right_move:
+                    if self.current_location == 'Радиоактивная Опушка':
+                        self.assistant_attack_attempt()
+
             except Exception as e:
                 self.actions_after_exception(exception=e)
 
             finally:
-                if self.timer() - self.reload_time_stamp > reload_ttl:
-                    self.reload_time_stamp = self.timer()
-                    self.reload_game()
-
                 if self.timer() - self.refresh_time_stamp > refresh_ttl:
                     self.refresh_time_stamp = self.timer()
                     self.refresh_page()
+
+                if self.timer() - self.reload_time_stamp > reload_ttl:
+                    self.reload_time_stamp = self.timer()
+                    self.reload_game()
 
     def dragon_farm(
             self,
@@ -1276,3 +1290,54 @@ class HaddanDriverManager(HaddanSpiritPlay):
             logger.info('Плановое обновление страницы')
         except Exception:
             pass
+
+    def assistant_attack_attempt(self) -> None:
+        """Метод попытки атаковать помощника."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_chat()
+        messages = self.driver.find_elements(
+            By.CLASS_NAME, 'msg_system',
+        )
+        if messages:
+            for message in messages:
+                if 'Вы не можете нападать на этого NPC' in message.text:
+                    cooldown = get_assistant_time_wait(
+                        text=message.text,
+                    )
+                    self.sleep_while_event_is_true(
+                        time_to_sleep=cooldown,
+                    )
+
+        self.try_to_switch_to_central_frame()
+        self.try_to_switch_to_central_frame()
+        assistant = self.driver.find_elements(
+            By.CSS_SELECTOR, 'img[id="roomnpc4562259"]',
+        )
+        if assistant:
+            assistant[0].click()
+
+            self.try_to_switch_to_dialog()
+            answers = self.driver.find_elements(
+                By.CLASS_NAME,
+                'talksayTak',
+            )
+            if answers:
+                for answer in answers:
+                    if 'Ну попробуй' in answer.text:
+                        answer.click()
+                        return
+
+    def get_current_location(self) -> str | None:
+        """Возвращает название актуальной локации."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        self.try_to_switch_to_central_frame()
+        current_location = self.driver.find_elements(
+            By.CLASS_NAME, 'LOCATION_NAME',
+        )
+        if not current_location:
+            return None
+        return current_location[0].text.strip()

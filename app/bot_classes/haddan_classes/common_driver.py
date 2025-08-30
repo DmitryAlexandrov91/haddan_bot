@@ -60,6 +60,19 @@ class HaddanCommonDriver(DriverManager):
             except Exception:
                 self.driver.switch_to.default_content()
 
+    def try_to_switch_to_chat(self) -> None:
+        """Переключается на фрейм чата."""
+        if not self.driver:
+            raise InvalidSessionIdException
+
+        if self.driver.execute_script('return window.name;') != 'frmtalkset':
+            try:
+                self.driver.switch_to.frame("frmtalkset")
+                self.driver.switch_to.frame("frmtalk")
+
+            except Exception:
+                self.driver.switch_to.default_content()
+
     def find_all_iframes(self) -> None:
         """Выводит в терминал список всех iframe егов на странице."""
         if not self.driver:
@@ -366,6 +379,10 @@ class HaddanCommonDriver(DriverManager):
             north = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[title="К Спуску"]')
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="Прямо"]')
 
         if north:
             self.click_to_element_with_actionchains(north[0])
@@ -404,6 +421,10 @@ class HaddanCommonDriver(DriverManager):
             south = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[title="К Мостику"]')
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="Назад"]')
 
         if south:
 
