@@ -1,5 +1,6 @@
 
 """Всё что связано с конкретным игроком."""
+
 from constants import (
     HADDAN_URL,
 )
@@ -48,10 +49,9 @@ class HaddanUser:
                 ec.element_to_be_clickable(
                     submit_button),
                 )
+            submit_button.click()
         except Exception:
             self.login_to_game(domen=domen)
-        finally:
-            submit_button.click()
 
     def exit_from_game(self) -> None:
         """Выходит из игры."""

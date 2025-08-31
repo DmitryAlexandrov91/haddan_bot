@@ -1117,13 +1117,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         By.PARTIAL_LINK_TEXT, 'Выпить',
                         )
             if drink:
-                drink[0].click()
+                # drink[0].click()
+                self.click_to_element_with_actionchains(drink[0])
 
             come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Отойти',
                     )
             if come_back:
-                come_back[0].click()
+                self.click_to_element_with_actionchains(come_back[0])
+                # come_back[0].click()
 
         if cheerfulness and self.check_for_fight() is False:
             self.check_cheerfulnes_level(
@@ -1316,7 +1318,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             By.CSS_SELECTOR, 'img[id="roomnpc4562259"]',
         )
         if assistant:
-            assistant[0].click()
+            self.click_to_element_with_actionchains(assistant[0])
 
             self.try_to_switch_to_dialog()
             answers = self.driver.find_elements(
@@ -1326,7 +1328,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             if answers:
                 for answer in answers:
                     if 'Ну попробуй' in answer.text:
-                        answer.click()
+                        self.click_to_element_with_actionchains(answer)
                         return
 
     def get_current_location(self) -> str | None:

@@ -327,7 +327,8 @@ class HaddanCommonDriver(DriverManager):
                 )
 
             if drop:
-                drop[0].click()
+                self.click_to_element_with_actionchains(drop[0])
+                # drop[0].click()
                 sleep(0.5)
                 self.send_info_message(message)
                 self.check_room_for_drop()
