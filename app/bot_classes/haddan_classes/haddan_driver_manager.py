@@ -515,7 +515,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
 
                 else:
-                    self.wait_until_transition_timeout(5)
 
                     if up_down_move:
                         # if self.current_location in COAST_LOCATIONS:
@@ -553,6 +552,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             self.actions_with_fight_counter(
                                 fights=fight_counter,
                             )
+
+                    self.wait_until_transition_timeout(7)
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
@@ -1140,6 +1141,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
             telegram_id=telegram_id,
         )
 
+        self.check_room_for_drop()
+
     def forest_passing(
         self,
         message_to_tg: bool = False,
@@ -1183,6 +1186,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
 
                 if room_number is None:
                     continue
+
+                self.send_status_message(
+                    f'Осталось локаций: {255 - len(self.passed_forest_rooms)}',
+                )
 
                 if room_number == 89:
 
