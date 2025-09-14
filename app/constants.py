@@ -68,6 +68,21 @@ NO_SOUL_LOCATIONS = {
     'Сектор W_BA',
     'Сектор W_BB',
     'Сектор W_CP',
+    'Сектор C_BBB',
+    'Сектор C_MG',
+    'Сектор C_BBA',
+    'Сектор C_BAB',
+    'Сектор C_BAA',
+    'Сектор C_ABB',
+    'Сектор C_ABA',
+    'Сектор C_AAB',
+    'Сектор C_AAA',
+}
+NO_SOUL_STOP_SOUTH_LOCATIONS = {
+    'Сектор C_AAA',
+}
+NO_SOUL_STOP_NORTH_LOCATIONS = {
+    'Сектор C_AAA',
 }
 
 
