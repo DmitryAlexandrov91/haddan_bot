@@ -21,6 +21,7 @@ DOMENS = {
     'online-igra': 'https://www.online-igra.ru/',
     'new.haddan': 'https://new.haddan.ru/',
     'ru.haddan': 'https://ru.haddan.ru/',
+    'hl.haddan': 'https://nl.haddan.ru/',
 }
 
 LICH_ROOM = 76
