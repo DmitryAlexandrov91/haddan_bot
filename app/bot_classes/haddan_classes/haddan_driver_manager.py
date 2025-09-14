@@ -14,6 +14,7 @@ from constants import (
     BASE_DIR,
     FIELD_PRICES,
     LICH_ROOM,
+    NO_SOUL_LOCATIONS,
     NPCImgTags,
     Room,
     Slot,
@@ -517,9 +518,12 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 else:
 
                     if up_down_move:
-                        # if self.current_location in COAST_LOCATIONS:
-                        if not self.crossing_to_the_north():
-                            self.crossing_to_the_south()
+                        if self.current_location in NO_SOUL_LOCATIONS:
+                            if not self.crossing_to_the_south():
+                                self.crossing_to_the_north()
+                        else:
+                            if not self.crossing_to_the_north():
+                                self.crossing_to_the_south()
                         # if self.current_location in (
                         #     RADIOACTIVE_FOREST_LOCATIONS
                         # ):

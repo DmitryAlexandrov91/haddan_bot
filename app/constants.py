@@ -61,6 +61,13 @@ SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7', 'p')
 
 COAST_LOCATIONS = {'Пирс', 'Мостик', 'Спуск', 'Берег'}
 RADIOACTIVE_FOREST_LOCATIONS = {'Радиоактивный Лес', 'Радиоактивная Опушка'}
+NO_SOUL_LOCATIONS = {
+    'Сектор W_AA',
+    'Сектор W_AB',
+    'Сектор W_BA',
+    'Сектор W_BB',
+    'Сектор W_CP',
+}
 
 
 class SlotsPage(StrEnum):
