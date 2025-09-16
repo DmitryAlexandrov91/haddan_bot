@@ -14,7 +14,8 @@ from constants import (
     BASE_DIR,
     FIELD_PRICES,
     LICH_ROOM,
-    NO_SOUL_LOCATIONS,
+    STOP_NORTH_LOCATIONS,
+    STOP_SOUTH_LOCATIONS,
     NPCImgTags,
     Room,
     Slot,
@@ -484,8 +485,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
         reload_ttl = settings.MIN_TO_RElOAD * 60
         refresh_ttl = settings.MIN_TO_REFRESH * 60
 
-        self.current_location = self.get_current_location()
-
         while self.cycle_is_running:
 
             try:
@@ -516,22 +515,21 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
 
                 else:
+                    self.current_location = self.get_current_location()
 
                     if up_down_move:
-                        if self.current_location in NO_SOUL_LOCATIONS:
+                        if self.current_location in STOP_NORTH_LOCATIONS:
                             if not self.crossing_to_the_south():
                                 self.crossing_to_the_north()
+                        elif self.current_location in STOP_SOUTH_LOCATIONS:
+                            if not self.crossing_to_the_north():
+                                self.crossing_to_the_south()
+                        # elif self.current_location in NO_SOUL_LOCATIONS:
+                        #     if not self.crossing_to_the_south():
+                        #         self.crossing_to_the_north()
                         else:
                             if not self.crossing_to_the_north():
                                 self.crossing_to_the_south()
-                        # if self.current_location in (
-                        #     RADIOACTIVE_FOREST_LOCATIONS
-                        # ):
-                        #     if not self.crossing_to_the_south():
-                        #         self.crossing_to_the_north()
-                        # else:
-                            # if not self.crossing_to_the_south():
-                            #     self.crossing_to_the_north()
 
                         if self.check_for_fight():
                             self.fight(

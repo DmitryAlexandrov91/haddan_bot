@@ -78,11 +78,13 @@ NO_SOUL_LOCATIONS = {
     'Сектор C_AAB',
     'Сектор C_AAA',
 }
-NO_SOUL_STOP_SOUTH_LOCATIONS = {
+STOP_SOUTH_LOCATIONS = {
     'Сектор C_AAA',
 }
-NO_SOUL_STOP_NORTH_LOCATIONS = {
-    'Сектор C_AAA',
+STOP_NORTH_LOCATIONS = {
+    'Сектор C_BBA',
+    'Сектор S_BB',
+    'Сектор W_BB',
 }
 
 

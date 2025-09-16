@@ -3,7 +3,7 @@ name = "haddan-bot"
 version = "0.1.0"
 description = "Easy Bot for haddan.ru"
 readme = "README.md"
-requires-python = ">=3.13,<4.0"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "aiogram>=3.22.0",
     "loguru>=0.7.3",
@@ -18,5 +18,6 @@ dependencies = [
     "undetected-chromedriver>=3.5.5",
     "webdriver-manager>=4.0.2",
     "punq (>=0.7.0,<0.8.0)",
+    "pyinstaller (>=6.16.0,<7.0.0)",
 ]
 package-mode = false
