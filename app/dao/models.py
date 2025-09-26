@@ -121,4 +121,3 @@ class UserAccess(BaseModel):
         DateTime(timezone=True),
         doc='Доступ',
     )
-
