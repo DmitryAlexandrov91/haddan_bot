@@ -1,3 +1,4 @@
+from config import settings
 from dao.services import SessionService
 from di import resolve
 
@@ -17,4 +18,4 @@ def test_char_acces_dict() -> None:
                 DT_FORMAT) for user in users_access
             }
 
-        assert isinstance(char_access, dict)
+        assert settings.FIRST_CHAR in char_access.keys()
