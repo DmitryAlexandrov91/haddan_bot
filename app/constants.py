@@ -21,6 +21,7 @@ DOMENS = {
     'online-igra': 'https://www.online-igra.ru/',
     'new.haddan': 'https://new.haddan.ru/',
     'ru.haddan': 'https://ru.haddan.ru/',
+    'hl.haddan': 'https://nl.haddan.ru/',
 }
 
 LICH_ROOM = 76
@@ -61,6 +62,32 @@ SLOT_VALUES = ('1', '2', '3', '4', '5', '6', '7', 'p')
 
 COAST_LOCATIONS = {'Пирс', 'Мостик', 'Спуск', 'Берег'}
 RADIOACTIVE_FOREST_LOCATIONS = {'Радиоактивный Лес', 'Радиоактивная Опушка'}
+NO_SOUL_LOCATIONS = {
+    'Сектор W_AA',
+    'Сектор W_AB',
+    'Сектор W_BA',
+    'Сектор W_BB',
+    'Сектор W_CP',
+    'Сектор C_BBB',
+    'Сектор C_MG',
+    'Сектор C_BBA',
+    'Сектор C_BAB',
+    'Сектор C_BAA',
+    'Сектор C_ABB',
+    'Сектор C_ABA',
+    'Сектор C_AAB',
+    'Сектор C_AAA',
+}
+STOP_SOUTH_LOCATIONS = {
+    'Сектор C_AAA',
+    'Спуск',
+}
+STOP_NORTH_LOCATIONS = {
+    'Сектор C_BBA',
+    'Сектор S_BB',
+    'Сектор W_BB',
+    'Мостик',
+}
 
 
 class SlotsPage(StrEnum):
@@ -128,18 +155,6 @@ class Room:
 
 
 DEFAULT_TK_STATUS = 'Бот готов к работе'
-
-
-CHARS_ACCESS = {
-    'SwordS': '2033-06-28 23:59:59',
-    'Nordman': '2033-06-27 23:59:59',
-    'фантазёрка': '2033-06-27 23:59:59',
-    'выдра полевая': '2033-06-27 23:59:59',
-    'sauron77': '2033-06-27 23:59:59',
-    'Joker13': '2033-06-27 23:59:59',
-    'Dark Messia': '2033-06-27 23:59:59',
-    '-Смертник-': '2033-06-27 23:59:59',
-}
 
 DT_FORMAT = '%Y-%m-%d %H:%M:%S'
 

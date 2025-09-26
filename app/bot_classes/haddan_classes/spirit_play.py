@@ -195,18 +195,22 @@ class HaddanSpiritPlay(HaddanFightDriver):
                 right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Легко')
                 if right_choise:
-                    right_choise[0].click()
+                    self.click_to_element_with_actionchains(right_choise[0])
 
                 random_play = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Сходить')
 
                 if random_play:
-                    random_play[random.choice([0, 1])].click()
+                    # random_play[random.choice([0, 1])].click()
+                    self.click_to_element_with_actionchains(
+                        random_play[random.choice([0, 1])],
+                    )
 
                 right_choise = self.driver.find_elements(
                         By.PARTIAL_LINK_TEXT, 'Телепортироваться')
                 if right_choise:
-                    right_choise[0].click()
+                    # right_choise[0].click()
+                    self.click_to_element_with_actionchains(right_choise[0])
 
                 spirit_answers = self.driver.find_elements(
                     By.CLASS_NAME,

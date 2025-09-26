@@ -1,7 +1,8 @@
 import tkinter as tk
 
 from dao.crud import event_crud
-from dao.database import sync_session_maker
+from dao.services import SessionService
+from di import resolve
 
 from tk_app.core import app
 
@@ -15,7 +16,7 @@ last_forest_pass_label.grid(
     column=0,
 )
 
-with sync_session_maker() as session:
+with resolve(SessionService)() as session:
     last_event = event_crud.get_single_filtered(
         session=session,
         event_name="Пройден лес",

@@ -5,7 +5,10 @@ from datetime import datetime
 
 from bot_classes import HaddanDriverManager, HaddanUser
 from config import settings
-from constants import CHARS_ACCESS, DOMENS, DT_FORMAT
+from constants import DOMENS, DT_FORMAT
+from dao.crud import user_access_crud
+from dao.services import SessionService
+from di import resolve
 from loguru import logger
 
 from tk_app.core import app
@@ -25,7 +28,18 @@ def start_game(manager: HaddanDriverManager = manager) -> None:
         password = password_field.get().strip()
 
         now = datetime.now()
-        char_access = CHARS_ACCESS[char]
+        with resolve(SessionService)() as session:
+            users_access = user_access_crud.get_multi(
+                session=session,
+            )
+
+            chars = {
+                user.username: user.access.strftime(
+                    DT_FORMAT,
+                ) for user in users_access
+            }
+
+        char_access = chars[char]
         if datetime.strptime(
             char_access, DT_FORMAT,
         ) < now:

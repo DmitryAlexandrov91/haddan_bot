@@ -327,7 +327,8 @@ class HaddanCommonDriver(DriverManager):
                 )
 
             if drop:
-                drop[0].click()
+                self.click_to_element_with_actionchains(drop[0])
+                # drop[0].click()
                 sleep(0.5)
                 self.send_info_message(message)
                 self.check_room_for_drop()
@@ -383,6 +384,10 @@ class HaddanCommonDriver(DriverManager):
             north = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[title="Прямо"]')
+        if not north:
+            north = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="Глубже в Подземелье"]')
 
         if north:
             self.click_to_element_with_actionchains(north[0])
@@ -425,6 +430,10 @@ class HaddanCommonDriver(DriverManager):
             south = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 'img[title="Назад"]')
+        if not south:
+            south = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                'img[title="Ко входу"]')
 
         if south:
 

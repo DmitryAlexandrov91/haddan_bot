@@ -14,13 +14,16 @@ from constants import (
     BASE_DIR,
     FIELD_PRICES,
     LICH_ROOM,
+    STOP_NORTH_LOCATIONS,
+    STOP_SOUTH_LOCATIONS,
     NPCImgTags,
     Room,
     Slot,
     SlotsPage,
 )
 from dao.crud import event_crud
-from dao.database import sync_session_maker
+from dao.services import SessionService
+from di import resolve
 from loguru import logger
 from maze_utils import (
     find_path_via_boxes_with_directions,
@@ -483,8 +486,6 @@ class HaddanDriverManager(HaddanSpiritPlay):
         reload_ttl = settings.MIN_TO_RElOAD * 60
         refresh_ttl = settings.MIN_TO_REFRESH * 60
 
-        self.current_location = self.get_current_location()
-
         while self.cycle_is_running:
 
             try:
@@ -515,20 +516,21 @@ class HaddanDriverManager(HaddanSpiritPlay):
                     )
 
                 else:
-                    self.wait_until_transition_timeout(5)
+                    self.current_location = self.get_current_location()
 
                     if up_down_move:
-                        # if self.current_location in COAST_LOCATIONS:
-                        if not self.crossing_to_the_north():
-                            self.crossing_to_the_south()
-                        # if self.current_location in (
-                        #     RADIOACTIVE_FOREST_LOCATIONS
-                        # ):
+                        if self.current_location in STOP_NORTH_LOCATIONS:
+                            if not self.crossing_to_the_south():
+                                self.crossing_to_the_north()
+                        elif self.current_location in STOP_SOUTH_LOCATIONS:
+                            if not self.crossing_to_the_north():
+                                self.crossing_to_the_south()
+                        # elif self.current_location in NO_SOUL_LOCATIONS:
                         #     if not self.crossing_to_the_south():
                         #         self.crossing_to_the_north()
-                        # else:
-                            # if not self.crossing_to_the_south():
-                            #     self.crossing_to_the_north()
+                        else:
+                            if not self.crossing_to_the_north():
+                                self.crossing_to_the_south()
 
                         if self.check_for_fight():
                             self.fight(
@@ -553,6 +555,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
                             self.actions_with_fight_counter(
                                 fights=fight_counter,
                             )
+
+                    self.wait_until_transition_timeout(7)
 
                 self.play_with_poetry_spirit()
                 self.play_with_gamble_spirit()
@@ -1117,13 +1121,15 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         By.PARTIAL_LINK_TEXT, 'Выпить',
                         )
             if drink:
-                drink[0].click()
+                # drink[0].click()
+                self.click_to_element_with_actionchains(drink[0])
 
             come_back = self.driver.find_elements(
                     By.PARTIAL_LINK_TEXT, 'Отойти',
                     )
             if come_back:
-                come_back[0].click()
+                self.click_to_element_with_actionchains(come_back[0])
+                # come_back[0].click()
 
         if cheerfulness and self.check_for_fight() is False:
             self.check_cheerfulnes_level(
@@ -1137,6 +1143,8 @@ class HaddanDriverManager(HaddanSpiritPlay):
             message_to_tg=message_to_tg,
             telegram_id=telegram_id,
         )
+
+        self.check_room_for_drop()
 
     def forest_passing(
         self,
@@ -1182,6 +1190,10 @@ class HaddanDriverManager(HaddanSpiritPlay):
                 if room_number is None:
                     continue
 
+                self.send_status_message(
+                    f'Осталось локаций: {255 - len(self.passed_forest_rooms)}',
+                )
+
                 if room_number == 89:
 
                     back_from_forest = self.driver.find_elements(
@@ -1203,7 +1215,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         'Лес пройден',
                     )
 
-                    with sync_session_maker() as session:
+                    with resolve(SessionService)() as session:
 
                         event_crud.create(
                             session=session,
@@ -1316,7 +1328,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             By.CSS_SELECTOR, 'img[id="roomnpc4562259"]',
         )
         if assistant:
-            assistant[0].click()
+            self.click_to_element_with_actionchains(assistant[0])
 
             self.try_to_switch_to_dialog()
             answers = self.driver.find_elements(
@@ -1326,7 +1338,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
             if answers:
                 for answer in answers:
                     if 'Ну попробуй' in answer.text:
-                        answer.click()
+                        self.click_to_element_with_actionchains(answer)
                         return
 
     def get_current_location(self) -> str | None:

@@ -10,8 +10,9 @@ from constants import (
     SlotsPage,
 )
 from dao.crud import preset_crud, spell_book_crud
-from dao.database import sync_session_maker
 from dao.models import Preset, SpellBook
+from dao.services import SessionService
+from di import resolve
 
 from tk_app.core import app
 
@@ -1058,7 +1059,7 @@ def get_preset_from_db_and_config_tk(
     :preset_name    Название пресета из БД
     :default_slots_func    Функция, задающая дефолтный конфиг для слотов
     """
-    with sync_session_maker() as session:
+    with resolve(SessionService)() as session:
         preset = preset_crud.get_single_filtered(
             session=session,
             name=preset_name,

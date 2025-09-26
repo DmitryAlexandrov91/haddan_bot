@@ -97,7 +97,8 @@ class HaddanFightDriver(HaddanCommonDriver):
     def open_slot_and_choise_spell(
             self,
             slots_page: SlotsPage,
-            slot: Slot) -> None:
+            slot: Slot,
+        ) -> None:
         """Открывает меню быстрых слотов и выбирает знужный закл."""
         if not self.driver:
             raise InvalidSessionIdException
@@ -183,14 +184,7 @@ class HaddanFightDriver(HaddanCommonDriver):
 
         if not kick:
             self.try_to_come_back_from_fight()
-            self.send_info_message(
-                text='Бой завершён',
-            )
             return
-
-        self.send_info_message(
-            text='Проводим бой',
-        )
 
         try:
 
