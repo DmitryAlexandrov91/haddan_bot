@@ -80,11 +80,13 @@ NO_SOUL_LOCATIONS = {
 }
 STOP_SOUTH_LOCATIONS = {
     'Сектор C_AAA',
+    'Спуск',
 }
 STOP_NORTH_LOCATIONS = {
     'Сектор C_BBA',
     'Сектор S_BB',
     'Сектор W_BB',
+    'Мостик',
 }
 
 

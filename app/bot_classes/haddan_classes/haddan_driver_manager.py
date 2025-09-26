@@ -22,7 +22,8 @@ from constants import (
     SlotsPage,
 )
 from dao.crud import event_crud
-from dao.database import sync_session_maker
+from dao.services import SessionService
+from di import resolve
 from loguru import logger
 from maze_utils import (
     find_path_via_boxes_with_directions,
@@ -1214,7 +1215,7 @@ class HaddanDriverManager(HaddanSpiritPlay):
                         'Лес пройден',
                     )
 
-                    with sync_session_maker() as session:
+                    with resolve(SessionService)() as session:
 
                         event_crud.create(
                             session=session,

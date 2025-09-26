@@ -1,14 +1,15 @@
-from dao.database import sync_engine, sync_session_maker
-from dao.models import Event, Preset, SlotSpell, SpellBook
+from dao.models import Event, Preset, SlotSpell, SpellBook, UserAccess
+from dao.services import SessionService
+from di import resolve
 from fastapi import FastAPI
 from sqladmin import Admin, ModelView
+from sqlalchemy import Engine
 
-app = FastAPI()
+fast_api_app = FastAPI()
 admin = Admin(
-    app,
-    engine=sync_engine,
-    session_maker=sync_session_maker,
-)
+    fast_api_app,
+    engine=resolve(Engine),
+    session_maker=resolve(SessionService).session)
 
 
 class EventAdmin(ModelView, model=Event):
@@ -54,7 +55,18 @@ class SloSpellAdmin(ModelView, model=SlotSpell):
     ]
 
 
+class UserAccessAdmin(ModelView, model=UserAccess):
+    """Админка модели UserAccess."""
+
+    column_list = [
+        UserAccess.id,
+        UserAccess.username,
+        UserAccess.access,
+    ]
+
+
 admin.add_view(EventAdmin)
 admin.add_view(PresetAdmin)
 admin.add_view(SpellBookAdmin)
 admin.add_view(SloSpellAdmin)
+admin.add_view(UserAccessAdmin)

@@ -1,7 +1,8 @@
 from tkinter import StringVar
 
 from dao.crud import preset_crud, slot_spell_crud, spell_book_crud
-from dao.database import sync_session_maker
+from dao.services import SessionService
+from di import resolve
 
 
 def create_update_objects(
@@ -10,7 +11,7 @@ def create_update_objects(
         main_spell_slot: StringVar,
 ) -> None:
     """Получает / обновляет / создаёт объекты пресета."""
-    with sync_session_maker() as session:
+    with resolve(SessionService)() as session:
         preset = preset_crud.get_or_create_or_update(
             session=session,
             name=data['name'],

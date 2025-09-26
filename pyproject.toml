@@ -19,5 +19,8 @@ dependencies = [
     "webdriver-manager>=4.0.2",
     "punq (>=0.7.0,<0.8.0)",
     "pyinstaller (>=6.16.0,<7.0.0)",
+    "alembic (>=1.16.5,<2.0.0)",
+    "uvicorn (>=0.37.0,<0.38.0)",
+    "fastapi (>=0.117.1,<0.118.0)",
 ]
 package-mode = false

@@ -107,3 +107,17 @@ class SlotSpell(BaseModel):
     spell_book: Mapped["SpellBook"] = relationship(
         back_populates="slot_spell",
     )
+
+
+class UserAccess(BaseModel):
+    """Модель доступа игроков к боту."""
+
+    username: Mapped[str] = mapped_column(
+        String(100),
+        nullable=True,
+        comment="Ник персонажа",
+    )
+    access: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        doc='Доступ',
+    )

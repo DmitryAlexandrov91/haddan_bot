@@ -2,22 +2,12 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from config import database_url
-from sqlalchemy import Identity, Integer, create_engine, inspect
+from sqlalchemy import Identity, Integer, inspect
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
     declared_attr,
     mapped_column,
-    sessionmaker,
-)
-
-sync_engine = create_engine(url=database_url)
-sync_session_maker = sessionmaker(
-    bind=sync_engine,
-    autocommit=False,
-    autoflush=False,
-    expire_on_commit=False,
 )
 
 
