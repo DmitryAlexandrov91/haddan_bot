@@ -22,7 +22,8 @@ def _inject_database(container: punq.Container) -> None:
     container.register(
         Engine,
         instance=create_engine(url=settings.DB_URL),
-        )
+        scope='singleton',
+    )
 
     container.register(SessionService)
 
