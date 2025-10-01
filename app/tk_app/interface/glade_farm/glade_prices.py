@@ -9,8 +9,7 @@ from config import configure_logging
 from constants import FIELD_PRICES
 
 from tk_app.core import app
-
-from .utils import get_glade_price_list
+from tk_app.interface.glade_farm.utils import get_glade_price_list
 
 GLADE_PRICES = FIELD_PRICES.copy()
 

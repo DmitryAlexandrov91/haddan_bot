@@ -2,8 +2,8 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from ..models import Preset
-from .base import BaseCRUD
+from dao.crud.base import BaseCRUD
+from dao.models import Preset
 
 
 class PresetCrud(BaseCRUD):

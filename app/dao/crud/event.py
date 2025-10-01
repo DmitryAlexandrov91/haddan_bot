@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from ..models import Event
-from .base import BaseCRUD
+from dao.crud.base import BaseCRUD
+from dao.models import Event
 
 
 class EventCrud(BaseCRUD):

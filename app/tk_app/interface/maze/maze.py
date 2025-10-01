@@ -28,8 +28,7 @@ from tk_app.interface.fight import (
 )
 from tk_app.interface.fight.quick_slots import get_round_spells
 from tk_app.interface.login import start_login_thread, stop_bot
-
-from .validators import send_message_and_stop_cycle
+from tk_app.interface.maze.utils import send_message_and_stop_cycle
 
 
 def start_maze_passing() -> None:

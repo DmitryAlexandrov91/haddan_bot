@@ -16,14 +16,13 @@ from tk_app.interface.fight import (
     main_slots_page,
     main_spell_slot,
 )
+from tk_app.interface.glade_farm.glade_prices import GLADE_PRICES
 from tk_app.interface.login import (
     send_message_checkbox_value,
     start_login_thread,
     stop_bot,
     tg_id_field,
 )
-
-from .glade_prices import GLADE_PRICES
 
 
 def tk_glade_farm() -> None:

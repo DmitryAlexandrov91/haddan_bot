@@ -2,7 +2,7 @@ from typing import Any, Generic, List, Optional, Type, TypeVar
 
 from sqlalchemy.orm import Session
 
-from ..database import BaseModel
+from dao.database import BaseModel
 
 T = TypeVar('T', bound='BaseModel')
 
