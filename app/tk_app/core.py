@@ -4,7 +4,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from config import configure_logging, settings
 
-from .utils import keys
+from tk_app.utils import keys
 
 app = tk.Tk()
 

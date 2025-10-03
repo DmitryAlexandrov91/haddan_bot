@@ -9,14 +9,17 @@ from urllib3.exceptions import MaxRetryError
 
 from tk_app.core import app
 from tk_app.driver_manager import manager
+from tk_app.interface.fight.quick_slots import (
+    get_round_spells,
+    main_slots_page,
+    main_spell_slot,
+)
 from tk_app.interface.login import (
     send_message_checkbox_value,
     start_login_thread,
     stop_bot,
     tg_id_field,
 )
-
-from .quick_slots import get_round_spells, main_slots_page, main_spell_slot
 
 
 #  Функции фарма драконов.

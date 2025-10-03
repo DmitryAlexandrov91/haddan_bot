@@ -15,8 +15,7 @@ from dao.services import SessionService
 from di import resolve
 
 from tk_app.core import app
-
-from .utils import create_update_objects
+from tk_app.interface.fight.utils import create_update_objects
 
 
 def sync_slots() -> None:

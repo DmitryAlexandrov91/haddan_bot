@@ -5,7 +5,7 @@ import pytz
 from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from . import BaseModel
+from dao.database import BaseModel
 
 
 class Event(BaseModel):
