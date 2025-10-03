@@ -1,15 +1,11 @@
+from admin.services import AdminService
 from dao.models import Event, Preset, SlotSpell, SpellBook, UserAccess
-from dao.services import SessionService
 from di import resolve
 from fastapi import FastAPI
-from sqladmin import Admin, ModelView
-from sqlalchemy import Engine
+from sqladmin import ModelView
 
-fast_api_app = FastAPI()
-admin = Admin(
-    fast_api_app,
-    engine=resolve(Engine),
-    session_maker=resolve(SessionService).session)
+fast_api_app = resolve(FastAPI)
+admin = resolve(AdminService)()
 
 
 class EventAdmin(ModelView, model=Event):

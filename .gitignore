@@ -10,6 +10,7 @@ chrome-win/
 .env
 .env/
 *.pyc
+*.env
 
 
 

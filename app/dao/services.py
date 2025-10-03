@@ -1,17 +1,15 @@
-from typing import final
+from dataclasses import dataclass
 
 from sqlalchemy import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
 
-@final
+@dataclass
 class SessionService:
     """Класс для регистрации сервиса сессий в DI."""
 
-    def __init__(self, engine: Engine) -> None:
-        """Инициализация движка из контейнера."""
-        self._engine = engine
+    _engine: Engine
 
     @property
     def session(self) -> sessionmaker[Session]:
@@ -24,5 +22,5 @@ class SessionService:
         )
 
     def __call__(self) -> Session:
-        """Позволяет использовать SessionService() как фабрику сессий."""
+        """Позволяет использовать SessionService как фабрику сессий."""
         return self.session()
